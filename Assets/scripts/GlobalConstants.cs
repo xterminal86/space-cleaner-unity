@@ -4,6 +4,9 @@ using UnityEngine;
 
 public static class GlobalConstants 
 {
+  public const float PlayerRotationSpeed = 100.0f;
+  public const float PlayerMoveSpeed = 3.0f;
+
   public static string MenuMoveSound = "menu_move";
   public static string MenuSelectSound = "menu_select";
   public static string MenuBackSound = "menu_back";
