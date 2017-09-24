@@ -163,4 +163,17 @@ public class SoundManager : MonoSingleton<SoundManager>
       item.Value.Stop();
     }
   }
+
+  void Update()
+  {    
+    if (_currentPlayingTrack == string.Empty)
+    {
+      return;
+    }
+
+    if (_audioSourcesByName[_currentPlayingTrack].timeSamples >= (int)GlobalConstants.MusicTrackLoopPointsByName[_currentPlayingTrack].y)
+    {
+      _audioSourcesByName[_currentPlayingTrack].timeSamples = (int)GlobalConstants.MusicTrackLoopPointsByName[_currentPlayingTrack].x;
+    }
+  }
 }

@@ -1,0 +1,87 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class BackgroundStar : MonoBehaviour 
+{
+  public SpriteRenderer StarSprite;
+
+  bool _isActive = false;
+  public bool IsActive
+  {
+    get { return _isActive; }
+  }
+
+  Color _starColor = Color.white;
+
+  float _alpha = 0.0f, _alphaSpeed = 1.0f;
+  public void Init()
+  {
+    _isActive = true;
+
+    Reset();
+  }
+
+  public void Reset()
+  {
+    _isGrowing = true;
+
+    float scale = Random.Range(0.05f, 0.25f);
+    float alphaSpeed = Random.Range(0.25f, 2.0f);
+
+    _alphaSpeed = alphaSpeed;
+
+    _scale.Set(scale, scale, scale);
+    transform.localScale = _scale;
+
+    _alpha = 0.0f;
+    _starColor.a = _alpha;
+
+    SetRandomPosition();
+  }
+
+  Vector3 _position = Vector3.zero;
+  public void SetRandomPosition()
+  {
+    float x = Random.Range(-10.0f, 10.0f);
+    float y = Random.Range(-5.0f, 5.0f);
+
+    _position.Set(x, y, -1.0f);
+
+    transform.localPosition = _position;
+  }
+
+  Vector3 _scale = Vector3.zero;
+  bool _isGrowing = true;
+  void Update()
+  {
+    if (!_isActive)
+    {
+      return;
+    }
+
+    if (_isGrowing)
+    {      
+      _alpha += _alphaSpeed * Time.smoothDeltaTime;
+    }
+    else
+    {      
+      _alpha -= _alphaSpeed * Time.smoothDeltaTime;
+    }
+
+    if (_alpha > 1.0f)
+    {
+      _isGrowing = false;
+    }
+    else if (_alpha < 0.0f)
+    {
+      Reset();
+    }
+
+    _starColor.a = _alpha;
+
+    StarSprite.color = _starColor;
+
+    transform.localScale = _scale;
+  }
+}
