@@ -12,15 +12,18 @@ public class GameScript : MonoBehaviour
     get { return _screenRect; }
   }
 
+  float _aspect = 1.0f;
   void Awake()
   {    
-    _dimensions = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height));
+    _dimensions = Camera.main.ViewportToWorldPoint(new Vector3(0.0f, 0.0f, Camera.main.nearClipPlane));
+
+    Debug.Log(_dimensions);
 
     _screenRect = new float[4];
 
-    _screenRect[0] = -_dimensions.x;
-    _screenRect[1] = -_dimensions.y;
-    _screenRect[2] = _dimensions.x;
-    _screenRect[3] = _dimensions.y;
+    _screenRect[0] = _dimensions.x;
+    _screenRect[1] = _dimensions.y;
+    _screenRect[2] = -_dimensions.x;
+    _screenRect[3] = -_dimensions.y;
   }
 }
