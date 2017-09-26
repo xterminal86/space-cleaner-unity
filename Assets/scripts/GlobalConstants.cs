@@ -7,7 +7,7 @@ public static class GlobalConstants
   // Maximum asteroids by default
   public const int AsteroidsMaxInstances = 40;
   // Number of asteroid breakdowns after it has been hit
-  public const int AsteroidMaxBreakdownLevel = 2;
+  public const int AsteroidMaxBreakdownLevel = 3;
 
   public const float AsteroidMinSpeed = 0.5f;
   public const float AsteroidMaxSpeed = 2.0f;

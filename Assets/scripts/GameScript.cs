@@ -26,6 +26,8 @@ public class GameScript : MonoBehaviour
   public GameObject PlayerDeathEffect;
   public GameObject PowerupSpawnEffect;
 
+  public GameObject AsteroidControllerPrefab;
+
   public Player PlayerScript;
 
   Vector2 _dimensions = Vector2.zero;
@@ -79,6 +81,11 @@ public class GameScript : MonoBehaviour
 
     _hpBar.Append('>', PlayerScript.Hitpoints);
     _shieldBar.Append('>', PlayerScript.Shieldpoints);
+
+    for (int i = 0; i < GlobalConstants.AsteroidsMaxInstances; i++)
+    {
+      Instantiate(AsteroidControllerPrefab);
+    }
 
     /*
     foreach (var item in _spawnPoints)
@@ -151,7 +158,7 @@ public class GameScript : MonoBehaviour
 
         _progressBarSb.Length = 0;
 
-        SpawnAsteroid();
+        //SpawnAsteroid();
       }
 
       SpawnProgressBar.text = _progressBarSb.ToString();
