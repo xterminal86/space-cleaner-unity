@@ -15,19 +15,55 @@ public class Asteroid : MonoBehaviour
     _game = GameObject.Find("App").GetComponent<GameScript>();
   }
 
-  float _asteroidSpeed = 1.0f;
-  public void Init(Vector2 position)
+  int _breakdownLevel = 0;
+  public int BreakdownLevel
   {
+    get { return _breakdownLevel; }
+  }
+
+  float _asteroidSpeed = 1.0f;
+  public void Init(Vector2 position, int breakdownLevel)
+  {
+    _breakdownLevel = breakdownLevel;
     _position = position;
     _rotationSpeed = Random.Range(GlobalConstants.AsteroidMinRotationSpeed, GlobalConstants.AsteroidMaxRotationSpeed);
     _rotationDirection = (Random.Range(0, 2) == 0) ? 1 : -1;
     _asteroidSpeed = Random.Range(GlobalConstants.AsteroidMinSpeed, GlobalConstants.AsteroidMaxSpeed);
+    gameObject.SetActive(true);
+  }
+
+  public void PushRandom()
+  {
     float dirX = Random.Range(-1.0f, 1.0f);
     float dirY = Random.Range(-1.0f, 1.0f);
     _direction.Set(dirX, dirY);
     _direction.Normalize();
-    RigidbodyComponent.AddForce(_direction, ForceMode2D.Impulse);
-    gameObject.SetActive(true);
+    RigidbodyComponent.AddForce(_direction * _asteroidSpeed, ForceMode2D.Impulse);
+  }
+
+  public void Breakdown()
+  {
+    if (_breakdownLevel < GlobalConstants.AsteroidMaxBreakdownLevel)
+    {
+      _breakdownLevel++;
+
+      int doubled = _breakdownLevel * 2;
+      for (int i = 0; i < doubled; i++)
+      {
+        GameObject go = Instantiate(_game.AsteroidPrefab, new Vector3(RigidbodyComponent.position.x, RigidbodyComponent.position.y, 0.0f), Quaternion.identity, _game.AsteroidsHolder);
+        Vector3 scale = new Vector3(transform.localScale.x / doubled, transform.localScale.y / doubled, transform.localScale.z / doubled);
+        go.transform.localScale = scale;
+        var asteroid = go.GetComponent<Asteroid>();
+        asteroid.Init(RigidbodyComponent.position, _breakdownLevel);
+        asteroid.RigidbodyComponent.AddForce(-_direction * _asteroidSpeed, ForceMode2D.Impulse);
+      }
+    }
+
+    GameObject effect = Instantiate(_game.AsteroidBreakdownEffect, new Vector3(RigidbodyComponent.position.x, RigidbodyComponent.position.y, 0.0f), Quaternion.identity);
+    effect.transform.localScale = transform.localScale;
+    Destroy(effect.gameObject, 2.0f);
+
+    Destroy(gameObject);
   }
 
   public void Push(Rigidbody2D pusher)
@@ -69,8 +105,8 @@ public class Asteroid : MonoBehaviour
       RigidbodyComponent.position = _position;
     }
 
-    _rotation += (_rotationSpeed * _rotationDirection) * Time.fixedDeltaTime;
-    RigidbodyComponent.MoveRotation(_rotation);
+    _rotation += _rotationDirection * (_rotationSpeed * Time.fixedDeltaTime);
+    RigidbodyComponent.rotation = _rotation;
   }
 
   void OnCollisionEnter2D(Collision2D collision)

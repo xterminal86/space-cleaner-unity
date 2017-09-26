@@ -5,21 +5,19 @@ using UnityEngine;
 public static class GlobalConstants 
 {
   // Maximum asteroids by default
-  public const int AsteroidsMaxInstances = 20;
+  public const int AsteroidsMaxInstances = 40;
   // Number of asteroid breakdowns after it has been hit
   public const int AsteroidMaxBreakdownLevel = 2;
-  // Number of asteroids created after breakdown
-  public const int AsteroidBreakdownChildren = 4;
 
   public const float AsteroidMinSpeed = 0.5f;
   public const float AsteroidMaxSpeed = 2.0f;
 
-  public const float AsteroidMinRotationSpeed = 0.1f;
-  public const float AsteroidMaxRotationSpeed = 1.0f;
+  public const float AsteroidMinRotationSpeed = 10.0f;
+  public const float AsteroidMaxRotationSpeed = 20.0f;
 
   // Time after which new asteroid will spawn
   // at the start of the game or after player has been killed
-  public const float StartingSpawnRate = 10.0f;
+  public const float StartingSpawnRate = 5.0f;
   // Fastest spawning time interval
   public const float MaxSpawnRate = 1.0f;
   // Starting time will decrement by this value every spawn

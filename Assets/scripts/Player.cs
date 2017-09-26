@@ -10,6 +10,7 @@ public class Player : MonoBehaviour
   public Rigidbody2D RigidbodyComponent;
   public Collider2D PlayerCollider;
   public Transform ShotPoint;
+  public SpriteRenderer ShieldSprite;
 
   public List<GameObject> Bullets;
 
@@ -33,18 +34,12 @@ public class Player : MonoBehaviour
 
   int _maxPoints = 20;
 
-  StringBuilder _hpBar = new StringBuilder();
-  StringBuilder _shieldBar = new StringBuilder();
   void Awake()
   {
     Hitpoints = _maxPoints;
     Shieldpoints = _maxPoints;
 
-    _hpBar.Length = 0;
-    _shieldBar.Length = 0;
-
-    _hpBar.Append('>', Hitpoints);
-    _shieldBar.Append('>', Shieldpoints);
+    _shieldColor.a = 0.0f;
   }
 
   Vector2 _direction = Vector2.zero;
@@ -68,15 +63,6 @@ public class Player : MonoBehaviour
       bullet.Propel(_direction, GlobalConstants.BulletSpeedByType[(GlobalConstants.BulletType)_currentWeapon]);
     }
 
-    _hpBar.Length = 0;
-    _hpBar.Append('>', Hitpoints);
-
-    _shieldBar.Length = 0;
-    _shieldBar.Append('>', Shieldpoints);
-
-    AppReference.HitpointsBar.text = _hpBar.ToString();
-    AppReference.ShieldpointsBar.text = _shieldBar.ToString();
-
     _cos = Mathf.Sin(_rotation * Mathf.Deg2Rad);
     _sin = Mathf.Cos(_rotation * Mathf.Deg2Rad);
 
@@ -84,6 +70,33 @@ public class Player : MonoBehaviour
     _direction.y = _cos;
 
     _acceleration = Input.GetAxis("Vertical") * GlobalConstants.PlayerMoveSpeed;
+
+    ProcessShield();
+  }
+
+  float _shieldRechargeTimer = 0.0f;
+  Color _shieldColor = Color.white;
+  void ProcessShield()
+  {
+    if (Shieldpoints < 20)
+    {
+      _shieldRechargeTimer += Time.smoothDeltaTime;
+    
+      if (_shieldRechargeTimer > GlobalConstants.ShieldRechargeTimeout)
+      {
+        _shieldRechargeTimer = 0.0f;
+        ReceiveShieldDamage(-1);
+      }
+    }
+
+    if (_shieldColor.a > 0.0f)
+    {
+      _shieldColor.a -= Time.smoothDeltaTime;
+    }
+
+    _shieldColor.a = Mathf.Clamp(_shieldColor.a, 0.0f, 1.0f);
+
+    ShieldSprite.color = _shieldColor;
   }
 
   Vector2 _position = Vector2.zero;
@@ -110,9 +123,9 @@ public class Player : MonoBehaviour
     }
   }
 
-  public void ReceiveShieldDamage()
+  public void ReceiveShieldDamage(int damageReceived)
   {
-    Shieldpoints--;
+    Shieldpoints -= damageReceived;
 
     Shieldpoints = Mathf.Clamp(Shieldpoints, 0, _maxPoints);
   }
@@ -124,17 +137,45 @@ public class Player : MonoBehaviour
     Hitpoints = Mathf.Clamp(Hitpoints, 0, _maxPoints);
 
     if (Hitpoints == 0)
-    {
-      // Game Over
+    {      
+      AppReference.SetGameOver();
+
+      var go = Instantiate(AppReference.PlayerDeathEffect, new Vector3(RigidbodyComponent.position.x, RigidbodyComponent.position.y, 0.0f), Quaternion.identity);
+      Destroy(go, 2.0f);
+
+      Destroy(gameObject);
     }
   }
 
   void OnCollisionEnter2D(Collision2D collision)
-  {    
+  { 
+    string layerToCheck = LayerMask.LayerToName(collision.gameObject.layer);
+    if (layerToCheck == "Asteroids")
+    {
+      Asteroid asteroid = collision.gameObject.GetComponentInParent<Asteroid>();
+
+      int damageDealt = GlobalConstants.AsteroidMaxBreakdownLevel * 2 - asteroid.BreakdownLevel;
+
+      asteroid.Breakdown();
+
+      ReceiveDamage(damageDealt);
+    }
   }
 
   void OnTriggerEnter2D(Collider2D other)
   {
-    //other.GetComponentInParent<Rigidbody2D>().AddForce(_direction * _acceleration, ForceMode2D.Impulse);
+    string layerToCheck = LayerMask.LayerToName(other.gameObject.layer);
+
+    if (layerToCheck == "Asteroids")
+    {      
+      if (Shieldpoints != 0)
+      {      
+        Asteroid asteroid = other.gameObject.GetComponentInParent<Asteroid>();
+        asteroid.Breakdown();
+
+        _shieldColor.a = 1.0f;
+        ReceiveShieldDamage(1);
+      }
+    }
   }
 }

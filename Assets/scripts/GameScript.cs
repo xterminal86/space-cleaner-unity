@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class GameScript : MonoBehaviour 
 { 
   public Transform AsteroidsHolder;
+  public GameObject GameOverScreen;
 
   public List<Sprite> BulletsIcons;
 
@@ -21,6 +22,8 @@ public class GameScript : MonoBehaviour
 
   public GameObject AsteroidPrefab;
   public GameObject AsteroidSpawnEffect;
+  public GameObject AsteroidBreakdownEffect;
+  public GameObject PlayerDeathEffect;
   public GameObject PowerupSpawnEffect;
 
   public Player PlayerScript;
@@ -39,12 +42,13 @@ public class GameScript : MonoBehaviour
   int _spawnedAsteroids = 0;
 
   float _currentSpawnRate = 1.0f;
-  float _spawnScale = 0.1f;
 
   List<Vector2> _spawnPoints = new List<Vector2>();
 
-  float _progressBarTimeCounter = 0.0f;
-  float _progressBarCurrentTimeMax = 0.0f;
+  StringBuilder _hpBar = new StringBuilder();
+  StringBuilder _shieldBar = new StringBuilder();
+
+  float _progressBarUpdateInterval = 0.0f;
   void Awake()
   {    
     _dimensions = Camera.main.ViewportToWorldPoint(new Vector3(0.0f, 0.0f, Camera.main.nearClipPlane));
@@ -61,12 +65,20 @@ public class GameScript : MonoBehaviour
     _currentSpawnRate = GlobalConstants.StartingSpawnRate;
 
     // 20 is the maximum number of '=' characters in the bar (hardcoded)
-    _progressBarCurrentTimeMax = _currentSpawnRate / 20.0f;
+    _progressBarUpdateInterval = _currentSpawnRate / 20.0f;
 
     _spawnPoints.Add(new Vector2(_dimensions.x + 0.5f, _dimensions.y + 0.5f));
     _spawnPoints.Add(new Vector2(-_dimensions.x - 0.5f, _dimensions.y + 0.5f));
     _spawnPoints.Add(new Vector2(_dimensions.x + 0.5f, -_dimensions.y - 1.5f));
     _spawnPoints.Add(new Vector2(-_dimensions.x - 0.5f, -_dimensions.y - 1.5f));
+
+    _progressBarTimer = Time.realtimeSinceStartup;
+
+    _hpBar.Length = 0;
+    _shieldBar.Length = 0;
+
+    _hpBar.Append('>', PlayerScript.Hitpoints);
+    _shieldBar.Append('>', PlayerScript.Shieldpoints);
 
     /*
     foreach (var item in _spawnPoints)
@@ -76,57 +88,74 @@ public class GameScript : MonoBehaviour
     */
   }
 
-  bool _isGameOver = false;
+  public void SetGameOver()
+  {
+    IsGameOver = true;
 
-  float _spawnTimer = 0.0f;
+    GameOverScreen.SetActive(true);
+
+    HitpointsBar.text = "";
+    ShieldpointsBar.text = "";
+  }
+
+  [HideInInspector]
+  public bool IsGameOver = false;
+
+  float _progressBarTimer = 0.0f;
+  float _spawnAcceleration = 1.0f;
+  int _barCounter = 0;
   void Update()
   {
-    if (_isGameOver) return;
+    if (IsGameOver) return;
+
+    _hpBar.Length = 0;
+    _hpBar.Append('>', PlayerScript.Hitpoints);
+
+    _shieldBar.Length = 0;
+    _shieldBar.Append('>', PlayerScript.Shieldpoints);
+
+    HitpointsBar.text = _hpBar.ToString();
+    ShieldpointsBar.text = _shieldBar.ToString();
 
     ExperienceText.text = string.Format("{0} / {1}", PlayerScript.Experience, GlobalConstants.ExperienceByLevel[PlayerScript.Level]);
     AsteroidsCount.text = string.Format("S: {0} / {1}", _spawnedAsteroids, GlobalConstants.AsteroidsMaxInstances);
     PhaseCount.text = string.Format("PHASE {0}", _currentPhase);
-    SpawnRate.text = string.Format("R: {0:N2}", GlobalConstants.StartingSpawnRate / _currentSpawnRate);
+    SpawnRate.text = string.Format("R: {0:N2}", _currentSpawnRate / GlobalConstants.MaxSpawnRate);
 
-    if (_spawnedAsteroids <= GlobalConstants.AsteroidsMaxInstances)
-    {
-      _spawnTimer += Time.smoothDeltaTime;
-      _progressBarTimeCounter += Time.smoothDeltaTime;
-
-      if (_progressBarTimeCounter > _progressBarCurrentTimeMax)
-      {
-        _progressBarTimeCounter = 0.0f;
+    if (_spawnedAsteroids < GlobalConstants.AsteroidsMaxInstances)
+    {      
+      float timeNow = Time.realtimeSinceStartup;
+      if (timeNow > _progressBarTimer + _progressBarUpdateInterval)
+      {        
+        _progressBarTimer = timeNow;
         _progressBarSb.Append('=');
+        _barCounter++;
       }
+
+      if (_barCounter > 20)
+      {
+        _barCounter = 0;
+
+        _spawnedAsteroids++;
+        _currentPhase++;
+
+        _currentSpawnRate -= GlobalConstants.SpawnRateDelta * _spawnAcceleration;
+
+        _spawnAcceleration += 0.2f;
+
+        _spawnAcceleration = Mathf.Clamp(_spawnAcceleration, 1.0f, 2.0f);
+
+        _currentSpawnRate = Mathf.Clamp(_currentSpawnRate, GlobalConstants.MaxSpawnRate, GlobalConstants.StartingSpawnRate);
+
+        _progressBarUpdateInterval = _currentSpawnRate / 20.0f;
+
+        _progressBarSb.Length = 0;
+
+        SpawnAsteroid();
+      }
+
+      SpawnProgressBar.text = _progressBarSb.ToString();
     }
-    else
-    {
-      _spawnTimer = 0.0f;
-    }
-
-    if (_spawnTimer > _currentSpawnRate)
-    {
-      _spawnTimer = 0.0f;
-
-      _spawnedAsteroids++;
-      _spawnScale += 0.1f;
-      _currentPhase++;
-
-      _spawnScale = Mathf.Clamp(_spawnScale, 0.1f, 1.0f);
-
-      _currentSpawnRate -= GlobalConstants.SpawnRateDelta * _spawnScale;
-
-      _currentSpawnRate = Mathf.Clamp(_currentSpawnRate, GlobalConstants.MaxSpawnRate, GlobalConstants.StartingSpawnRate);
-
-      _progressBarCurrentTimeMax = _currentSpawnRate / 20.0f;
-      _progressBarTimeCounter = 0.0f;
-
-      _progressBarSb.Length = 0;
-
-      SpawnAsteroid();
-    }
-
-    SpawnProgressBar.text = _progressBarSb.ToString();
   }
 
   void SpawnAsteroid()
@@ -139,7 +168,9 @@ public class GameScript : MonoBehaviour
     GameObject go = Instantiate(AsteroidPrefab, new Vector3(_spawnPoints[index].x, _spawnPoints[index].y, 0.0f), Quaternion.identity);
     go.transform.parent = AsteroidsHolder;
 
-    go.GetComponent<Asteroid>().Init(_spawnPoints[index]);
+    var asteroid = go.GetComponent<Asteroid>();
+    asteroid.Init(_spawnPoints[index], 0);
+    asteroid.PushRandom();
   }
 
   public void SetWeapon(int weaponIndex)
