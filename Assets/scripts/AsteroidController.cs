@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class AsteroidController : MonoBehaviour 
 {
+  [HideInInspector]
+  public bool IsActive = false;
+    
   GameScript _appReference;
 
   List<Asteroid> _totalAsteroidInstances = new List<Asteroid>();
@@ -40,8 +43,62 @@ public class AsteroidController : MonoBehaviour
     for (int i = 0; i < _totalAsteroids; i++)
     {
       GameObject go = Instantiate(_appReference.AsteroidPrefab);
-      _totalAsteroidInstances.Add(go.GetComponent<Asteroid>());
+      Asteroid a = go.GetComponent<Asteroid>();
+      a.ControllerRef = this;
+      _totalAsteroidInstances.Add(a);
       go.transform.parent = transform;
+    }
+  }
+
+  void Update()
+  {
+    if (!IsActive)
+    {
+      return;
+    }
+
+    bool shouldDeactivate = true;
+    foreach (var item in _totalAsteroidInstances)
+    {
+      if (item.IsActive)
+      {
+        shouldDeactivate = false;
+      }
+    }
+
+    if (shouldDeactivate)
+    {
+      _appReference.SpawnedAsteroids--;
+      IsActive = false;
+    }
+  }
+
+  public void Init(Vector2 position)
+  {
+    IsActive = true;
+
+    foreach (var item in _totalAsteroidInstances)
+    {
+      if (!item.IsActive)
+      {
+        item.Init(position, 1);
+        break;
+      }
+    }
+  }
+
+  public void ProcessBreakdown(Vector2 position, int breakdownLevel)
+  {
+    for (int i = 0; i < breakdownLevel; i++)
+    {
+      foreach (var item in _totalAsteroidInstances)
+      {
+        if (!item.IsActive)
+        {
+          item.Init(position, breakdownLevel);
+          break;
+        }
+      }
     }
   }
 }

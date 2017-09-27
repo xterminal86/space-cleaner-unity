@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
 
   public Rigidbody2D RigidbodyComponent;
   public Collider2D PlayerCollider;
+  public Collider2D ShieldCollider;
   public Transform ShotPoint;
   public SpriteRenderer ShieldSprite;
 
@@ -70,6 +71,8 @@ public class Player : MonoBehaviour
     _direction.y = _cos;
 
     _acceleration = Input.GetAxis("Vertical") * GlobalConstants.PlayerMoveSpeed;
+
+    ShieldCollider.gameObject.SetActive(Shieldpoints != 0);
 
     ProcessShield();
   }
@@ -147,35 +150,32 @@ public class Player : MonoBehaviour
     }
   }
 
-  void OnCollisionEnter2D(Collision2D collision)
-  { 
-    string layerToCheck = LayerMask.LayerToName(collision.gameObject.layer);
-    if (layerToCheck == "Asteroids")
-    {
-      Asteroid asteroid = collision.gameObject.GetComponentInParent<Asteroid>();
-
-      int damageDealt = GlobalConstants.AsteroidMaxBreakdownLevel * 2 - asteroid.BreakdownLevel;
-
-      asteroid.Breakdown();
-
-      ReceiveDamage(damageDealt);
-    }
-  }
-
   void OnTriggerEnter2D(Collider2D other)
   {
     string layerToCheck = LayerMask.LayerToName(other.gameObject.layer);
 
     if (layerToCheck == "Asteroids")
-    {      
-      if (Shieldpoints != 0)
-      {      
-        Asteroid asteroid = other.gameObject.GetComponentInParent<Asteroid>();
-        asteroid.Breakdown();
+    {   
+      Asteroid asteroid = other.gameObject.GetComponentInParent<Asteroid>();
 
+      // GetComponent returns null if object is inactive
+      if (asteroid == null)
+      {
+        return;
+      }
+
+      if (Shieldpoints != 0)
+      {                        
         _shieldColor.a = 1.0f;
         ReceiveShieldDamage(1);
       }
+      else
+      {
+        int damageDealt = (GlobalConstants.AsteroidMaxBreakdownLevel + 1) - asteroid.BreakdownLevel;
+        ReceiveDamage(damageDealt);
+      }
+
+      asteroid.HandleCollision();
     }
   }
 }
