@@ -14,9 +14,13 @@ public class BackgroundStar : MonoBehaviour
 
   Color _starColor = Color.white;
 
+  float[] _screenDimensions;
+
   float _alpha = 0.0f, _alphaSpeed = 1.0f;
-  public void Init()
+  public void Init(float[] screenDimensions)
   {
+    _screenDimensions = screenDimensions;
+
     _isActive = true;
 
     Reset();
@@ -43,8 +47,8 @@ public class BackgroundStar : MonoBehaviour
   Vector3 _position = Vector3.zero;
   public void SetRandomPosition()
   {
-    float x = Random.Range(-10.0f, 10.0f);
-    float y = Random.Range(-5.0f, 5.0f);
+    float x = Random.Range(_screenDimensions[0], _screenDimensions[2]);
+    float y = Random.Range(_screenDimensions[1], _screenDimensions[3]);
 
     _position.Set(x, y, -1.0f);
 

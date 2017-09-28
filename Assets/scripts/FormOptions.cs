@@ -28,11 +28,13 @@ public class FormOptions : FormBase
 
   public override void Close()
   {
+    MenuIems[_itemIndex].fontSize = DefaultFontSize;
     MenuIems[_itemIndex].color = Color.white;
 
     base.Close();
   }
 
+  int _musicIndex = 0;
   public override void Process()
   {           
     if (Input.GetKeyDown(KeyCode.DownArrow))
@@ -53,7 +55,33 @@ public class FormOptions : FormBase
     }
     else if (Input.GetKeyDown(KeyCode.Return))
     {
-      Debug.Log("Selected index " + _itemIndex);
+      if (_itemIndex == 2)
+      {
+        SoundManager.Instance.PlayMusicTrack(GlobalConstants.MusicTracks[_musicIndex]);
+      }
+    }
+
+    if (_itemIndex == 2)
+    {
+      if (Input.GetKeyDown(KeyCode.LeftArrow))
+      {
+        _musicIndex--;
+      }
+      else if (Input.GetKeyDown(KeyCode.RightArrow))
+      {
+        _musicIndex++;
+      }
+
+      if (_musicIndex < 0)
+      {
+        _musicIndex = GlobalConstants.MusicTracks.Count - 1;
+      }
+      else if (_musicIndex > GlobalConstants.MusicTracks.Count - 1)
+      {
+        _musicIndex = 0;
+      }
+
+      MenuIems[_itemIndex].text = string.Format("Music Test: {0}", _musicIndex);
     }
 
     _itemIndex = Mathf.Clamp(_itemIndex, 0, MenuIems.Count - 1);

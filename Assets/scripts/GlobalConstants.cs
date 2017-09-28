@@ -60,18 +60,28 @@ public static class GlobalConstants
 
   public static List<string> MusicTracks = new List<string>()
   {
+    "pb1",
     "metroid",
     "green-planet",
-    "pb1",
     "pb3",
     "pb4",
     "pb5",
     "pb7",
-    "pb8",
+    "pb8"
   };
 
   public static Dictionary<string, Vector2> MusicTrackLoopPointsByName = new Dictionary<string, Vector2>()
   {
+    { "metroid", new Vector2(320100, 2704100) },
+    { "green-planet", new Vector2(231910, 2536210) },
+    { "pb1", new Vector2(696800, 3678900) },
+    { "pb3", new Vector2(421300, 2097000) },
+    { "pb4", new Vector2(480000, 2400000) },
+    { "pb5", new Vector2(290300, 3362300) },
+    { "pb7", new Vector2(962400, 3266400) },
+    { "pb8", new Vector2(694272, 1960512) }
+
+    /*
     { "metroid", new Vector2(320100, 2704000) },
     { "green-planet", new Vector2(231910, 2536208) },
     { "pb1", new Vector2(694560, 3676320) },
@@ -80,5 +90,6 @@ public static class GlobalConstants
     { "pb5", new Vector2(290300, 3362300) },
     { "pb7", new Vector2(962400, 3266400) },
     { "pb8", new Vector2(694272, 1960512) }
+    */
   };
 }

@@ -4,24 +4,66 @@ using UnityEngine;
 
 public class TitleScreen : MonoBehaviour 
 {
-  public GameObject BackgroundStarsHolder;
-  public GameObject BackgroundStarPrefab;
+  public Transform BackgroundStarsHolder;
+  public Transform AsteroidsHolder;
 
-  public int BackgroundStars = 100;
+  public GameObject BackgroundStarPrefab;
+  public GameObject AsteroidPrefab;
 
   List<BackgroundStar> _stars = new List<BackgroundStar>();
+
+  float[] _screenRect;
+  public float[] ScreenRect
+  {
+    get { return _screenRect; }
+  }
+
   void Awake()
   {
+    LoadingScreen.Instance.Initialize();
     SoundManager.Instance.Initialize();
+
+    Vector3 dimensions = Camera.main.ViewportToWorldPoint(new Vector3(0.0f, 0.0f, Camera.main.nearClipPlane));
+
+    //Debug.Log(_dimensions);
+
+    // 90 is pixels per unit in import settings of the star texture
+
+    int starsNumberHorizontal = Screen.width / 90;
+    int starsNumberVertical = Screen.height / 90;
+
+    int totalStars = starsNumberHorizontal * starsNumberVertical;
+
+    float[] screenDimensions = new float[4];
+
+    screenDimensions[0] = dimensions.x;
+    screenDimensions[1] = dimensions.y;
+    screenDimensions[2] = -dimensions.x;
+    screenDimensions[3] = -dimensions.y + 1.0f;
+
+    _screenRect = screenDimensions;
 
     _stars.Clear();
 
-    for (int i = 0; i < BackgroundStars; i++)
+    for (int i = 0; i < totalStars; i++)
     {      
-      GameObject go = Instantiate(BackgroundStarPrefab, new Vector3(0.0f, 0.0f, -1.0f), Quaternion.identity, BackgroundStarsHolder.transform);
+      GameObject go = Instantiate(BackgroundStarPrefab, new Vector3(0.0f, 0.0f, -1.0f), Quaternion.identity, BackgroundStarsHolder);
       BackgroundStar bs = go.GetComponent<BackgroundStar>();
-      bs.Init();
+      bs.Init(screenDimensions);
       _stars.Add(bs);
+    }
+
+    // Asteroids are of random size, so make total amount half the stars
+    int totalAsteroids = totalStars / 2;
+
+    for (int i = 0; i < totalAsteroids; i++)
+    {
+      GameObject go = Instantiate(AsteroidPrefab, new Vector3(0.0f, 0.0f, -1.0f), Quaternion.identity, AsteroidsHolder);
+      Asteroid a = go.GetComponent<Asteroid>();
+      int breakdownLevel = Random.Range(1, GlobalConstants.AsteroidMaxBreakdownLevel);
+      float x = Random.Range(dimensions.x, -dimensions.x);
+      float y = Random.Range(dimensions.y, -dimensions.y);
+      a.Init(new Vector2(x, y), breakdownLevel);
     }
   }
 }

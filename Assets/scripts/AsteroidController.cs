@@ -6,7 +6,7 @@ public class AsteroidController : MonoBehaviour
 {
   [HideInInspector]
   public bool IsActive = false;
-    
+
   GameScript _appReference;
 
   List<Asteroid> _totalAsteroidInstances = new List<Asteroid>();

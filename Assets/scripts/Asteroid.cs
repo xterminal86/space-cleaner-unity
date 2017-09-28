@@ -8,6 +8,7 @@ public class Asteroid : MonoBehaviour
   public Vector3 OriginalScale;
 
   GameScript _game;
+  TitleScreen _title;
 
   [HideInInspector]
   public AsteroidController ControllerRef;
@@ -17,9 +18,23 @@ public class Asteroid : MonoBehaviour
   [HideInInspector]
   public bool IsActive = false;
     
+  float[] _screenRect;
+
   void Awake()
   {
-    _game = GameObject.Find("App").GetComponent<GameScript>();
+    var go = GameObject.Find("App");
+
+    if (go != null)
+    {
+      _game = go.GetComponent<GameScript>();
+      _screenRect = _game.ScreenRect;
+    }
+    else
+    {
+      go = GameObject.Find("Title");
+      _title = go.GetComponent<TitleScreen>();
+      _screenRect = _title.ScreenRect;
+    }
   }
 
   int _breakdownLevel = 0;
@@ -99,9 +114,25 @@ public class Asteroid : MonoBehaviour
 
   public void Push(Rigidbody2D pusher)
   {
-    Vector2 vel = RigidbodyComponent.velocity + pusher.velocity;
-    vel.Normalize();
-    _direction.Set(vel.x, vel.y);
+    float vx = Mathf.Abs(RigidbodyComponent.velocity.x);
+    float vy = Mathf.Abs(RigidbodyComponent.velocity.y);
+
+    Vector2 newVelocity = new Vector2(RigidbodyComponent.velocity.x, RigidbodyComponent.velocity.y);
+
+    if (vx > vy)
+    {
+      newVelocity.y = -newVelocity.y;
+    }
+    else
+    {
+      newVelocity.x = -newVelocity.x;
+    }
+
+    newVelocity.Normalize();
+
+    //Vector2 vel = RigidbodyComponent.velocity + pusher.velocity;
+    //vel.Normalize();
+    _direction.Set(newVelocity.x, newVelocity.y);
     RigidbodyComponent.AddForce(_direction, ForceMode2D.Impulse);
   }
 
@@ -133,24 +164,24 @@ public class Asteroid : MonoBehaviour
 
     _position = RigidbodyComponent.position;
 
-    if (RigidbodyComponent.position.x < _game.ScreenRect[0] - _offset)
+    if (RigidbodyComponent.position.x < _screenRect[0] - _offset)
     {
-      _position.x = _game.ScreenRect[2] + _offset;
+      _position.x = _screenRect[2] + _offset;
       RigidbodyComponent.position = _position;
     }
-    else if (RigidbodyComponent.position.x > _game.ScreenRect[2] + _offset)
+    else if (RigidbodyComponent.position.x > _screenRect[2] + _offset)
     {
-      _position.x = _game.ScreenRect[0] - _offset;
+      _position.x = _screenRect[0] - _offset;
       RigidbodyComponent.position = _position;
     }
-    else if (RigidbodyComponent.position.y < _game.ScreenRect[1] - _offset)
+    else if (RigidbodyComponent.position.y < _screenRect[1] - _offset)
     {
-      _position.y = _game.ScreenRect[3] + _offset;
+      _position.y = _screenRect[3] + _offset;
       RigidbodyComponent.position = _position;
     }
-    else if (RigidbodyComponent.position.y > _game.ScreenRect[3] + _offset)
+    else if (RigidbodyComponent.position.y > _screenRect[3] + _offset)
     {
-      _position.y = _game.ScreenRect[1] - _offset;
+      _position.y = _screenRect[1] - _offset;
       RigidbodyComponent.position = _position;
     }
 
@@ -164,10 +195,12 @@ public class Asteroid : MonoBehaviour
 
     _isColliding = true;
 
+    //Debug.DrawRay(collision.contacts[0].point, collision.contacts[0].normal, Color.yellow, 10.0f);
+
     int asteroidsLayer = LayerMask.NameToLayer("Asteroids");
 
     if (collision.gameObject.layer == asteroidsLayer)
-    {
+    {      
       collision.gameObject.GetComponent<Asteroid>().Push(RigidbodyComponent);
     }
   }

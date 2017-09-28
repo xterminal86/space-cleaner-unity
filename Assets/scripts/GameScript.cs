@@ -7,6 +7,9 @@ using UnityEngine.SceneManagement;
 
 public class GameScript : MonoBehaviour 
 { 
+  public Transform BackgroundStarsHolder;
+  public GameObject BackgroundStarPrefab;
+
   public Transform AsteroidsHolder;
   public GameObject GameOverScreen;
 
@@ -28,7 +31,7 @@ public class GameScript : MonoBehaviour
   public GameObject PowerupSpawnEffect;
 
   public GameObject AsteroidControllerPrefab;
-
+ 
   public Player PlayerScript;
 
   Vector2 _dimensions = Vector2.zero;
@@ -91,7 +94,20 @@ public class GameScript : MonoBehaviour
     {
       var go = Instantiate(AsteroidControllerPrefab);
       go.transform.parent = AsteroidsHolder;
-      _asteroidControllers.Add(go.GetComponent<AsteroidController>());
+      AsteroidController ac = go.GetComponent<AsteroidController>();
+      _asteroidControllers.Add(ac);
+    }
+
+    int starsNumberHorizontal = Screen.width / 90;
+    int starsNumberVertical = Screen.height / 90;
+
+    int totalStars = starsNumberHorizontal * starsNumberVertical;
+
+    for (int i = 0; i < totalStars; i++)
+    {
+      GameObject go = Instantiate(BackgroundStarPrefab, new Vector3(0.0f, 0.0f, -1.0f), Quaternion.identity, BackgroundStarsHolder.transform);
+      BackgroundStar bs = go.GetComponent<BackgroundStar>();
+      bs.Init(_screenRect);
     }
 
     /*
@@ -209,5 +225,24 @@ public class GameScript : MonoBehaviour
   public void SetWeapon(int weaponIndex)
   {
     WeaponIcon.sprite = BulletsIcons[weaponIndex];
+  }
+
+  void OnEnable()
+  {
+    SceneManager.sceneLoaded += SceneLoadedHandler;
+  }
+
+  void OnDisable()
+  {
+    SceneManager.sceneLoaded -= SceneLoadedHandler;
+  }
+
+  void SceneLoadedHandler(Scene scene, LoadSceneMode mode)
+  {
+    LoadingScreen.Instance.Hide();
+
+    int musicTrackIndex = Random.Range(1, GlobalConstants.MusicTracks.Count);
+
+    //SoundManager.Instance.PlayMusicTrack(GlobalConstants.MusicTracks[musicTrackIndex]);
   }
 }

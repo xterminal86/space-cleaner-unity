@@ -127,16 +127,16 @@ public class SoundManager : MonoSingleton<SoundManager>
     }
   }
 
-  public void PlaySound(AudioSource premade, float pitch)
+  public void PlaySound(AudioSource premade, float volume)
   {    
     GameObject go = new GameObject("SFX-one-shot");
     go.transform.parent = transform;
     AudioSource a = go.AddComponent<AudioSource>();
     a.playOnAwake = false;
-    a.volume = premade.volume;
+    a.volume = volume * SoundVolume;
     a.clip = premade.clip;    
-    a.pitch = pitch;
-    float length = a.clip.length / pitch + 1.0f;
+    a.pitch = 1.0f;
+    float length = a.clip.length + 1.0f;
     a.Play();
     Destroy(go, length);    
   }
@@ -171,7 +171,7 @@ public class SoundManager : MonoSingleton<SoundManager>
       return;
     }
 
-    if (_audioSourcesByName[_currentPlayingTrack].timeSamples >= (int)GlobalConstants.MusicTrackLoopPointsByName[_currentPlayingTrack].y)
+    if (_audioSourcesByName[_currentPlayingTrack].timeSamples > (int)GlobalConstants.MusicTrackLoopPointsByName[_currentPlayingTrack].y)
     {
       _audioSourcesByName[_currentPlayingTrack].timeSamples = (int)GlobalConstants.MusicTrackLoopPointsByName[_currentPlayingTrack].x;
     }
