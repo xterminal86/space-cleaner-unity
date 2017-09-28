@@ -26,7 +26,9 @@ public static class GlobalConstants
   public const float ShieldRechargeTimeout = 10.0f;
 
   // Delay of spawned powerup after it disappears
-  public const int PowerupLifetimeMs = 5000;
+  public const float PowerupLifetime = 5.0f;
+
+  public const float PowerupSpawnPercent = 3.0f;
 
   public static Dictionary<int, int> AsteroidHitpointsByBreakdownLevel = new Dictionary<int, int>() 
   {
@@ -34,6 +36,14 @@ public static class GlobalConstants
     { 2, 20 },
     { 3, 10 },
     { 4, 1 }
+  };
+
+  public static Dictionary<int, int> AsteroidScoreByBreakdownLevel = new Dictionary<int, int>()
+  {
+    { 1, 1 },
+    { 2, 2 },
+    { 3, 4 },
+    { 4, 8 }
   };
 
   // Number of asteroids to destroy (value) after given level (key) is reached
@@ -51,6 +61,12 @@ public static class GlobalConstants
   public static string MenuMoveSound = "menu_move";
   public static string MenuSelectSound = "menu_select";
   public static string MenuBackSound = "menu_back";
+
+  public enum PowerupType
+  {
+    HEALTH = 0,
+    SHIELD
+  }
 
   public enum BulletType
   {

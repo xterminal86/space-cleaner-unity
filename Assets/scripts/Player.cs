@@ -231,5 +231,14 @@ public class Player : MonoBehaviour
 
       asteroid.HandleCollision();
     }
+    else if (layerToCheck == "Powerups")
+    {
+      PowerupBase p = other.gameObject.GetComponentInParent<PowerupBase>();
+
+      if (p != null)
+      {
+        p.Pickup(this);
+      }
+    }
   }
 }

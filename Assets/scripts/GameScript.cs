@@ -9,6 +9,8 @@ public class GameScript : MonoBehaviour
 { 
   public Transform BackgroundStarsHolder;
   public GameObject BackgroundStarPrefab;
+  public GameObject HealthPowerupPrefab;
+  public GameObject ShieldPowerupPrefab;
 
   public Transform AsteroidsHolder;
   public GameObject GameOverScreen;
@@ -22,6 +24,7 @@ public class GameScript : MonoBehaviour
   public Text SpawnRate;
   public Text AsteroidsCount;
   public Text PhaseCount;
+  public Text ScoreCount;
   public Text SpawnProgressBar;
 
   public GameObject AsteroidPrefab;
@@ -45,6 +48,9 @@ public class GameScript : MonoBehaviour
   }
 
   int _currentPhase = 0;
+
+  [HideInInspector]
+  public int Score = 0;
 
   [HideInInspector]
   public int SpawnedAsteroids = 0;
@@ -171,6 +177,7 @@ public class GameScript : MonoBehaviour
     AsteroidsCount.text = string.Format("S: {0} / {1}", SpawnedAsteroids, GlobalConstants.AsteroidsMaxInstances);
     PhaseCount.text = string.Format("PHASE {0}", _currentPhase);
     SpawnRate.text = string.Format("R: {0:N2}", _currentSpawnRate / GlobalConstants.MaxSpawnRate);
+    ScoreCount.text = Score.ToString();
 
     if (SpawnedAsteroids < GlobalConstants.AsteroidsMaxInstances)
     {      
@@ -233,6 +240,58 @@ public class GameScript : MonoBehaviour
     asteroid.Init(_spawnPoints[index], 0);
     asteroid.PushRandom();
     */
+  }
+
+  Vector2 _powerupPosition = Vector2.zero;
+  public void TryToSpawnPowerup(Vector2 position)
+  {
+    if (PlayerScript == null)
+    {
+      return;
+    }
+
+    _powerupPosition.Set(position.x, position.y);
+
+    if (_powerupPosition.x < _screenRect[0]) _powerupPosition.x = _screenRect[0] + 1.0f;
+    if (_powerupPosition.x > _screenRect[2]) _powerupPosition.x = _screenRect[2] - 1.0f;
+    if (_powerupPosition.y < _screenRect[1]) _powerupPosition.y = _screenRect[1] + 1.0f;
+    if (_powerupPosition.y > _screenRect[3]) _powerupPosition.y = _screenRect[3] - 1.0f;
+
+    float modifierH = 1.0f - PlayerScript.Hitpoints / 20.0f;
+    float chanceH = modifierH * GlobalConstants.PowerupSpawnPercent;
+    float modifierS = 1.0f - PlayerScript.Shieldpoints / 20.0f;
+    float chanceS = modifierS * GlobalConstants.PowerupSpawnPercent;
+
+    int whichOne = Random.Range(0, 2);
+
+    float chance = Random.Range(0.0f, 101.0f);
+
+    if (whichOne == 0)
+    {
+      if (chance < chanceH)
+      { 
+        SoundManager.Instance.PlaySound("powerup_spawn", 0.25f);
+
+        var effect = Instantiate(PowerupSpawnEffect, new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
+
+        Destroy(effect, 1.0f);
+
+        Instantiate(HealthPowerupPrefab, new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
+      }
+    }
+    else
+    {
+      if (chance < chanceS)
+      {
+        SoundManager.Instance.PlaySound("powerup_spawn", 0.25f);
+
+        var effect = Instantiate(PowerupSpawnEffect, new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
+
+        Destroy(effect, 1.0f);
+
+        Instantiate(ShieldPowerupPrefab, new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
+      }
+    }
   }
 
   public void SetWeapon(int weaponIndex)

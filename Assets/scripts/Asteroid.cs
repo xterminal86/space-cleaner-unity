@@ -84,10 +84,14 @@ public class Asteroid : MonoBehaviour
 
       SoundManager.Instance.PlaySound("asteroid_hit_big", volume, pitch);
 
+      _game.Score += GlobalConstants.AsteroidScoreByBreakdownLevel[_breakdownLevel];
+
       if (_game.PlayerScript.Level != GlobalConstants.ExperienceByLevel.Count)
       {
         _game.PlayerScript.AddExperience(_breakdownLevel);
       }
+
+      _game.TryToSpawnPowerup(RigidbodyComponent.position);
 
       HandleCollision();
     }
