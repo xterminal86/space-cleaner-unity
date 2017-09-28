@@ -53,8 +53,10 @@ public class TitleScreen : MonoBehaviour
       _stars.Add(bs);
     }
 
-    // Asteroids are of random size, so make total amount half the stars
-    int totalAsteroids = totalStars / 2;
+    int asteroidsH = Screen.width / 180;
+    int asteroidsV = Screen.height / 180;
+
+    int totalAsteroids = asteroidsH * asteroidsV;
 
     for (int i = 0; i < totalAsteroids; i++)
     {

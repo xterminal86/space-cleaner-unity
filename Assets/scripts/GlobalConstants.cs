@@ -30,6 +30,9 @@ public static class GlobalConstants
 
   public const float PowerupSpawnPercent = 3.0f;
 
+  // Random spread arc of asteroid from hitting the shield
+  public const float AsteroidShieldBreakdownArc = 120.0f;
+
   public static Dictionary<int, int> AsteroidHitpointsByBreakdownLevel = new Dictionary<int, int>() 
   {
     { 1, 40 },

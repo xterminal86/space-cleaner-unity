@@ -39,16 +39,22 @@ public class FormOptions : FormBase
   {           
     if (Input.GetKeyDown(KeyCode.DownArrow))
     {
+      if (_itemIndex == MenuIems.Count - 1) return;
+
       SoundManager.Instance.PlaySound(GlobalConstants.MenuMoveSound);
 
+      _fontSize = DefaultFontSize;
       MenuIems[_itemIndex].fontSize = DefaultFontSize;
       MenuIems[_itemIndex].color = Color.white;
       _itemIndex++;
     }
     else if (Input.GetKeyDown(KeyCode.UpArrow))
     {
+      if (_itemIndex == 0) return;
+
       SoundManager.Instance.PlaySound(GlobalConstants.MenuMoveSound);
 
+      _fontSize = DefaultFontSize;
       MenuIems[_itemIndex].fontSize = DefaultFontSize;
       MenuIems[_itemIndex].color = Color.white;
       _itemIndex--;
