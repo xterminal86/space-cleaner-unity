@@ -50,7 +50,7 @@ public class BackgroundStar : MonoBehaviour
     float x = Random.Range(_screenDimensions[0], _screenDimensions[2]);
     float y = Random.Range(_screenDimensions[1], _screenDimensions[3]);
 
-    _position.Set(x, y, -1.0f);
+    _position.Set(x, y, 0.0f);
 
     transform.localPosition = _position;
   }

@@ -47,8 +47,8 @@ public class TitleScreen : MonoBehaviour
 
     for (int i = 0; i < totalStars; i++)
     {      
-      GameObject go = Instantiate(BackgroundStarPrefab, new Vector3(0.0f, 0.0f, -1.0f), Quaternion.identity, BackgroundStarsHolder);
-      BackgroundStar bs = go.GetComponent<BackgroundStar>();
+      GameObject go = Instantiate(BackgroundStarPrefab, Vector3.zero, Quaternion.identity, BackgroundStarsHolder);
+      BackgroundStar bs = go.GetComponentInChildren<BackgroundStar>();
       bs.Init(screenDimensions);
       _stars.Add(bs);
     }
@@ -58,7 +58,7 @@ public class TitleScreen : MonoBehaviour
 
     for (int i = 0; i < totalAsteroids; i++)
     {
-      GameObject go = Instantiate(AsteroidPrefab, new Vector3(0.0f, 0.0f, -1.0f), Quaternion.identity, AsteroidsHolder);
+      GameObject go = Instantiate(AsteroidPrefab, Vector3.zero, Quaternion.identity, AsteroidsHolder);
       Asteroid a = go.GetComponent<Asteroid>();
       int breakdownLevel = Random.Range(1, GlobalConstants.AsteroidMaxBreakdownLevel);
       float x = Random.Range(dimensions.x, -dimensions.x);

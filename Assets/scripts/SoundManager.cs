@@ -85,24 +85,6 @@ public class SoundManager : MonoSingleton<SoundManager>
     }
   }
 
-  public void PlaySound(string name)
-  {
-    if (_audioSourcesByName.ContainsKey(name))
-    {
-      _audioSourcesByName[name].spatialBlend = 0.0f;
-      _audioSourcesByName[name].Play();
-    }
-  }
-
-  public void PlaySound(string name, float pitchOffset)
-  {
-    if (_audioSourcesByName.ContainsKey(name))
-    {
-      _audioSourcesByName[name].pitch = 1 + Random.Range(-pitchOffset, pitchOffset);
-      _audioSourcesByName[name].Play();      
-    }
-  }
-
   public void PlaySound(string name, Vector3 position, bool is3D, float pitch = 1.0f)
   {
     if (_audioSourcesByName.ContainsKey(name))
@@ -127,18 +109,29 @@ public class SoundManager : MonoSingleton<SoundManager>
     }
   }
 
-  public void PlaySound(AudioSource premade, float volume)
+  public void PlaySound(string name, float volume = 1.0f, float pitch = 1.0f, bool instantiate = true)
   {    
-    GameObject go = new GameObject("SFX-one-shot");
-    go.transform.parent = transform;
-    AudioSource a = go.AddComponent<AudioSource>();
-    a.playOnAwake = false;
-    a.volume = volume * SoundVolume;
-    a.clip = premade.clip;    
-    a.pitch = 1.0f;
-    float length = a.clip.length + 1.0f;
-    a.Play();
-    Destroy(go, length);    
+    if (_audioSourcesByName.ContainsKey(name))
+    {
+      if (instantiate)
+      {
+        GameObject go = new GameObject("SFX-one-shot");
+        go.transform.parent = transform;
+        AudioSource a = go.AddComponent<AudioSource>();
+        a.playOnAwake = false;
+        a.volume = volume * SoundVolume;
+        a.clip = _audioSourcesByName[name].clip;    
+        a.pitch = pitch;
+        float length = a.clip.length + 1.0f;
+        a.Play();
+        Destroy(go, length);    
+      }
+      else
+      {
+        _audioSourcesByName[name].volume = volume * SoundVolume;
+        _audioSourcesByName[name].Play();
+      }
+    }
   }
 
   string _currentPlayingTrack = string.Empty;
@@ -147,8 +140,9 @@ public class SoundManager : MonoSingleton<SoundManager>
     if (_audioSourcesByName.ContainsKey(trackName))
     {
       if (_currentPlayingTrack != string.Empty && _audioSourcesByName[_currentPlayingTrack].isPlaying)
-      {
+      {        
         _audioSourcesByName[_currentPlayingTrack].Stop();
+        _audioSourcesByName[_currentPlayingTrack].timeSamples = 0;
       }
 
       _audioSourcesByName[trackName].Play();

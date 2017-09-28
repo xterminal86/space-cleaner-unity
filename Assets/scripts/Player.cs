@@ -56,12 +56,35 @@ public class Player : MonoBehaviour
       _rotation -= GlobalConstants.PlayerRotationSpeed * Time.smoothDeltaTime;
     }
 
-    if (Input.GetKeyDown(KeyCode.Space))
+    #if UNITY_EDITOR
+    if (Input.GetKeyDown(KeyCode.LeftBracket))
     {
+      _currentWeapon--;
+    }
+    else if (Input.GetKeyDown(KeyCode.RightBracket))
+    {
+      _currentWeapon++;
+    }
+
+    _currentWeapon = Mathf.Clamp(_currentWeapon, 0, GlobalConstants.BulletSpeedByType.Count - 1);
+
+    AppReference.SetWeapon(_currentWeapon);
+    #endif
+
+    if (Input.GetKeyDown(KeyCode.Space))
+    {      
       GameObject go = Instantiate(Bullets[_currentWeapon], new Vector3(ShotPoint.position.x, ShotPoint.position.y, 0.0f), Quaternion.identity);
       var bullet = go.GetComponent<BulletBase>();
+      if (_currentWeapon == 2)
+      {
+        bullet.RigidbodyComponent.rotation = _rotation;
+      }
       //Physics2D.IgnoreCollision(PlayerCollider, bullet.Collider);
+      float volume = GlobalConstants.BulletSoundVolumesByType[(GlobalConstants.BulletType)_currentWeapon];
+      string soundName = GlobalConstants.BulletSoundByType[(GlobalConstants.BulletType)_currentWeapon];
       bullet.Propel(_direction, GlobalConstants.BulletSpeedByType[(GlobalConstants.BulletType)_currentWeapon]);
+
+      SoundManager.Instance.PlaySound(soundName, volume);
     }
 
     _cos = Mathf.Sin(_rotation * Mathf.Deg2Rad);
@@ -140,7 +163,10 @@ public class Player : MonoBehaviour
     Hitpoints = Mathf.Clamp(Hitpoints, 0, _maxPoints);
 
     if (Hitpoints == 0)
-    {      
+    { 
+      SoundManager.Instance.PlaySound("ship_explode", 0.5f);
+      SoundManager.Instance.PlaySound("gameover");
+
       AppReference.SetGameOver();
 
       var go = Instantiate(AppReference.PlayerDeathEffect, new Vector3(RigidbodyComponent.position.x, RigidbodyComponent.position.y, 0.0f), Quaternion.identity);
@@ -150,8 +176,32 @@ public class Player : MonoBehaviour
     }
   }
 
+  public void AddExperience(int experienceToAdd)
+  {
+    Experience += experienceToAdd;
+
+    if (Experience >= GlobalConstants.ExperienceByLevel[Level])
+    {
+      Experience = 0;
+      Level++;
+
+      _currentWeapon++;
+
+      SoundManager.Instance.PlaySound("weapon_upgrade", 0.25f);
+
+      _currentWeapon = Mathf.Clamp(_currentWeapon, 0, GlobalConstants.BulletSpeedByType.Count - 1);
+
+      AppReference.SetWeapon(_currentWeapon);
+    }
+  }
+
   void OnTriggerEnter2D(Collider2D other)
   {
+    if (AppReference.IsGameOver)
+    {
+      return;
+    }
+
     string layerToCheck = LayerMask.LayerToName(other.gameObject.layer);
 
     if (layerToCheck == "Asteroids")
@@ -165,12 +215,16 @@ public class Player : MonoBehaviour
       }
 
       if (Shieldpoints != 0)
-      {                        
+      {                       
+        SoundManager.Instance.PlaySound("shield_hit_energy", 0.1f, 1.0f, false);
+
         _shieldColor.a = 1.0f;
         ReceiveShieldDamage(1);
       }
       else
       {
+        SoundManager.Instance.PlaySound("ship_hit", 0.25f, 1.0f, false);
+
         int damageDealt = (GlobalConstants.AsteroidMaxBreakdownLevel + 1) - asteroid.BreakdownLevel;
         ReceiveDamage(damageDealt);
       }

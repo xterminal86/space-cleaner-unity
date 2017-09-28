@@ -20,6 +20,8 @@ public class Asteroid : MonoBehaviour
     
   float[] _screenRect;
 
+  int _hitpoints = 0;
+
   void Awake()
   {
     var go = GameObject.Find("App");
@@ -37,6 +39,7 @@ public class Asteroid : MonoBehaviour
     }
   }
 
+  // Starts from 1
   int _breakdownLevel = 0;
   public int BreakdownLevel
   {
@@ -48,6 +51,7 @@ public class Asteroid : MonoBehaviour
   {
     IsActive = true;
     _breakdownLevel = breakdownLevel;
+    _hitpoints = GlobalConstants.AsteroidHitpointsByBreakdownLevel[_breakdownLevel];
     _position = position;
     _rotationSpeed = Random.Range(GlobalConstants.AsteroidMinRotationSpeed, GlobalConstants.AsteroidMaxRotationSpeed);
     _rotationDirection = (Random.Range(0, 2) == 0) ? 1 : -1;
@@ -69,29 +73,24 @@ public class Asteroid : MonoBehaviour
     RigidbodyComponent.AddForce(_direction * _asteroidSpeed, ForceMode2D.Impulse);
   }
 
-  public void Breakdown()
+  public void ReceiveDamage(int damage)
   {
-    if (_breakdownLevel < GlobalConstants.AsteroidMaxBreakdownLevel)
+    _hitpoints -= damage;
+
+    if (_hitpoints <= 0)
     {
-      _breakdownLevel++;
+      float pitch = 0.5f * _breakdownLevel;
+      float volume = 0.75f / _breakdownLevel;
 
-      int doubled = _breakdownLevel * 2;
-      for (int i = 0; i < doubled; i++)
+      SoundManager.Instance.PlaySound("asteroid_hit_big", volume, pitch);
+
+      if (_game.PlayerScript.Level != GlobalConstants.ExperienceByLevel.Count)
       {
-        GameObject go = Instantiate(_game.AsteroidPrefab, new Vector3(RigidbodyComponent.position.x, RigidbodyComponent.position.y, 0.0f), Quaternion.identity, _game.AsteroidsHolder);
-        Vector3 scale = new Vector3(transform.localScale.x / doubled, transform.localScale.y / doubled, transform.localScale.z / doubled);
-        go.transform.localScale = scale;
-        var asteroid = go.GetComponent<Asteroid>();
-        asteroid.Init(RigidbodyComponent.position, _breakdownLevel);
-        asteroid.RigidbodyComponent.AddForce(-_direction * _asteroidSpeed, ForceMode2D.Impulse);
+        _game.PlayerScript.AddExperience(_breakdownLevel);
       }
+
+      HandleCollision();
     }
-
-    GameObject effect = Instantiate(_game.AsteroidBreakdownEffect, new Vector3(RigidbodyComponent.position.x, RigidbodyComponent.position.y, 0.0f), Quaternion.identity);
-    effect.transform.localScale = transform.localScale;
-    Destroy(effect.gameObject, 2.0f);
-
-    Destroy(gameObject);
   }
 
   public void HandleCollision()
@@ -114,25 +113,9 @@ public class Asteroid : MonoBehaviour
 
   public void Push(Rigidbody2D pusher)
   {
-    float vx = Mathf.Abs(RigidbodyComponent.velocity.x);
-    float vy = Mathf.Abs(RigidbodyComponent.velocity.y);
-
-    Vector2 newVelocity = new Vector2(RigidbodyComponent.velocity.x, RigidbodyComponent.velocity.y);
-
-    if (vx > vy)
-    {
-      newVelocity.y = -newVelocity.y;
-    }
-    else
-    {
-      newVelocity.x = -newVelocity.x;
-    }
-
-    newVelocity.Normalize();
-
-    //Vector2 vel = RigidbodyComponent.velocity + pusher.velocity;
-    //vel.Normalize();
-    _direction.Set(newVelocity.x, newVelocity.y);
+    Vector2 v = RigidbodyComponent.position - pusher.position;
+    v.Normalize();
+    _direction.Set(v.x, v.y);
     RigidbodyComponent.AddForce(_direction, ForceMode2D.Impulse);
   }
 
@@ -189,19 +172,25 @@ public class Asteroid : MonoBehaviour
     RigidbodyComponent.rotation = _rotation;
   }
 
-  void OnCollisionEnter2D(Collision2D collision)
+  void OnTriggerEnter2D(Collider2D collider)
   {    
-    if (_isColliding) return;
+    //if (_isColliding) return;
 
-    _isColliding = true;
+    //_isColliding = true;
 
     //Debug.DrawRay(collision.contacts[0].point, collision.contacts[0].normal, Color.yellow, 10.0f);
 
     int asteroidsLayer = LayerMask.NameToLayer("Asteroids");
 
-    if (collision.gameObject.layer == asteroidsLayer)
-    {      
-      collision.gameObject.GetComponent<Asteroid>().Push(RigidbodyComponent);
+    if (collider.gameObject.layer == asteroidsLayer)
+    { 
+      var c = collider.gameObject.GetComponentInParent<Asteroid>();
+
+      // GetComponent returns null if object is inactive
+      if (c != null)
+      {
+        c.Push(RigidbodyComponent);
+      }
     }
   }
 }

@@ -105,8 +105,8 @@ public class GameScript : MonoBehaviour
 
     for (int i = 0; i < totalStars; i++)
     {
-      GameObject go = Instantiate(BackgroundStarPrefab, new Vector3(0.0f, 0.0f, -1.0f), Quaternion.identity, BackgroundStarsHolder.transform);
-      BackgroundStar bs = go.GetComponent<BackgroundStar>();
+      GameObject go = Instantiate(BackgroundStarPrefab, Vector3.zero, Quaternion.identity, BackgroundStarsHolder.transform);
+      BackgroundStar bs = go.GetComponentInChildren<BackgroundStar>();
       bs.Init(_screenRect);
     }
 
@@ -138,9 +138,13 @@ public class GameScript : MonoBehaviour
   {
     if (IsGameOver)
     {
-      if (Input.GetKeyDown(KeyCode.R))
+      if (Input.GetKeyDown(KeyCode.Y))
       {
         SceneManager.LoadScene("main");
+      }
+      else if (Input.GetKeyDown(KeyCode.N))
+      {
+        SceneManager.LoadScene("title");
       }
 
       return;
@@ -155,7 +159,15 @@ public class GameScript : MonoBehaviour
     HitpointsBar.text = _hpBar.ToString();
     ShieldpointsBar.text = _shieldBar.ToString();
 
-    ExperienceText.text = string.Format("{0} / {1}", PlayerScript.Experience, GlobalConstants.ExperienceByLevel[PlayerScript.Level]);
+    if (PlayerScript.Level < GlobalConstants.ExperienceByLevel.Count)
+    {
+      ExperienceText.text = string.Format("{0} / {1}", PlayerScript.Experience, GlobalConstants.ExperienceByLevel[PlayerScript.Level]);
+    }
+    else
+    {
+      ExperienceText.text = "MAX";
+    }
+
     AsteroidsCount.text = string.Format("S: {0} / {1}", SpawnedAsteroids, GlobalConstants.AsteroidsMaxInstances);
     PhaseCount.text = string.Format("PHASE {0}", _currentPhase);
     SpawnRate.text = string.Format("R: {0:N2}", _currentSpawnRate / GlobalConstants.MaxSpawnRate);
@@ -207,6 +219,7 @@ public class GameScript : MonoBehaviour
     {
       if (!item.IsActive)
       {
+        SoundManager.Instance.PlaySound("asteroid_spawn", 0.5f);
         item.Init(_spawnPoints[index]);
         break;
       }

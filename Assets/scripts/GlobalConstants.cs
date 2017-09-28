@@ -10,7 +10,7 @@ public static class GlobalConstants
   public const int AsteroidMaxBreakdownLevel = 4;
 
   public const float AsteroidMinSpeed = 0.5f;
-  public const float AsteroidMaxSpeed = 2.0f;
+  public const float AsteroidMaxSpeed = 1.0f;
 
   public const float AsteroidMinRotationSpeed = 10.0f;
   public const float AsteroidMaxRotationSpeed = 20.0f;
@@ -28,17 +28,25 @@ public static class GlobalConstants
   // Delay of spawned powerup after it disappears
   public const int PowerupLifetimeMs = 5000;
 
+  public static Dictionary<int, int> AsteroidHitpointsByBreakdownLevel = new Dictionary<int, int>() 
+  {
+    { 1, 40 },
+    { 2, 20 },
+    { 3, 10 },
+    { 4, 1 }
+  };
+
   // Number of asteroids to destroy (value) after given level (key) is reached
   public static Dictionary<int, int> ExperienceByLevel = new Dictionary<int, int>()
   {
-    {0, 25}, {1, 50}, {2, 100}
+    {0, 10}, {1, 20}, {2, 30}
   };
 
   public const float PlayerRotationSpeed = 100.0f;
   public const float PlayerMoveSpeed = 3.0f;
-  public const float BulletLameSpeed = 5.0f;
-  public const float BulletMediumSpeed = 5.0f;
-  public const float BulletStrongSpeed = 2.5f;
+  public const float BulletLameSpeed = 8.0f;
+  public const float BulletMediumSpeed = 8.0f;
+  public const float BulletStrongSpeed = 8.0f;
 
   public static string MenuMoveSound = "menu_move";
   public static string MenuSelectSound = "menu_select";
@@ -56,6 +64,34 @@ public static class GlobalConstants
     { BulletType.LAME, BulletLameSpeed },
     { BulletType.MEDIUM, BulletMediumSpeed },
     { BulletType.STRONG, BulletStrongSpeed }
+  };
+
+  public static Dictionary<BulletType, int> BulletDamageByType = new Dictionary<BulletType, int>()
+  {
+    { BulletType.LAME, 1 },
+    { BulletType.MEDIUM, 4 },
+    { BulletType.STRONG, 8 }
+  };
+
+  public static Dictionary<BulletType, string> BulletSoundByType = new Dictionary<BulletType, string>() 
+  {
+    { BulletType.LAME, "ship_fire_lame" },
+    { BulletType.MEDIUM, "ship_fire_medium" },
+    { BulletType.STRONG, "ship_fire_strong" }
+  };
+
+  public static Dictionary<BulletType, string> BulletSoundHitByType = new Dictionary<BulletType, string>() 
+  {
+    { BulletType.LAME, "hit_lame" },
+    { BulletType.MEDIUM, "hit" },
+    { BulletType.STRONG, "hit" }
+  };
+
+  public static Dictionary<BulletType, float> BulletSoundVolumesByType = new Dictionary<BulletType, float>() 
+  {
+    { BulletType.LAME, 0.25f },
+    { BulletType.MEDIUM, 0.125f },
+    { BulletType.STRONG, 0.125f }
   };
 
   public static List<string> MusicTracks = new List<string>()

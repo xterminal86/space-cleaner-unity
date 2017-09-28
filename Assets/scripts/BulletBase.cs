@@ -8,7 +8,11 @@ public class BulletBase : MonoBehaviour
   public Collider2D Collider;
 
   protected Rigidbody2D _rigidbodyComponent;
-  protected Player _player;
+  public Rigidbody2D RigidbodyComponent
+  {
+    get { return _rigidbodyComponent; }
+  }
+
   protected GameScript _app;
 
   protected bool _isColliding = false;
@@ -16,7 +20,6 @@ public class BulletBase : MonoBehaviour
   void Awake()
   {
     _rigidbodyComponent = GetComponentInChildren<Rigidbody2D>();
-    _player = GameObject.Find("player").GetComponent<Player>();
     _app = GameObject.Find("App").GetComponent<GameScript>();
   }
 

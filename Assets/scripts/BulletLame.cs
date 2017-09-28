@@ -10,14 +10,26 @@ public class BulletLame : BulletBase
 
     _isColliding = true;
 
-    var go = Instantiate(HitAnimationPrefab, new Vector3(_rigidbodyComponent.position.x, _rigidbodyComponent.position.y, 0.0f), Quaternion.identity);
-
-    Destroy(go, 1.0f);
-
     int asteroidsLayer = LayerMask.NameToLayer("Asteroids");
 
     if (collider.gameObject.layer == asteroidsLayer)
     {
+      Asteroid a = collider.gameObject.GetComponentInParent<Asteroid>();
+      if (a != null)
+      {
+        if (a.BreakdownLevel == GlobalConstants.AsteroidMaxBreakdownLevel)
+        {          
+          a.ReceiveDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.LAME]);
+        }
+        else
+        {
+          var go = Instantiate(HitAnimationPrefab, new Vector3(_rigidbodyComponent.position.x, _rigidbodyComponent.position.y, 0.0f), Quaternion.identity);
+
+          Destroy(go, 1.0f);
+
+          SoundManager.Instance.PlaySound(GlobalConstants.BulletSoundHitByType[GlobalConstants.BulletType.LAME], 0.25f);
+        }
+      }
     }
 
     Destroy(gameObject);
