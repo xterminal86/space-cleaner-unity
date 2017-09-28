@@ -14,7 +14,7 @@ public class FormTitleScreen : FormBase
   Color _selectedColor = new Color(1.0f, 0.0f, 1.0f);
   public override void Init()
   {
-    //SoundManager.Instance.PlayMusicTrack(GlobalConstants.MusicTracks[0]);
+    SoundManager.Instance.PlayMusicTrack(GlobalConstants.MusicTracks[0]);
 
     _itemIndex = 0;
     _fontSize = DefaultFontSize;

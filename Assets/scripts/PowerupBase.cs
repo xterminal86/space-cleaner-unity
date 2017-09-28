@@ -19,4 +19,17 @@ public class PowerupBase : MonoBehaviour
   public virtual void Pickup(Player p)
   {
   }
+
+  void OnTriggerEnter2D(Collider2D collider)
+  {
+    if (collider.name == "ship")
+    {
+      Player p = collider.gameObject.GetComponentInParent<Player>();
+
+      if (p != null)
+      {
+        Pickup(p);
+      }     
+    }
+  }
 }

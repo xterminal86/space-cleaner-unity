@@ -47,7 +47,7 @@ public class Asteroid : MonoBehaviour
   }
 
   float _asteroidSpeed = 1.0f;
-  public void Init(Vector2 position, int breakdownLevel)
+  public void Init(Vector2 position, int breakdownLevel, Vector2 pushDir)
   {
     IsActive = true;
     _breakdownLevel = breakdownLevel;
@@ -61,7 +61,10 @@ public class Asteroid : MonoBehaviour
     gameObject.transform.localScale = scale;
     gameObject.transform.localPosition = new Vector3(position.x, position.y, 0.0f);
     gameObject.SetActive(true);
-    PushRandom();
+    //PushRandom();
+    _direction.Set(pushDir.x, pushDir.y);
+    _direction.Normalize();
+    RigidbodyComponent.AddForce(_direction * _asteroidSpeed, ForceMode2D.Impulse);
   }
 
   void PushRandom()
@@ -73,14 +76,14 @@ public class Asteroid : MonoBehaviour
     RigidbodyComponent.AddForce(_direction * _asteroidSpeed, ForceMode2D.Impulse);
   }
 
-  public void ReceiveDamage(int damage)
+  public void ReceiveDamage(int damage, BulletBase dealer)
   {
     _hitpoints -= damage;
 
     if (_hitpoints <= 0)
     {
-      float pitch = 0.5f * _breakdownLevel;
-      float volume = 0.75f / _breakdownLevel;
+      float pitch = 0.25f * _breakdownLevel;
+      float volume = 1.0f / _breakdownLevel;
 
       SoundManager.Instance.PlaySound("asteroid_hit_big", volume, pitch);
 
@@ -93,11 +96,11 @@ public class Asteroid : MonoBehaviour
 
       _game.TryToSpawnPowerup(RigidbodyComponent.position);
 
-      HandleCollision();
+      HandleCollision(dealer.Direction);
     }
   }
 
-  public void HandleCollision()
+  public void HandleCollision(Vector2 collisionDir)
   {
     _breakdownLevel++;
 
@@ -111,7 +114,7 @@ public class Asteroid : MonoBehaviour
 
     if (_breakdownLevel <= GlobalConstants.AsteroidMaxBreakdownLevel)
     {
-      ControllerRef.ProcessBreakdown(RigidbodyComponent.position, _breakdownLevel);
+      ControllerRef.ProcessBreakdown(RigidbodyComponent.position, _breakdownLevel, collisionDir);
     }
   }
 
@@ -182,8 +185,6 @@ public class Asteroid : MonoBehaviour
 
     //_isColliding = true;
 
-    //Debug.DrawRay(collision.contacts[0].point, collision.contacts[0].normal, Color.yellow, 10.0f);
-
     int asteroidsLayer = LayerMask.NameToLayer("Asteroids");
 
     if (collider.gameObject.layer == asteroidsLayer)
@@ -192,7 +193,7 @@ public class Asteroid : MonoBehaviour
 
       // GetComponent returns null if object is inactive
       if (c != null)
-      {
+      {        
         c.Push(RigidbodyComponent);
       }
     }

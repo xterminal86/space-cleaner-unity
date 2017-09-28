@@ -8,7 +8,7 @@ public class PowerupHealth : PowerupBase
   {
     SoundManager.Instance.PlaySound("health_powerup", 0.25f, 1.0f);
 
-    p.Hitpoints += 10;
+    p.ReceiveDamage(-10);
 
     Destroy(gameObject);
   }

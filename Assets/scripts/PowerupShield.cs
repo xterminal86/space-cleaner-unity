@@ -8,7 +8,7 @@ public class PowerupShield : PowerupBase
   {
     SoundManager.Instance.PlaySound("shield_powerup", 0.125f, 1.0f);
 
-    p.Shieldpoints += 10;
+    p.ReceiveShieldDamage(-10);
 
     Destroy(gameObject);
   }

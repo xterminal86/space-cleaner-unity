@@ -17,6 +17,12 @@ public class FormOptions : FormBase
     _itemIndex = 0;
     _fontSize = DefaultFontSize;
     MenuIems[_itemIndex].color = _selectedColor;
+
+    int format = Mathf.RoundToInt(SoundManager.Instance.SoundVolume * 100);
+    MenuIems[0].text = string.Format("Sound Volume: {0}", format);
+
+    format = Mathf.RoundToInt(SoundManager.Instance.MusicVolume * 100);
+    MenuIems[1].text = string.Format("Music Volume: {0}", format);
   }
 
   public override void Select(FormBase parentForm)
@@ -67,34 +73,77 @@ public class FormOptions : FormBase
       }
     }
 
-    if (_itemIndex == 2)
-    {
-      if (Input.GetKeyDown(KeyCode.LeftArrow))
-      {
-        _musicIndex--;
-      }
-      else if (Input.GetKeyDown(KeyCode.RightArrow))
-      {
-        _musicIndex++;
-      }
-
-      if (_musicIndex < 0)
-      {
-        _musicIndex = GlobalConstants.MusicTracks.Count - 1;
-      }
-      else if (_musicIndex > GlobalConstants.MusicTracks.Count - 1)
-      {
-        _musicIndex = 0;
-      }
-
-      MenuIems[_itemIndex].text = string.Format("Music Test: {0}", _musicIndex);
-    }
+    HandleMenuItem();
 
     _itemIndex = Mathf.Clamp(_itemIndex, 0, MenuIems.Count - 1);
 
     MenuIems[_itemIndex].color = _selectedColor;
 
     AnimateFont();
+  }
+
+  void HandleMenuItem()
+  {
+    switch (_itemIndex)
+    {
+      case 0:
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+          SoundManager.Instance.SoundVolume -= 0.1f;
+        }
+        else if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+          SoundManager.Instance.SoundVolume += 0.1f;
+        }
+
+        SoundManager.Instance.SoundVolume = Mathf.Clamp(SoundManager.Instance.SoundVolume, 0.0f, 1.0f);
+
+        int format = Mathf.RoundToInt(SoundManager.Instance.SoundVolume * 100);
+
+        MenuIems[_itemIndex].text = string.Format("Sound Volume: {0}", format);
+        break;
+
+      case 1:
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+          SoundManager.Instance.MusicVolume -= 0.1f;
+        }
+        else if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+          SoundManager.Instance.MusicVolume += 0.1f;
+        }
+
+        SoundManager.Instance.MusicVolume = Mathf.Clamp(SoundManager.Instance.MusicVolume, 0.0f, 1.0f);
+
+        format = Mathf.RoundToInt(SoundManager.Instance.MusicVolume * 100);
+
+        SoundManager.Instance.CurrentMusicTrack.volume = SoundManager.Instance.MusicVolume;
+
+        MenuIems[_itemIndex].text = string.Format("Music Volume: {0}", format);
+        break;
+
+      case 2:
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+          _musicIndex--;
+        }
+        else if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+          _musicIndex++;
+        }
+
+        if (_musicIndex < 0)
+        {
+          _musicIndex = GlobalConstants.MusicTracks.Count - 1;
+        }
+        else if (_musicIndex > GlobalConstants.MusicTracks.Count - 1)
+        {
+          _musicIndex = 0;
+        }
+
+        MenuIems[_itemIndex].text = string.Format("Music Test: {0}", _musicIndex);
+        break;
+    }
   }
 
   bool _sizeGrow = false;

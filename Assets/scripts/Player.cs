@@ -73,7 +73,9 @@ public class Player : MonoBehaviour
 
     if (Input.GetKeyDown(KeyCode.Space))
     {      
-      GameObject go = Instantiate(Bullets[_currentWeapon], new Vector3(ShotPoint.position.x, ShotPoint.position.y, 0.0f), Quaternion.identity);
+      Quaternion q = Quaternion.Euler(0.0f, 0.0f, _rotation);
+
+      GameObject go = Instantiate(Bullets[_currentWeapon], new Vector3(ShotPoint.position.x, ShotPoint.position.y, 0.0f), q);
       var bullet = go.GetComponent<BulletBase>();
       if (_currentWeapon == 2)
       {
@@ -164,6 +166,7 @@ public class Player : MonoBehaviour
 
     if (Hitpoints == 0)
     { 
+      SoundManager.Instance.StopMusic();
       SoundManager.Instance.PlaySound("ship_explode", 0.5f);
       SoundManager.Instance.PlaySound("gameover");
 
@@ -182,6 +185,8 @@ public class Player : MonoBehaviour
 
     if (Experience >= GlobalConstants.ExperienceByLevel[Level])
     {
+      AppReference.StarsList[Level].SetActive(true);
+
       Experience = 0;
       Level++;
 
@@ -229,16 +234,15 @@ public class Player : MonoBehaviour
         ReceiveDamage(damageDealt);
       }
 
-      asteroid.HandleCollision();
-    }
-    else if (layerToCheck == "Powerups")
-    {
-      PowerupBase p = other.gameObject.GetComponentInParent<PowerupBase>();
+      //Vector2 v = RigidbodyComponent.position - asteroid.RigidbodyComponent.position;
+      Vector2 v = asteroid.RigidbodyComponent.position - RigidbodyComponent.position;
 
-      if (p != null)
-      {
-        p.Pickup(this);
-      }
+      float angle = Random.Range(-GlobalConstants.AsteroidBreakdownHalfArc, GlobalConstants.AsteroidBreakdownHalfArc);
+
+      Vector2 newDir = GlobalConstants.RotateVector2(v, angle);
+      newDir.Normalize();
+
+      asteroid.HandleCollision(newDir);
     }
   }
 }

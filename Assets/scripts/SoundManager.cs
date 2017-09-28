@@ -135,6 +135,11 @@ public class SoundManager : MonoSingleton<SoundManager>
   }
 
   string _currentPlayingTrack = string.Empty;
+  public AudioSource CurrentMusicTrack
+  {
+    get { return _audioSourcesByName[_currentPlayingTrack]; }
+  }
+
   public void PlayMusicTrack(string trackName)
   { 
     if (_audioSourcesByName.ContainsKey(trackName))
@@ -145,9 +150,16 @@ public class SoundManager : MonoSingleton<SoundManager>
         _audioSourcesByName[_currentPlayingTrack].timeSamples = 0;
       }
 
+      _audioSourcesByName[trackName].volume = MusicVolume;
       _audioSourcesByName[trackName].Play();
       _currentPlayingTrack = trackName;
     }
+  }
+
+  public void StopMusic()
+  {
+    _audioSourcesByName[_currentPlayingTrack].Stop();
+    _audioSourcesByName[_currentPlayingTrack].timeSamples = 0;
   }
 
   public void StopAllSounds()

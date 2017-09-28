@@ -14,8 +14,10 @@ public class GameScript : MonoBehaviour
 
   public Transform AsteroidsHolder;
   public GameObject GameOverScreen;
+  public GameObject ReturnToMenuScreen;
 
   public List<Sprite> BulletsIcons;
+  public List<GameObject> StarsList;
 
   public Image WeaponIcon;
   public Text ExperienceText;
@@ -109,6 +111,8 @@ public class GameScript : MonoBehaviour
 
     int totalStars = starsNumberHorizontal * starsNumberVertical;
 
+    totalStars /= 2;
+
     for (int i = 0; i < totalStars; i++)
     {
       GameObject go = Instantiate(BackgroundStarPrefab, Vector3.zero, Quaternion.identity, BackgroundStarsHolder.transform);
@@ -137,6 +141,8 @@ public class GameScript : MonoBehaviour
   [HideInInspector]
   public bool IsGameOver = false;
 
+  bool _returnToMainOpen = false;
+
   float _progressBarTimer = 0.0f;
   float _spawnAcceleration = 1.0f;
   int _barCounter = 0;
@@ -146,14 +152,39 @@ public class GameScript : MonoBehaviour
     {
       if (Input.GetKeyDown(KeyCode.Y))
       {
+        LoadingScreen.Instance.Show();
         SceneManager.LoadScene("main");
       }
       else if (Input.GetKeyDown(KeyCode.N))
       {
+        LoadingScreen.Instance.Show();
         SceneManager.LoadScene("title");
       }
 
       return;
+    }
+
+    if (Input.GetKeyDown(KeyCode.Escape) && !_returnToMainOpen)
+    {
+      _returnToMainOpen = true;
+
+      ReturnToMenuScreen.gameObject.SetActive(true);
+    }
+
+    if (_returnToMainOpen)
+    {
+      if (Input.GetKeyDown(KeyCode.Y))
+      {
+        LoadingScreen.Instance.Show();
+        SceneManager.LoadScene("title");
+        return;
+      }
+      else if (Input.GetKeyDown(KeyCode.N))
+      {
+        _returnToMainOpen = false;
+
+        ReturnToMenuScreen.gameObject.SetActive(false);
+      }
     }
 
     _hpBar.Length = 0;
@@ -315,6 +346,6 @@ public class GameScript : MonoBehaviour
 
     int musicTrackIndex = Random.Range(1, GlobalConstants.MusicTracks.Count);
 
-    //SoundManager.Instance.PlayMusicTrack(GlobalConstants.MusicTracks[musicTrackIndex]);
+    SoundManager.Instance.PlayMusicTrack(GlobalConstants.MusicTracks[musicTrackIndex]);
   }
 }

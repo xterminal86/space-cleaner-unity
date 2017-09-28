@@ -19,7 +19,7 @@ public class BulletLame : BulletBase
       {
         if (a.BreakdownLevel == GlobalConstants.AsteroidMaxBreakdownLevel)
         {          
-          a.ReceiveDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.LAME]);
+          a.ReceiveDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.LAME], this);
         }
         else
         {

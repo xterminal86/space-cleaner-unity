@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class TitleScreen : MonoBehaviour 
 {
@@ -34,6 +35,8 @@ public class TitleScreen : MonoBehaviour
 
     int totalStars = starsNumberHorizontal * starsNumberVertical;
 
+    totalStars /= 2;
+
     float[] screenDimensions = new float[4];
 
     screenDimensions[0] = dimensions.x;
@@ -65,7 +68,22 @@ public class TitleScreen : MonoBehaviour
       int breakdownLevel = Random.Range(1, GlobalConstants.AsteroidMaxBreakdownLevel);
       float x = Random.Range(dimensions.x, -dimensions.x);
       float y = Random.Range(dimensions.y, -dimensions.y);
-      a.Init(new Vector2(x, y), breakdownLevel);
+      a.Init(new Vector2(x, y), breakdownLevel, GlobalConstants.GetRandomDir());
     }
+  }
+
+  void OnEnable()
+  {
+    SceneManager.sceneLoaded += SceneLoadedHandler;
+  }
+
+  void OnDisable()
+  {
+    SceneManager.sceneLoaded -= SceneLoadedHandler;
+  }
+
+  void SceneLoadedHandler(Scene scene, LoadSceneMode mode)
+  {
+    LoadingScreen.Instance.Hide();
   }
 }

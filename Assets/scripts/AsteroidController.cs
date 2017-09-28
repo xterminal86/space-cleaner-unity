@@ -81,13 +81,13 @@ public class AsteroidController : MonoBehaviour
     {
       if (!item.IsActive)
       {
-        item.Init(position, 1);
+        item.Init(position, 1, GlobalConstants.GetRandomDir());
         break;
       }
     }
   }
 
-  public void ProcessBreakdown(Vector2 position, int breakdownLevel)
+  public void ProcessBreakdown(Vector2 position, int breakdownLevel, Vector2 pushDir)
   {
     for (int i = 0; i < breakdownLevel; i++)
     {
@@ -95,7 +95,7 @@ public class AsteroidController : MonoBehaviour
       {
         if (!item.IsActive)
         {
-          item.Init(position, breakdownLevel);
+          item.Init(position, breakdownLevel, pushDir);
           break;
         }
       }

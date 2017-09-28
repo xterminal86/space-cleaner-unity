@@ -23,7 +23,7 @@ public class BulletMedium : BulletBase
       {
         SoundManager.Instance.PlaySound(GlobalConstants.BulletSoundHitByType[GlobalConstants.BulletType.MEDIUM], 0.25f);
 
-        a.ReceiveDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.MEDIUM]);
+        a.ReceiveDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.MEDIUM], this);
       }
     }
 

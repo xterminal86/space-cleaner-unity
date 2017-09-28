@@ -30,8 +30,8 @@ public static class GlobalConstants
 
   public const float PowerupSpawnPercent = 3.0f;
 
-  // Random spread arc of asteroid from hitting the shield
-  public const float AsteroidShieldBreakdownArc = 120.0f;
+  // Random spread arc of asteroid from hitting the player
+  public const float AsteroidBreakdownHalfArc = 60.0f;
 
   public static Dictionary<int, int> AsteroidHitpointsByBreakdownLevel = new Dictionary<int, int>() 
   {
@@ -52,7 +52,7 @@ public static class GlobalConstants
   // Number of asteroids to destroy (value) after given level (key) is reached
   public static Dictionary<int, int> ExperienceByLevel = new Dictionary<int, int>()
   {
-    {0, 10}, {1, 20}, {2, 30}
+    {0, 100}, {1, 500}, {2, 1000}
   };
 
   public const float PlayerRotationSpeed = 100.0f;
@@ -147,4 +147,17 @@ public static class GlobalConstants
     { "pb8", new Vector2(694272, 1960512) }
     */
   };
+
+  public static Vector2 GetRandomDir()
+  {    
+    float dirX = Random.Range(-1.0f, 1.0f);
+    float dirY = Random.Range(-1.0f, 1.0f);
+
+    return new Vector2(dirX, dirY).normalized;
+  }
+
+  public static Vector2 RotateVector2(this Vector2 v, float degrees)
+  {
+    return Quaternion.Euler(0, 0, degrees) * v;
+  }
 }

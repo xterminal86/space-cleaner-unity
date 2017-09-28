@@ -24,6 +24,11 @@ public class BulletBase : MonoBehaviour
   }
 
   protected Vector2 _direction = Vector2.zero;
+  public Vector2 Direction
+  {
+    get { return _direction; }
+  }
+
   float _bulletSpeed = 0.0f;
   public virtual void Propel(Vector2 direction, float bulletSpeed)
   {
