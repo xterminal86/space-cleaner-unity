@@ -64,6 +64,8 @@ public class BackgroundStar : MonoBehaviour
       return;
     }
 
+    //Debug.Log(transform.localPosition + " " + StarSprite.color + " " + _starColor);
+
     if (_isGrowing)
     {      
       _alpha += _alphaSpeed * Time.smoothDeltaTime;

@@ -59,7 +59,7 @@ public class FormTitleScreen : FormBase
 
   bool _sizeGrow = false;
   void AnimateFont()
-  {    
+  { 
     if (_sizeGrow)
     {
       _fontSize++;

@@ -18,11 +18,11 @@ public class FormOptions : FormBase
     _fontSize = DefaultFontSize;
     MenuIems[_itemIndex].color = _selectedColor;
 
-    int format = Mathf.RoundToInt(SoundManager.Instance.SoundVolume * 100);
-    MenuIems[0].text = string.Format("Sound Volume: {0}", format);
+    int format = Mathf.RoundToInt(SoundManager.Instance.MusicVolume * 100);
+    MenuIems[0].text = string.Format("MUSIC: {0}", format);
 
-    format = Mathf.RoundToInt(SoundManager.Instance.MusicVolume * 100);
-    MenuIems[1].text = string.Format("Music Volume: {0}", format);
+    format = Mathf.RoundToInt(SoundManager.Instance.SoundVolume * 100);
+    MenuIems[1].text = string.Format("SOUND: {0}", format);
   }
 
   public override void Select(FormBase parentForm)
@@ -89,23 +89,6 @@ public class FormOptions : FormBase
       case 0:
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-          SoundManager.Instance.SoundVolume -= 0.1f;
-        }
-        else if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-          SoundManager.Instance.SoundVolume += 0.1f;
-        }
-
-        SoundManager.Instance.SoundVolume = Mathf.Clamp(SoundManager.Instance.SoundVolume, 0.0f, 1.0f);
-
-        int format = Mathf.RoundToInt(SoundManager.Instance.SoundVolume * 100);
-
-        MenuIems[_itemIndex].text = string.Format("Sound Volume: {0}", format);
-        break;
-
-      case 1:
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
           SoundManager.Instance.MusicVolume -= 0.1f;
         }
         else if (Input.GetKeyDown(KeyCode.RightArrow))
@@ -115,13 +98,30 @@ public class FormOptions : FormBase
 
         SoundManager.Instance.MusicVolume = Mathf.Clamp(SoundManager.Instance.MusicVolume, 0.0f, 1.0f);
 
-        format = Mathf.RoundToInt(SoundManager.Instance.MusicVolume * 100);
+        int format = Mathf.RoundToInt(SoundManager.Instance.MusicVolume * 100);
 
         SoundManager.Instance.CurrentMusicTrack.volume = SoundManager.Instance.MusicVolume;
 
-        MenuIems[_itemIndex].text = string.Format("Music Volume: {0}", format);
+        MenuIems[_itemIndex].text = string.Format("MUSIC: {0}", format);
         break;
 
+      case 1:
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+          SoundManager.Instance.SoundVolume -= 0.1f;
+        }
+        else if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+          SoundManager.Instance.SoundVolume += 0.1f;
+        }
+
+        SoundManager.Instance.SoundVolume = Mathf.Clamp(SoundManager.Instance.SoundVolume, 0.0f, 1.0f);
+
+        format = Mathf.RoundToInt(SoundManager.Instance.SoundVolume * 100);
+
+        MenuIems[_itemIndex].text = string.Format("SOUND: {0}", format);
+        break;
+      
       case 2:
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
@@ -141,7 +141,7 @@ public class FormOptions : FormBase
           _musicIndex = 0;
         }
 
-        MenuIems[_itemIndex].text = string.Format("Music Test: {0}", _musicIndex);
+        MenuIems[_itemIndex].text = string.Format("MUSIC TEST: {0}", _musicIndex);
         break;
     }
   }
@@ -158,11 +158,13 @@ public class FormOptions : FormBase
       _fontSize--;
     }
 
-    if (_fontSize > FontSizeMax)
+    _fontSize = Mathf.Clamp(_fontSize, DefaultFontSize, FontSizeMax);
+
+    if (_fontSize == FontSizeMax)
     {
       _sizeGrow = false;
     }
-    else if (_fontSize < DefaultFontSize)
+    else if (_fontSize == DefaultFontSize)
     {
       _sizeGrow = true;
     }

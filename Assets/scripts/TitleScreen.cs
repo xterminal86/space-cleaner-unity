@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class TitleScreen : MonoBehaviour 
 {
+  public Font MyFont;
+
   public Transform BackgroundStarsHolder;
   public Transform AsteroidsHolder;
 
@@ -70,6 +72,8 @@ public class TitleScreen : MonoBehaviour
       float y = Random.Range(dimensions.y, -dimensions.y);
       a.Init(new Vector2(x, y), breakdownLevel, GlobalConstants.GetRandomDir());
     }
+
+    MyFont.material.mainTexture.filterMode = FilterMode.Trilinear;
   }
 
   void OnEnable()
