@@ -65,6 +65,12 @@ public static class GlobalConstants
   public static string MenuSelectSound = "menu_select";
   public static string MenuBackSound = "menu_back";
 
+  public static string PlayerPrefsConfigDataKey = "pp-config";
+
+  public static string HighscoreEntryPlayerNameKey = "e-name";
+  public static string HighscoreEntryPlayerScoreKey = "e-score";
+  public static string HighscoreEntryPlayerPhaseKey = "e-phase";
+
   public enum PowerupType
   {
     HEALTH = 0,
