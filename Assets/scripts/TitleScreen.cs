@@ -23,6 +23,7 @@ public class TitleScreen : MonoBehaviour
 
   void Awake()
   {
+    ScreenshotTaker.Instance.Initialize();
     LoadingScreen.Instance.Initialize();
     SoundManager.Instance.Initialize();
 
