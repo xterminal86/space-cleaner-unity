@@ -66,6 +66,7 @@ public static class GlobalConstants
   public static string MenuBackSound = "menu_back";
 
   public static string PlayerPrefsConfigDataKey = "pp-config";
+  public static string PlayerPrefsPlayerNameKey = "pp-player-name";
 
   public static string HighscoreEntryPlayerNameKey = "e-name";
   public static string HighscoreEntryPlayerScoreKey = "e-score";

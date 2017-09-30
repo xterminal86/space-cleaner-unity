@@ -133,6 +133,7 @@ public class GameScript : MonoBehaviour
     IsGameOver = true;
 
     GameOverScreen.SetActive(true);
+    GameStats.Instance.WriteHighScore(Score, _currentPhase);
 
     HitpointsBar.text = "";
     ShieldpointsBar.text = "";
