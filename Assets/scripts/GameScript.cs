@@ -343,6 +343,8 @@ public class GameScript : MonoBehaviour
 
   void SceneLoadedHandler(Scene scene, LoadSceneMode mode)
   {
+    System.GC.Collect();
+
     LoadingScreen.Instance.Hide();
 
     int musicTrackIndex = Random.Range(1, GlobalConstants.MusicTracks.Count);

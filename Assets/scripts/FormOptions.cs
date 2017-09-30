@@ -19,10 +19,10 @@ public class FormOptions : FormBase
     MenuIems[_itemIndex].color = _selectedColor;
 
     int format = Mathf.RoundToInt(SoundManager.Instance.MusicVolume * 100);
-    MenuIems[0].text = string.Format("MUSIC: {0}", format);
+    MenuIems[1].text = string.Format("MUSIC: {0}", format);
 
     format = Mathf.RoundToInt(SoundManager.Instance.SoundVolume * 100);
-    MenuIems[1].text = string.Format("SOUND: {0}", format);
+    MenuIems[2].text = string.Format("SOUND: {0}", format);
   }
 
   public override void Select(FormBase parentForm)
@@ -67,9 +67,13 @@ public class FormOptions : FormBase
     }
     else if (Input.GetKeyDown(KeyCode.Return))
     {
-      if (_itemIndex == 2)
+      if (_itemIndex == 3)
       {
         SoundManager.Instance.PlayMusicTrack(GlobalConstants.MusicTracks[_musicIndex]);
+      }
+      else if (_itemIndex == 0)
+      {
+        ChildForms[0].Select(this);
       }
     }
 
@@ -86,7 +90,7 @@ public class FormOptions : FormBase
   {
     switch (_itemIndex)
     {
-      case 0:
+      case 1:
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
           SoundManager.Instance.MusicVolume -= 0.1f;
@@ -105,7 +109,7 @@ public class FormOptions : FormBase
         MenuIems[_itemIndex].text = string.Format("MUSIC: {0}", format);
         break;
 
-      case 1:
+      case 2:
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
           SoundManager.Instance.SoundVolume -= 0.1f;
@@ -122,7 +126,7 @@ public class FormOptions : FormBase
         MenuIems[_itemIndex].text = string.Format("SOUND: {0}", format);
         break;
       
-      case 2:
+      case 3:
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
           _musicIndex--;

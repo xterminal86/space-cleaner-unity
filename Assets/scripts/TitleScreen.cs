@@ -90,6 +90,8 @@ public class TitleScreen : MonoBehaviour
 
   void SceneLoadedHandler(Scene scene, LoadSceneMode mode)
   {
+    System.GC.Collect();
+
     LoadingScreen.Instance.Hide();
   }
 }
