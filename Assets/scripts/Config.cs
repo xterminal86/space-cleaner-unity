@@ -20,6 +20,8 @@ public class Config
       DataAsJson = JSON.Parse(config);
 
       Debug.Log("Config loaded:\n" + DataAsJson.ToString(4));
+
+      GameStats.Instance.FillHighscores();
     }
     else
     {
@@ -32,6 +34,8 @@ public class Config
     string entryKey = string.Empty;
 
     DataAsJson[GlobalConstants.PlayerPrefsPlayerNameKey] = GameStats.Instance.PlayerName;
+    DataAsJson[GlobalConstants.PlayerPrefsSoundVolumeKey] = "100";
+    DataAsJson[GlobalConstants.PlayerPrefsMusicVolumeKey] = "100";
 
     for (int i = 0; i < 10; i++)
     {
@@ -45,6 +49,7 @@ public class Config
       DataAsJson[entryKey] = e.GetJson();
     }
 
+    GameStats.Instance.FillHighscores();
     WriteConfig();
   }
 
@@ -60,6 +65,8 @@ public class Config
   void WriteJson()
   {
     DataAsJson[GlobalConstants.PlayerPrefsPlayerNameKey] = GameStats.Instance.PlayerName;
+    DataAsJson[GlobalConstants.PlayerPrefsSoundVolumeKey] = SoundManager.Instance.SoundVolumePercent.ToString();
+    DataAsJson[GlobalConstants.PlayerPrefsMusicVolumeKey] = SoundManager.Instance.MusicVolumePercent.ToString();
 
     for (int i = 0; i < 10; i++)
     {      

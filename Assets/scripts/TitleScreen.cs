@@ -34,12 +34,10 @@ public class TitleScreen : MonoBehaviour
 
     // 90 is pixels per unit in import settings of the star texture
 
-    int starsNumberHorizontal = Screen.width / 90;
-    int starsNumberVertical = Screen.height / 90;
+    int starsNumberHorizontal = Screen.width / 180;
+    int starsNumberVertical = Screen.height / 180;
 
     int totalStars = starsNumberHorizontal * starsNumberVertical;
-
-    totalStars /= 2;
 
     float[] screenDimensions = new float[4];
 

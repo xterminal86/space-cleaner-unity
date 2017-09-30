@@ -20,8 +20,7 @@ public class GameStats : MonoSingleton<GameStats>
     }
 
     GameConfig.ReadConfig();
-
-    FillHighscores();
+    PlayerName = GameConfig.DataAsJson[GlobalConstants.PlayerPrefsPlayerNameKey];
   }
 
   public void WriteHighScore(int score, int phase)

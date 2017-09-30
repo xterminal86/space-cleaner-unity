@@ -9,8 +9,8 @@ public static class GlobalConstants
   // Number of asteroid breakdowns after it has been hit
   public const int AsteroidMaxBreakdownLevel = 4;
 
-  public const float AsteroidMinSpeed = 0.5f;
-  public const float AsteroidMaxSpeed = 1.0f;
+  public const float AsteroidMinSpeed = 25.0f;
+  public const float AsteroidMaxSpeed = 200.0f;
 
   public const float AsteroidMinRotationSpeed = 10.0f;
   public const float AsteroidMaxRotationSpeed = 20.0f;
@@ -28,7 +28,7 @@ public static class GlobalConstants
   // Delay of spawned powerup after it disappears
   public const float PowerupLifetime = 5.0f;
 
-  public const float PowerupSpawnPercent = 3.0f;
+  public const float PowerupSpawnPercent = 10.0f;
 
   // Random spread arc of asteroid from hitting the player
   public const float AsteroidBreakdownHalfArc = 60.0f;
@@ -67,6 +67,8 @@ public static class GlobalConstants
 
   public static string PlayerPrefsConfigDataKey = "pp-config";
   public static string PlayerPrefsPlayerNameKey = "pp-player-name";
+  public static string PlayerPrefsSoundVolumeKey = "pp-sound-volume";
+  public static string PlayerPrefsMusicVolumeKey = "pp-music-volume";
 
   public static string HighscoreEntryPlayerNameKey = "e-name";
   public static string HighscoreEntryPlayerScoreKey = "e-score";
@@ -155,10 +157,22 @@ public static class GlobalConstants
     */
   };
 
+  static List<Vector2> _dirRanges = new List<Vector2>()
+  {
+    new Vector2(-1.0f, -0.1f),
+    new Vector2(0.1f, 1.0f)
+  };
+
   public static Vector2 GetRandomDir()
-  {    
-    float dirX = Random.Range(-1.0f, 1.0f);
-    float dirY = Random.Range(-1.0f, 1.0f);
+  { 
+    int indexX = Random.Range(0, 2);
+    int indexY = Random.Range(0, 2);
+
+    Vector2 dx = _dirRanges[indexX];
+    Vector2 dy = _dirRanges[indexY];
+
+    float dirX = Random.Range(dx.x, dx.y);
+    float dirY = Random.Range(dy.x, dy.y);
 
     return new Vector2(dirX, dirY).normalized;
   }

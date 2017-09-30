@@ -31,7 +31,7 @@ public class BackgroundStar : MonoBehaviour
     _isGrowing = true;
 
     float scale = Random.Range(0.05f, 0.25f);
-    float alphaSpeed = Random.Range(0.25f, 2.0f);
+    float alphaSpeed = Random.Range(0.1f, 1.0f);
 
     _alphaSpeed = alphaSpeed;
 

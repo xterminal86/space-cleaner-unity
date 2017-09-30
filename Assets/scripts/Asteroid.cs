@@ -40,7 +40,7 @@ public class Asteroid : MonoBehaviour
   }
 
   // Starts from 1
-  int _breakdownLevel = 0;
+  int _breakdownLevel = 1;
   public int BreakdownLevel
   {
     get { return _breakdownLevel; }
@@ -55,25 +55,16 @@ public class Asteroid : MonoBehaviour
     _position = position;
     _rotationSpeed = Random.Range(GlobalConstants.AsteroidMinRotationSpeed, GlobalConstants.AsteroidMaxRotationSpeed);
     _rotationDirection = (Random.Range(0, 2) == 0) ? 1 : -1;
-    _asteroidSpeed = Random.Range(GlobalConstants.AsteroidMinSpeed, GlobalConstants.AsteroidMaxSpeed);
+    //_asteroidSpeed = Random.Range(GlobalConstants.AsteroidMinSpeed, GlobalConstants.AsteroidMinSpeed * breakdownLevel);
+    _asteroidSpeed = (float)(GlobalConstants.AsteroidMinSpeed * _breakdownLevel);
     float divider = Mathf.Pow(2, _breakdownLevel);
     Vector3 scale = new Vector3(OriginalScale.x / divider, OriginalScale.y / divider, OriginalScale.z / divider);
     gameObject.transform.localScale = scale;
     gameObject.transform.localPosition = new Vector3(position.x, position.y, 0.0f);
     gameObject.SetActive(true);
-    //PushRandom();
     _direction.Set(pushDir.x, pushDir.y);
     _direction.Normalize();
-    RigidbodyComponent.AddForce(_direction * _asteroidSpeed, ForceMode2D.Impulse);
-  }
-
-  void PushRandom()
-  {
-    float dirX = Random.Range(-1.0f, 1.0f);
-    float dirY = Random.Range(-1.0f, 1.0f);
-    _direction.Set(dirX, dirY);
-    _direction.Normalize();
-    RigidbodyComponent.AddForce(_direction * _asteroidSpeed, ForceMode2D.Impulse);
+    //RigidbodyComponent.AddForce(_direction * _asteroidSpeed, ForceMode2D.Impulse);
   }
 
   public void ReceiveDamage(int damage, BulletBase dealer)
@@ -82,7 +73,7 @@ public class Asteroid : MonoBehaviour
 
     if (_hitpoints <= 0)
     {
-      float pitch = 0.25f * _breakdownLevel;
+      float pitch = 0.125f * Mathf.Pow(2, _breakdownLevel + 1);
       float volume = 1.0f / _breakdownLevel;
 
       SoundManager.Instance.PlaySound("asteroid_hit_big", volume, pitch);
@@ -122,8 +113,21 @@ public class Asteroid : MonoBehaviour
   {
     Vector2 v = RigidbodyComponent.position - pusher.position;
     v.Normalize();
-    _direction.Set(v.x, v.y);
-    RigidbodyComponent.AddForce(_direction, ForceMode2D.Impulse);
+
+    // When asteroid breaks down after being destroyed, OnTriggerEnter2D gets called on broken down asteroids
+    // and since they all start in the same spot, distance in this method becomes zero.
+    //
+    // They say Unity overloaded == operator for following comparison cases
+    if (v.magnitude != 0.0f)
+    {
+      _direction.Set(v.x, v.y);
+    }
+    else
+    {
+      _direction = GlobalConstants.GetRandomDir();
+    }
+
+    //RigidbodyComponent.AddForce(_direction, ForceMode2D.Impulse);
   }
 
   Vector2 _position = Vector2.zero;
@@ -136,21 +140,6 @@ public class Asteroid : MonoBehaviour
   void FixedUpdate()
   {
     if (!IsActive) return;
-
-    /*
-    _velocity.Set(RigidbodyComponent.velocity.x, RigidbodyComponent.velocity.y);
-
-    float vx = Mathf.Abs(_velocity.x);
-    float vy = Mathf.Abs(_velocity.y);
-
-    int sx = (int)Mathf.Sign(_velocity.x);
-    int sy = (int)Mathf.Sign(_velocity.y);
-
-    _velocity.x = sx * Mathf.Clamp(vx, GlobalConstants.AsteroidMinSpeed, GlobalConstants.AsteroidMaxSpeed);
-    _velocity.y = sy * Mathf.Clamp(vy, GlobalConstants.AsteroidMinSpeed, GlobalConstants.AsteroidMaxSpeed);
-
-    RigidbodyComponent.velocity = _velocity;
-    */
 
     _position = RigidbodyComponent.position;
 
@@ -176,12 +165,18 @@ public class Asteroid : MonoBehaviour
     }
 
     _rotation += _rotationDirection * (_rotationSpeed * Time.fixedDeltaTime);
+    _velocity = _direction * (_asteroidSpeed * Time.fixedDeltaTime);
+
+//    Debug.Log(_velocity + " " + _direction + " " + _asteroidSpeed + " " + (_asteroidSpeed * Time.fixedDeltaTime) + " " + _direction * (_asteroidSpeed * Time.fixedDeltaTime));
+
     RigidbodyComponent.rotation = _rotation;
+    RigidbodyComponent.velocity = _velocity;
   }
 
+  Vector2 _newPosition = Vector2.zero;
   void OnTriggerEnter2D(Collider2D collider)
   {    
-    //if (_isColliding) return;
+    if (_isColliding) return;
 
     //_isColliding = true;
 
@@ -193,7 +188,7 @@ public class Asteroid : MonoBehaviour
 
       // GetComponent returns null if object is inactive
       if (c != null)
-      {        
+      { 
         c.Push(RigidbodyComponent);
       }
     }

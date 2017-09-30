@@ -106,12 +106,10 @@ public class GameScript : MonoBehaviour
       _asteroidControllers.Add(ac);
     }
 
-    int starsNumberHorizontal = Screen.width / 90;
-    int starsNumberVertical = Screen.height / 90;
+    int starsNumberHorizontal = Screen.width / 180;
+    int starsNumberVertical = Screen.height / 180;
 
     int totalStars = starsNumberHorizontal * starsNumberVertical;
-
-    totalStars /= 2;
 
     for (int i = 0; i < totalStars; i++)
     {

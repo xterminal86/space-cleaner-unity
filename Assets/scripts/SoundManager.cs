@@ -8,6 +8,10 @@ public class SoundManager : MonoSingleton<SoundManager>
   [Range(0.0f, 1.0f)]
   public float MusicVolume = 1.0f;  
 
+  // For displaying in options form
+  public int SoundVolumePercent = 100;
+  public int MusicVolumePercent = 100;
+
   public AudioSource AudioSourceOneShotPrefab;
 
   [SerializeField]
@@ -21,6 +25,15 @@ public class SoundManager : MonoSingleton<SoundManager>
 
   protected override void Init()
   {    
+    int musicVol = (int)GameStats.Instance.GameConfig.DataAsJson[GlobalConstants.PlayerPrefsMusicVolumeKey];
+    int soundVol = (int)GameStats.Instance.GameConfig.DataAsJson[GlobalConstants.PlayerPrefsSoundVolumeKey];
+
+    SoundVolumePercent = soundVol;
+    MusicVolumePercent = musicVol;
+
+    SoundVolume = SoundVolumePercent * 0.01f;
+    MusicVolume = MusicVolumePercent * 0.01f;
+
     MakeMusicDatabase();
     MakeSoundsDatabase();
   }

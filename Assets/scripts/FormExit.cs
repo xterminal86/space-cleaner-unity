@@ -8,6 +8,8 @@ public class FormExit : FormBase
   {
     base.Select(parentForm);
 
+    GameStats.Instance.GameConfig.WriteConfig();
+
     Application.Quit();
   }
 }
