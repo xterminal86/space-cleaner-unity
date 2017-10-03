@@ -20,6 +20,7 @@ public class GameScript : MonoBehaviour
   public List<GameObject> StarsList;
 
   public Image WeaponIcon;
+  public Text StatsDoubleIcon;
   public Text ExperienceText;
   public Text HitpointsBar;
   public Text ShieldpointsBar;
@@ -187,10 +188,16 @@ public class GameScript : MonoBehaviour
     }
 
     _hpBar.Length = 0;
-    _hpBar.Append('>', PlayerScript.Hitpoints);
+
+    int barLength = (PlayerScript.Hitpoints * GlobalConstants.GuiHitpointsShieldBarLength) / PlayerScript.MaxPoints;
+
+    _hpBar.Append('>', barLength);
 
     _shieldBar.Length = 0;
-    _shieldBar.Append('>', PlayerScript.Shieldpoints);
+
+    barLength = (PlayerScript.Shieldpoints * GlobalConstants.GuiHitpointsShieldBarLength) / PlayerScript.MaxPoints;
+
+    _shieldBar.Append('>', barLength);
 
     HitpointsBar.text = _hpBar.ToString();
     ShieldpointsBar.text = _shieldBar.ToString();

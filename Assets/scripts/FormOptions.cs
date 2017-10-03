@@ -85,6 +85,7 @@ public class FormOptions : FormBase
     AnimateFont();
   }
 
+  int _musicSoundDelta = 5;
   void HandleMenuItem()
   {
     switch (_itemIndex)
@@ -92,13 +93,13 @@ public class FormOptions : FormBase
       case 1:
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-          SoundManager.Instance.MusicVolumePercent -= 10;
+          SoundManager.Instance.MusicVolumePercent -= _musicSoundDelta;
 
           SoundManager.Instance.MusicVolume = SoundManager.Instance.MusicVolumePercent * 0.01f;
         }
         else if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-          SoundManager.Instance.MusicVolumePercent += 10;
+          SoundManager.Instance.MusicVolumePercent += _musicSoundDelta;
 
           SoundManager.Instance.MusicVolume = SoundManager.Instance.MusicVolumePercent * 0.01f;
         }
@@ -114,13 +115,13 @@ public class FormOptions : FormBase
       case 2:
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-          SoundManager.Instance.SoundVolumePercent -= 10;
+          SoundManager.Instance.SoundVolumePercent -= _musicSoundDelta;
 
           SoundManager.Instance.SoundVolume = SoundManager.Instance.SoundVolumePercent * 0.01f;
         }
         else if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-          SoundManager.Instance.SoundVolumePercent += 10;
+          SoundManager.Instance.SoundVolumePercent += _musicSoundDelta;
 
           SoundManager.Instance.SoundVolume = SoundManager.Instance.SoundVolumePercent * 0.01f;
         }

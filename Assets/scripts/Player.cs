@@ -34,6 +34,10 @@ public class Player : MonoBehaviour
   public int Shieldpoints = 0;
 
   int _maxPoints = 20;
+  public int MaxPoints
+  {
+    get { return _maxPoints; }
+  }
 
   void Awake()
   {
@@ -106,7 +110,7 @@ public class Player : MonoBehaviour
   Color _shieldColor = Color.white;
   void ProcessShield()
   {
-    if (Shieldpoints < 20)
+    if (Shieldpoints < _maxPoints)
     {
       _shieldRechargeTimer += Time.smoothDeltaTime;
     
@@ -189,6 +193,16 @@ public class Player : MonoBehaviour
 
       Experience = 0;
       Level++;
+
+      if (Level == GlobalConstants.ExperienceByLevel.Count)
+      {
+        AppReference.StatsDoubleIcon.gameObject.SetActive(true);
+
+        _maxPoints *= 2;
+
+        Hitpoints = _maxPoints;
+        Shieldpoints = _maxPoints;
+      }
 
       _currentWeapon++;
 

@@ -9,6 +9,8 @@ public static class GlobalConstants
   // Number of asteroid breakdowns after it has been hit
   public const int AsteroidMaxBreakdownLevel = 4;
 
+  public const int GuiHitpointsShieldBarLength = 20;
+
   public const float AsteroidMinSpeed = 25.0f;
   public const float AsteroidMaxSpeed = 200.0f;
 
@@ -52,7 +54,7 @@ public static class GlobalConstants
   // Number of asteroids to destroy (value) after given level (key) is reached
   public static Dictionary<int, int> ExperienceByLevel = new Dictionary<int, int>()
   {
-    {0, 100}, {1, 500}, {2, 1000}
+    {0, 10}, {1, 20}, {2, 30}
   };
 
   public const float PlayerRotationSpeed = 100.0f;
