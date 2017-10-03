@@ -45,6 +45,8 @@ public class Player : MonoBehaviour
     Shieldpoints = _maxPoints;
 
     _shieldColor.a = 0.0f;
+
+    Physics2D.IgnoreCollision(ShieldCollider, PlayerCollider);
   }
 
   Vector2 _direction = Vector2.zero;
@@ -85,7 +87,8 @@ public class Player : MonoBehaviour
       {
         bullet.RigidbodyComponent.rotation = _rotation;
       }
-      //Physics2D.IgnoreCollision(PlayerCollider, bullet.Collider);
+      Physics2D.IgnoreCollision(PlayerCollider, bullet.Collider);
+      Physics2D.IgnoreCollision(ShieldCollider, bullet.Collider);
       float volume = GlobalConstants.BulletSoundVolumesByType[(GlobalConstants.BulletType)_currentWeapon];
       string soundName = GlobalConstants.BulletSoundByType[(GlobalConstants.BulletType)_currentWeapon];
       bullet.Propel(_direction, GlobalConstants.BulletSpeedByType[(GlobalConstants.BulletType)_currentWeapon]);
@@ -221,9 +224,10 @@ public class Player : MonoBehaviour
       return;
     }
 
-    string layerToCheck = LayerMask.LayerToName(other.gameObject.layer);
+    int asteroidsLayer = LayerMask.NameToLayer("Asteroids");
+    int playerLayer = LayerMask.NameToLayer("Player");
 
-    if (layerToCheck == "Asteroids")
+    if (other.gameObject.layer == asteroidsLayer)
     {   
       Asteroid asteroid = other.gameObject.GetComponentInParent<Asteroid>();
 
@@ -233,20 +237,9 @@ public class Player : MonoBehaviour
         return;
       }
 
-      if (Shieldpoints != 0)
-      {                       
-        SoundManager.Instance.PlaySound("shield_hit_energy", 0.1f, 1.0f, false);
+      int damageDealt = (GlobalConstants.AsteroidMaxBreakdownLevel + 1) - asteroid.BreakdownLevel;
 
-        _shieldColor.a = 1.0f;
-        ReceiveShieldDamage(1);
-      }
-      else
-      {
-        SoundManager.Instance.PlaySound("ship_hit", 0.25f, 1.0f, false);
-
-        int damageDealt = (GlobalConstants.AsteroidMaxBreakdownLevel + 1) - asteroid.BreakdownLevel;
-        ReceiveDamage(damageDealt);
-      }
+      ProcessDamage(damageDealt);
 
       //Vector2 v = RigidbodyComponent.position - asteroid.RigidbodyComponent.position;
       Vector2 v = asteroid.RigidbodyComponent.position - RigidbodyComponent.position;
@@ -257,6 +250,30 @@ public class Player : MonoBehaviour
       newDir.Normalize();
 
       asteroid.HandleCollision(newDir);
+    }
+    else if (other.gameObject.layer == playerLayer)
+    {
+      UFO saucer = other.gameObject.GetComponentInParent<UFO>();
+      if (saucer != null)
+      {
+        ProcessDamage(1);
+      }
+    }
+  }
+
+  void ProcessDamage(int damage)
+  {
+    if (Shieldpoints != 0)
+    {                       
+      SoundManager.Instance.PlaySound("shield_hit_energy", 0.1f, 1.0f, false);
+
+      _shieldColor.a = 1.0f;
+      ReceiveShieldDamage(1);
+    }
+    else
+    {
+      SoundManager.Instance.PlaySound("ship_hit", 0.25f, 1.0f, false);
+      ReceiveDamage(damage);
     }
   }
 }

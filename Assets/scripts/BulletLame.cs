@@ -11,6 +11,7 @@ public class BulletLame : BulletBase
     _isColliding = true;
 
     int asteroidsLayer = LayerMask.NameToLayer("Asteroids");
+    int playerLayer = LayerMask.NameToLayer("Player");
 
     if (collider.gameObject.layer == asteroidsLayer)
     {
@@ -29,6 +30,17 @@ public class BulletLame : BulletBase
 
           SoundManager.Instance.PlaySound(GlobalConstants.BulletSoundHitByType[GlobalConstants.BulletType.LAME], 0.25f);
         }
+      }
+    }
+    else if (collider.gameObject.layer == playerLayer)
+    {
+      UFO saucer = collider.gameObject.GetComponentInParent<UFO>();
+      if (saucer != null)
+      {
+        var go = Instantiate(HitAnimationPrefab, new Vector3(_rigidbodyComponent.position.x, _rigidbodyComponent.position.y, 0.0f), Quaternion.identity);
+        Destroy(go, 1.0f);
+
+        saucer.ProcessDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.LAME]);
       }
     }
 

@@ -31,6 +31,7 @@ public static class GlobalConstants
   public const float PowerupLifetime = 5.0f;
 
   public const float PowerupSpawnPercent = 10.0f;
+  public const float UfoSpawnPercent = 25.0f;
 
   // Random spread arc of asteroid from hitting the player
   public const float AsteroidBreakdownHalfArc = 60.0f;

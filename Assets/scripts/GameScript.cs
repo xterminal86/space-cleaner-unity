@@ -11,6 +11,7 @@ public class GameScript : MonoBehaviour
   public GameObject BackgroundStarPrefab;
   public GameObject HealthPowerupPrefab;
   public GameObject ShieldPowerupPrefab;
+  public GameObject UfoPrefab;
 
   public Transform AsteroidsHolder;
   public GameObject GameOverScreen;
@@ -245,11 +246,30 @@ public class GameScript : MonoBehaviour
 
         _progressBarSb.Length = 0;
 
-        SpawnAsteroid();
+        float chance = Random.Range(0.0f, 101.0f);
+
+        if (chance < GlobalConstants.UfoSpawnPercent && PlayerScript.Level > 0)
+        {
+          SpawnUfo();
+        }
+        else
+        {
+          SpawnAsteroid();
+        }
       }
 
       SpawnProgressBar.text = _progressBarSb.ToString();
     }
+  }
+
+  void SpawnUfo()
+  {
+    int index = Random.Range(0, _spawnPoints.Count);
+
+    GameObject ase = Instantiate(AsteroidSpawnEffect, new Vector3(_spawnPoints[index].x, _spawnPoints[index].y, 0.0f), Quaternion.identity);
+    Destroy(ase.gameObject, 1.0f);
+
+    Instantiate(UfoPrefab, new Vector3(_spawnPoints[index].x, _spawnPoints[index].y, 0.0f), Quaternion.identity);
   }
 
   void SpawnAsteroid()

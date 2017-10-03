@@ -15,6 +15,7 @@ public class BulletMedium : BulletBase
     Destroy(go, 1.0f);
 
     int asteroidsLayer = LayerMask.NameToLayer("Asteroids");
+    int playerLayer = LayerMask.NameToLayer("Player");
 
     if (collider.gameObject.layer == asteroidsLayer)
     {
@@ -24,6 +25,14 @@ public class BulletMedium : BulletBase
         SoundManager.Instance.PlaySound(GlobalConstants.BulletSoundHitByType[GlobalConstants.BulletType.MEDIUM], 0.25f);
 
         a.ReceiveDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.MEDIUM], this);
+      }
+    }
+    else if (collider.gameObject.layer == playerLayer)
+    {
+      UFO saucer = collider.gameObject.GetComponentInParent<UFO>();
+      if (saucer != null)
+      {        
+        saucer.ProcessDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.MEDIUM]);
       }
     }
 
