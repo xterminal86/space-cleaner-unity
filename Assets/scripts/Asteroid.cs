@@ -21,6 +21,10 @@ public class Asteroid : MonoBehaviour
   float[] _screenRect;
 
   int _hitpoints = 0;
+  public int Hitpoints
+  {
+    get { return _hitpoints; }
+  }
 
   void Awake()
   {
@@ -76,16 +80,18 @@ public class Asteroid : MonoBehaviour
       float pitch = 0.125f * Mathf.Pow(2, _breakdownLevel + 1);
       float volume = 1.0f / _breakdownLevel;
 
-      SoundManager.Instance.PlaySound("asteroid_hit_big", volume, pitch);
-
-      _game.Score += GlobalConstants.AsteroidScoreByBreakdownLevel[_breakdownLevel];
-
-      if (_game.PlayerScript.Level != GlobalConstants.ExperienceByLevel.Count)
+      if (!(dealer is BulletLaser))
       {
-        _game.PlayerScript.AddExperience(_breakdownLevel);
-      }
+        SoundManager.Instance.PlaySound("asteroid_hit_big", volume, pitch, true);
+        _game.Score += GlobalConstants.AsteroidScoreByBreakdownLevel[_breakdownLevel];
 
-      _game.TryToSpawnPowerup(RigidbodyComponent.position);
+        if (_game.PlayerScript.Level != GlobalConstants.ExperienceByLevel.Count)
+        {
+          _game.PlayerScript.AddExperience(_breakdownLevel);
+        }
+
+        _game.TryToSpawnPowerup(RigidbodyComponent.position);
+      }
 
       HandleCollision(dealer.Direction);
     }

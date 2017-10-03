@@ -8,6 +8,8 @@ public static class GlobalConstants
   public const int AsteroidsMaxInstances = 40;
   // Number of asteroid breakdowns after it has been hit
   public const int AsteroidMaxBreakdownLevel = 4;
+  public const int MaxUfos = 6;
+  public const int UfoScore = 50;
 
   public const int GuiHitpointsShieldBarLength = 20;
 
@@ -30,8 +32,8 @@ public static class GlobalConstants
   // Delay of spawned powerup after it disappears
   public const float PowerupLifetime = 5.0f;
 
-  public const float PowerupSpawnPercent = 10.0f;
-  public const float UfoSpawnPercent = 25.0f;
+  public const float PowerupSpawnPercent = 5.0f;
+  public const float UfoSpawnPercent = 30.0f;
 
   // Random spread arc of asteroid from hitting the player
   public const float AsteroidBreakdownHalfArc = 60.0f;
@@ -55,7 +57,8 @@ public static class GlobalConstants
   // Number of asteroids to destroy (value) after given level (key) is reached
   public static Dictionary<int, int> ExperienceByLevel = new Dictionary<int, int>()
   {
-    {0, 10}, {1, 20}, {2, 30}
+    // 100, 500, 1000
+    {0, 100}, {1, 500}, {2, 1000}
   };
 
   public const float PlayerRotationSpeed = 100.0f;
@@ -63,6 +66,7 @@ public static class GlobalConstants
   public const float BulletLameSpeed = 8.0f;
   public const float BulletMediumSpeed = 8.0f;
   public const float BulletStrongSpeed = 8.0f;
+  public const float BulletLaserSpeed = 6.0f;
 
   public static string MenuMoveSound = "menu_move";
   public static string MenuSelectSound = "menu_select";
@@ -87,7 +91,8 @@ public static class GlobalConstants
   {
     LAME = 0,
     MEDIUM,
-    STRONG
+    STRONG,
+    LASER
   }
 
   public static Dictionary<BulletType, float> BulletSpeedByType = new Dictionary<BulletType, float>() 
@@ -101,7 +106,8 @@ public static class GlobalConstants
   {
     { BulletType.LAME, 1 },
     { BulletType.MEDIUM, 4 },
-    { BulletType.STRONG, 8 }
+    { BulletType.STRONG, 8 },
+    { BulletType.LASER, 5 }
   };
 
   public static Dictionary<BulletType, string> BulletSoundByType = new Dictionary<BulletType, string>() 
@@ -120,7 +126,7 @@ public static class GlobalConstants
 
   public static Dictionary<BulletType, float> BulletSoundVolumesByType = new Dictionary<BulletType, float>() 
   {
-    { BulletType.LAME, 0.25f },
+    { BulletType.LAME, 0.15f },
     { BulletType.MEDIUM, 0.125f },
     { BulletType.STRONG, 0.125f }
   };

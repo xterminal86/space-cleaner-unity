@@ -4,10 +4,49 @@ using UnityEngine;
 
 public class BulletLaser : BulletBase 
 {
-  void OnTriggerEnter2D(Collider2D collider)
+  public override void Propel(Vector2 direction, float bulletSpeed)
   {
-    if (_isColliding) return;
+    base.Propel(direction, bulletSpeed);
 
-    _isColliding = true;
+    _borderOffset = 3.0f;
+  }
+
+  void OnTriggerEnter2D(Collider2D collider)
+  {    
+    Rigidbody2D rb = collider.gameObject.GetComponentInParent<Rigidbody2D>();
+    Vector2 v = RigidbodyComponent.position - rb.position;
+
+    // Prevent collision on all objects after asteroid breakdown
+    if (v.magnitude < 0.21f)
+    {
+      return;
+    }
+
+    var go = Instantiate(HitAnimationPrefab, new Vector3(_rigidbodyComponent.position.x, _rigidbodyComponent.position.y, 0.0f), Quaternion.identity);
+    Destroy(go, 1.0f);
+
+    int asteroidsLayer = LayerMask.NameToLayer("Asteroids");
+    int playerLayer = LayerMask.NameToLayer("Player");
+
+    if (collider.gameObject.layer == asteroidsLayer)
+    {
+      Asteroid a = collider.gameObject.GetComponentInParent<Asteroid>();
+      if (a != null)
+      { 
+        SoundManager.Instance.PlaySound(GlobalConstants.BulletSoundHitByType[GlobalConstants.BulletType.MEDIUM], 0.25f, 1.0f, false);
+
+        a.ReceiveDamage(GlobalConstants.AsteroidHitpointsByBreakdownLevel[1], this);
+      }
+    }
+    else if (collider.gameObject.layer == playerLayer)
+    {
+      Player player = collider.gameObject.GetComponentInParent<Player>();
+      if (player != null)
+      {        
+        Destroy(gameObject);
+
+        player.ProcessDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.LASER]);
+      }
+    }
   }
 }

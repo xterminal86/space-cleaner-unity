@@ -11,6 +11,9 @@ public class UFO : MonoBehaviour
 
   public GameObject BulletPrefab;
 
+  public AudioSource HitSound;
+  public AudioSource EnergyHitSound;
+
   [HideInInspector]
   public int Shieldpoints = 20;
 
@@ -25,10 +28,14 @@ public class UFO : MonoBehaviour
   Vector2 _direction = Vector2.zero;
 
   GameScript _app;
+  Player _player;
+
   float[] _screenRect;
   void Awake()
   {
     _app = GameObject.Find("App").GetComponent<GameScript>();
+    _player = GameObject.Find("player").GetComponent<Player>();
+
     _screenRect = _app.ScreenRect;
 
     _shieldColor.a = 0.0f;
@@ -42,8 +49,10 @@ public class UFO : MonoBehaviour
 
   float _minTimeout = 1.0f;
   float _maxTimeout = 2.0f;
+  float _shootingTimeout = 3.0f;
   float _timeout = 0.0f;
   float _timer = 0.0f;
+  float _shootingTimeoutCounter = 0.0f;
   void Update()
   {
     ShieldCollider.gameObject.SetActive(Shieldpoints != 0);
@@ -51,6 +60,7 @@ public class UFO : MonoBehaviour
     ProcessShield();
 
     _timer += Time.smoothDeltaTime;
+    _shootingTimeoutCounter += Time.smoothDeltaTime;
 
     if (_timer > _timeout)
     {
@@ -58,11 +68,46 @@ public class UFO : MonoBehaviour
       _timeout = Random.Range(_minTimeout, _maxTimeout);
       _direction = GlobalConstants.GetRandomDir();
     }
+
+    if (_shootingTimeoutCounter > _shootingTimeout)
+    {
+      _shootingTimeoutCounter = 0.0f;
+      Shoot();
+    }
+  }
+
+  void Shoot()
+  {    
+    if (_app.IsGameOver)
+    {
+      return;
+    }
+
+    Vector2 shotDir = _player.RigidbodyComponent.position - RigidbodyComponent.position;
+    shotDir.Normalize();
+
+    float angle = Vector2.Angle(Vector2.up, shotDir);
+    Vector3 cross = Vector3.Cross(Vector2.up, shotDir);
+
+    if (cross.z < 0.0f)
+    {
+      angle = 360 - angle;
+    }
+
+    Quaternion q = Quaternion.Euler(0.0f, 0.0f, angle);
+
+    var go = Instantiate(BulletPrefab, RigidbodyComponent.position, q);
+    BulletLaser bl = go.GetComponent<BulletLaser>();
+    Physics2D.IgnoreCollision(ShieldCollider, bl.Collider);
+    Physics2D.IgnoreCollision(UfoCollider, bl.Collider);
+    bl.Propel(shotDir, GlobalConstants.BulletLaserSpeed);
+
+    SoundManager.Instance.PlaySound("laser", 0.25f, 1.0f, true);
   }
 
   Vector2 _position = Vector2.zero;
-  float _saucerMinSpeed = 100.0f;
-  float _saucerMaxSpeed = 200.0f;
+  float _saucerMinSpeed = 50.0f;
+  float _saucerMaxSpeed = 100.0f;
   float _saucerSpeed = 0.0f;
   float _offset = 0.5f;
   Vector2 _velocity = Vector2.zero;
@@ -134,6 +179,9 @@ public class UFO : MonoBehaviour
 
     if (Hitpoints == 0)
     { 
+      _app.SpawnedUfos--;
+      _app.Score += GlobalConstants.UfoScore;
+
       SoundManager.Instance.PlaySound("ship_explode", 0.25f);
 
       var go = Instantiate(_app.PlayerDeathEffect, new Vector3(RigidbodyComponent.position.x, RigidbodyComponent.position.y, 0.0f), Quaternion.identity);
@@ -148,6 +196,7 @@ public class UFO : MonoBehaviour
     int asteroidsLayer = LayerMask.NameToLayer("Asteroids");
     int playerLayer = LayerMask.NameToLayer("Player");
 
+    /*
     if (other.gameObject.layer == asteroidsLayer)
     {   
       Asteroid asteroid = other.gameObject.GetComponentInParent<Asteroid>();
@@ -172,7 +221,8 @@ public class UFO : MonoBehaviour
 
       asteroid.HandleCollision(newDir);
     }
-    else if (other.gameObject.layer == playerLayer)
+    */
+    if (other.gameObject.layer == playerLayer)
     {
       Player p = other.gameObject.GetComponentInParent<Player>();
       if (p != null)
@@ -185,8 +235,9 @@ public class UFO : MonoBehaviour
   public void ProcessDamage(int damage)
   {
     if (Shieldpoints != 0)
-    {                       
-      SoundManager.Instance.PlaySound("shield_hit_energy", 0.1f, 1.0f, false);
+    {   
+      PlaySound(0, 0.1f);
+      //SoundManager.Instance.PlaySound("shield_hit_energy", 0.1f, 1.0f, false);
 
       _shieldColor.a = 1.0f;
       ReceiveShieldDamage(1);
@@ -197,8 +248,23 @@ public class UFO : MonoBehaviour
 
       if (Hitpoints != 0)
       {
-        SoundManager.Instance.PlaySound("ship_hit", 0.25f, 1.0f, false);
+        PlaySound(1, 0.3f);
+        //SoundManager.Instance.PlaySound("ufo-hit", 0.125f, 1.0f, false);
       }
+    }
+  }
+
+  void PlaySound(int type, float volume)
+  {
+    if (type == 0)
+    {
+      EnergyHitSound.volume = volume * SoundManager.Instance.SoundVolume;
+      EnergyHitSound.Play();
+    }
+    else
+    {
+      HitSound.volume = volume * SoundManager.Instance.SoundVolume;
+      HitSound.Play();
     }
   }
 }

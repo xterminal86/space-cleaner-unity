@@ -261,7 +261,7 @@ public class Player : MonoBehaviour
     }
   }
 
-  void ProcessDamage(int damage)
+  public void ProcessDamage(int damage)
   {
     if (Shieldpoints != 0)
     {                       

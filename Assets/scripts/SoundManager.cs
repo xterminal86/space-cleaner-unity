@@ -22,6 +22,10 @@ public class SoundManager : MonoSingleton<SoundManager>
   public Dictionary<string, int> LastPlayedFootstepSoundIndexOfActor = new Dictionary<string, int>();
 
   Dictionary<string, AudioSource> _audioSourcesByName = new Dictionary<string, AudioSource>();
+  public Dictionary<string, AudioSource> AudioSourcesByName
+  {
+    get { return _audioSourcesByName; }
+  }
 
   protected override void Init()
   {    
@@ -140,7 +144,7 @@ public class SoundManager : MonoSingleton<SoundManager>
         Destroy(go, length);    
       }
       else
-      {
+      {        
         _audioSourcesByName[name].volume = volume * SoundVolume;
         _audioSourcesByName[name].Play();
       }

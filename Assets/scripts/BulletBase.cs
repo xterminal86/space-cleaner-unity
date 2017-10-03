@@ -36,11 +36,11 @@ public class BulletBase : MonoBehaviour
     _bulletSpeed = bulletSpeed;
   }
 
-  float _offset = 0.5f;
+  protected float _borderOffset = 0.5f;
   void FixedUpdate()
   {
-    if (_rigidbodyComponent.position.x > _app.ScreenRect[2] + _offset || _rigidbodyComponent.position.x < _app.ScreenRect[0] - _offset 
-     || _rigidbodyComponent.position.y > _app.ScreenRect[3] + _offset || _rigidbodyComponent.position.y < _app.ScreenRect[1] - _offset) 
+    if (_rigidbodyComponent.position.x > _app.ScreenRect[2] + _borderOffset || _rigidbodyComponent.position.x < _app.ScreenRect[0] - _borderOffset 
+     || _rigidbodyComponent.position.y > _app.ScreenRect[3] + _borderOffset || _rigidbodyComponent.position.y < _app.ScreenRect[1] - _borderOffset) 
     {
       Destroy(gameObject);
       return;

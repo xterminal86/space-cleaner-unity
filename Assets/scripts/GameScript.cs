@@ -59,6 +59,9 @@ public class GameScript : MonoBehaviour
   [HideInInspector]
   public int SpawnedAsteroids = 0;
 
+  [HideInInspector]
+  public int SpawnedUfos = 0;
+
   float _currentSpawnRate = 1.0f;
 
   List<AsteroidController> _asteroidControllers = new List<AsteroidController>();
@@ -231,7 +234,6 @@ public class GameScript : MonoBehaviour
       {
         _barCounter = 0;
 
-        SpawnedAsteroids++;
         _currentPhase++;
 
         _currentSpawnRate -= GlobalConstants.SpawnRateDelta * _spawnAcceleration;
@@ -248,7 +250,7 @@ public class GameScript : MonoBehaviour
 
         float chance = Random.Range(0.0f, 101.0f);
 
-        if (chance < GlobalConstants.UfoSpawnPercent && PlayerScript.Level > 0)
+        if (chance < GlobalConstants.UfoSpawnPercent && PlayerScript.Level > 0 && SpawnedUfos < GlobalConstants.MaxUfos)
         {
           SpawnUfo();
         }
@@ -264,12 +266,16 @@ public class GameScript : MonoBehaviour
 
   void SpawnUfo()
   {
+    SoundManager.Instance.PlaySound("ufo-spawn", 0.25f);
+
     int index = Random.Range(0, _spawnPoints.Count);
 
     GameObject ase = Instantiate(AsteroidSpawnEffect, new Vector3(_spawnPoints[index].x, _spawnPoints[index].y, 0.0f), Quaternion.identity);
     Destroy(ase.gameObject, 1.0f);
 
     Instantiate(UfoPrefab, new Vector3(_spawnPoints[index].x, _spawnPoints[index].y, 0.0f), Quaternion.identity);
+
+    SpawnedUfos++;
   }
 
   void SpawnAsteroid()
@@ -285,6 +291,7 @@ public class GameScript : MonoBehaviour
       {
         SoundManager.Instance.PlaySound("asteroid_spawn", 0.5f);
         item.Init(_spawnPoints[index]);
+        SpawnedAsteroids++;          
         break;
       }
     }
@@ -314,9 +321,9 @@ public class GameScript : MonoBehaviour
     if (_powerupPosition.y < _screenRect[1]) _powerupPosition.y = _screenRect[1] + 1.0f;
     if (_powerupPosition.y > _screenRect[3]) _powerupPosition.y = _screenRect[3] - 1.0f;
 
-    float modifierH = 1.0f - PlayerScript.Hitpoints / 20.0f;
+    float modifierH = 1.0f - PlayerScript.Hitpoints / PlayerScript.MaxPoints;
     float chanceH = modifierH * GlobalConstants.PowerupSpawnPercent;
-    float modifierS = 1.0f - PlayerScript.Shieldpoints / 20.0f;
+    float modifierS = 1.0f - PlayerScript.Shieldpoints / PlayerScript.MaxPoints;
     float chanceS = modifierS * GlobalConstants.PowerupSpawnPercent;
 
     int whichOne = Random.Range(0, 2);
@@ -334,6 +341,8 @@ public class GameScript : MonoBehaviour
         Destroy(effect, 1.0f);
 
         Instantiate(HealthPowerupPrefab, new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
+
+        //Debug.Log("health : " + chanceH + " " + modifierH + " chance rolled: " + chance);
       }
     }
     else
@@ -347,6 +356,8 @@ public class GameScript : MonoBehaviour
         Destroy(effect, 1.0f);
 
         Instantiate(ShieldPowerupPrefab, new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
+
+        //Debug.Log("shield : " + chanceS + " " + modifierS + " chance rolled: " + chance);
       }
     }
   }
