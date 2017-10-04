@@ -402,7 +402,7 @@ public class GameScript : MonoBehaviour
   public void FireHandler()
   {
     if (IsGameOver) return;
-
+    
     PlayerScript.Fire();
   }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Player : MonoBehaviour 
 {
@@ -47,6 +48,8 @@ public class Player : MonoBehaviour
     _shieldColor.a = 0.0f;
 
     Physics2D.IgnoreCollision(ShieldCollider, PlayerCollider);
+
+    _direction = Vector2.right;
   }
 
   int _rotationStatus = 0;
@@ -63,6 +66,12 @@ public class Player : MonoBehaviour
 
   public void Fire()
   {
+    // Edge case when user clicked on the same spot as previous one on joystick
+    if (_direction.magnitude == 0.0f)
+    {
+      _direction = Vector2.up;
+    }
+
     Quaternion q = Quaternion.Euler(0.0f, 0.0f, _rotation);
 
     GameObject go = Instantiate(Bullets[_currentWeapon], new Vector3(ShotPoint.position.x, ShotPoint.position.y, 0.0f), q);
@@ -80,6 +89,10 @@ public class Player : MonoBehaviour
     SoundManager.Instance.PlaySound(soundName, volume);
   }
 
+  Vector2 _newCenterLocation = Vector2.zero;
+  Vector2 _oldCenterLocation = Vector2.zero;
+  Vector3 _mousePos = Vector3.zero;
+
   Vector2 _direction = Vector2.zero;
   void Update()
   {
@@ -91,6 +104,59 @@ public class Player : MonoBehaviour
     if (_rotationStatus == 2)
     {
       _rotation -= GlobalConstants.PlayerRotationSpeed * Time.smoothDeltaTime;
+    }
+
+    if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
+    {
+      _mousePos.Set(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
+
+      Vector2 wp = Camera.main.ScreenToWorldPoint(_mousePos);
+
+      _newCenterLocation.x = wp.x;
+      _newCenterLocation.y = wp.y;
+
+      _oldCenterLocation.x = wp.x;
+      _oldCenterLocation.y = wp.y;
+
+      //Debug.Log("mouse down");
+    }
+    else if (Input.GetMouseButtonUp(0))
+    {
+      _mousePos.Set(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
+
+      Vector2 wp = Camera.main.ScreenToWorldPoint(_mousePos);
+
+      _oldCenterLocation.x = _newCenterLocation.x;
+      _oldCenterLocation.y = _newCenterLocation.y;
+
+      _gasPedal = 0;
+
+      //Debug.Log("mouse up");
+    }
+    else if (Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject())
+    {
+      _gasPedal = 1;
+
+      _mousePos.Set(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
+      Vector2 wp = Camera.main.ScreenToWorldPoint(_mousePos);
+
+      _newCenterLocation.x = wp.x;
+      _newCenterLocation.y = wp.y;
+
+      _direction = _newCenterLocation - _oldCenterLocation;
+      _direction.Normalize();
+
+      float angle = Vector2.Angle(Vector2.right, _direction);
+      Vector3 cross = Vector3.Cross(Vector2.right, _direction);
+
+      if (cross.z < 0.0f)
+      {
+        angle = 360 - angle;
+      }
+
+      _rotation = angle;
+
+      //Debug.Log("mouse hold");
     }
 
     #if UNITY_EDITOR
@@ -108,11 +174,13 @@ public class Player : MonoBehaviour
     AppReference.SetWeapon(_currentWeapon);
     #endif
 
+    /*
     _cos = Mathf.Sin(_rotation * Mathf.Deg2Rad);
     _sin = Mathf.Cos(_rotation * Mathf.Deg2Rad);
 
     _direction.x = _sin;
     _direction.y = _cos;
+    */
 
     CheckGas();
 
