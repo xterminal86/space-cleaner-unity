@@ -230,6 +230,8 @@ public class UFO : MonoBehaviour
       {
         ProcessDamage(1);
       }
+
+      ProcessDamage(1);
     }
   }
 

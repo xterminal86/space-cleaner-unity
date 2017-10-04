@@ -49,15 +49,46 @@ public class Player : MonoBehaviour
     Physics2D.IgnoreCollision(ShieldCollider, PlayerCollider);
   }
 
+  int _rotationStatus = 0;
+  public void SetRotation(int rotationStatus)
+  {
+    _rotationStatus = rotationStatus;
+  }
+
+  int _gasPedal = 0;
+  public void SetGas(int gas)
+  {
+    _gasPedal = gas;
+  }
+
+  public void Fire()
+  {
+    Quaternion q = Quaternion.Euler(0.0f, 0.0f, _rotation);
+
+    GameObject go = Instantiate(Bullets[_currentWeapon], new Vector3(ShotPoint.position.x, ShotPoint.position.y, 0.0f), q);
+    var bullet = go.GetComponent<BulletBase>();
+    if (_currentWeapon == 2)
+    {
+      bullet.RigidbodyComponent.rotation = _rotation;
+    }
+    Physics2D.IgnoreCollision(PlayerCollider, bullet.Collider);
+    Physics2D.IgnoreCollision(ShieldCollider, bullet.Collider);
+    float volume = GlobalConstants.BulletSoundVolumesByType[(GlobalConstants.BulletType)_currentWeapon];
+    string soundName = GlobalConstants.BulletSoundByType[(GlobalConstants.BulletType)_currentWeapon];
+    bullet.Propel(_direction, GlobalConstants.BulletSpeedByType[(GlobalConstants.BulletType)_currentWeapon]);
+
+    SoundManager.Instance.PlaySound(soundName, volume);
+  }
+
   Vector2 _direction = Vector2.zero;
   void Update()
   {
-    if (Input.GetKey(KeyCode.A))
+    if (_rotationStatus == 1)
     {
       _rotation += GlobalConstants.PlayerRotationSpeed * Time.smoothDeltaTime;
     } 
 
-    if (Input.GetKey(KeyCode.D))
+    if (_rotationStatus == 2)
     {
       _rotation -= GlobalConstants.PlayerRotationSpeed * Time.smoothDeltaTime;
     }
@@ -77,36 +108,34 @@ public class Player : MonoBehaviour
     AppReference.SetWeapon(_currentWeapon);
     #endif
 
-    if (Input.GetKeyDown(KeyCode.Space))
-    {      
-      Quaternion q = Quaternion.Euler(0.0f, 0.0f, _rotation);
-
-      GameObject go = Instantiate(Bullets[_currentWeapon], new Vector3(ShotPoint.position.x, ShotPoint.position.y, 0.0f), q);
-      var bullet = go.GetComponent<BulletBase>();
-      if (_currentWeapon == 2)
-      {
-        bullet.RigidbodyComponent.rotation = _rotation;
-      }
-      Physics2D.IgnoreCollision(PlayerCollider, bullet.Collider);
-      Physics2D.IgnoreCollision(ShieldCollider, bullet.Collider);
-      float volume = GlobalConstants.BulletSoundVolumesByType[(GlobalConstants.BulletType)_currentWeapon];
-      string soundName = GlobalConstants.BulletSoundByType[(GlobalConstants.BulletType)_currentWeapon];
-      bullet.Propel(_direction, GlobalConstants.BulletSpeedByType[(GlobalConstants.BulletType)_currentWeapon]);
-
-      SoundManager.Instance.PlaySound(soundName, volume);
-    }
-
     _cos = Mathf.Sin(_rotation * Mathf.Deg2Rad);
     _sin = Mathf.Cos(_rotation * Mathf.Deg2Rad);
 
     _direction.x = _sin;
     _direction.y = _cos;
 
-    _acceleration = Input.GetAxis("Vertical") * GlobalConstants.PlayerMoveSpeed;
+    CheckGas();
+
+    _acceleration = _gasAmount * GlobalConstants.PlayerMoveSpeed;
 
     ShieldCollider.gameObject.SetActive(Shieldpoints != 0);
 
     ProcessShield();
+  }
+
+  float _gasAmount = 0.0f;
+  void CheckGas()
+  {
+    if (_gasPedal == 1)
+    {
+      _gasAmount += Time.smoothDeltaTime * 2;
+      _gasAmount = Mathf.Clamp(_gasAmount, 0.0f, 1.0f);
+    }
+    else
+    {
+      _gasAmount -= Time.smoothDeltaTime * 2;
+      _gasAmount = Mathf.Clamp(_gasAmount, 0.0f, 1.0f);
+    }
   }
 
   float _shieldRechargeTimer = 0.0f;

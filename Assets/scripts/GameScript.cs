@@ -371,6 +371,55 @@ public class GameScript : MonoBehaviour
     WeaponIcon.sprite = BulletsIcons[weaponIndex];
   }
 
+  public void RotateLeftDownHandler()
+  {
+    if (IsGameOver) return;
+
+    PlayerScript.SetRotation(1);
+  }
+
+  public void RotateLeftUpHandler()
+  { 
+    if (IsGameOver) return;
+
+    PlayerScript.SetRotation(0);
+  }
+
+  public void RotateRightDownHandler()
+  {
+    if (IsGameOver) return;
+
+    PlayerScript.SetRotation(2);
+  }
+
+  public void RotateRightUpHandler()
+  {
+    if (IsGameOver) return;
+
+    PlayerScript.SetRotation(0);
+  }
+
+  public void FireHandler()
+  {
+    if (IsGameOver) return;
+
+    PlayerScript.Fire();
+  }
+
+  public void GasDownHandler()
+  {
+    if (IsGameOver) return;
+
+    PlayerScript.SetGas(1);
+  }
+
+  public void GasUpHandler()
+  {
+    if (IsGameOver) return;
+
+    PlayerScript.SetGas(0);
+  }
+
   void OnEnable()
   {
     SceneManager.sceneLoaded += SceneLoadedHandler;
