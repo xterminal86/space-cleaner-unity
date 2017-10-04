@@ -256,7 +256,7 @@ public class GameScript : MonoBehaviour
 
         float chance = Random.Range(0.0f, 101.0f);
 
-        if (chance < GlobalConstants.UfoSpawnPercent && PlayerScript.Level > 0 && SpawnedUfos < GlobalConstants.MaxUfosPerPlayerLevel[PlayerScript.Level])
+        if (chance < GlobalConstants.UfoSpawnPercent && SpawnedUfos < GlobalConstants.MaxUfosPerPlayerLevel[PlayerScript.Level])
         {
           SpawnUfo();
         }
@@ -348,7 +348,7 @@ public class GameScript : MonoBehaviour
 
         Instantiate(HealthPowerupPrefab, new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
 
-        Debug.Log("health : " + chanceH + " " + modifierH + " chance rolled: " + chance);
+        //Debug.Log("health : " + chanceH + " " + modifierH + " chance rolled: " + chance);
       }
     }
     else
@@ -363,7 +363,7 @@ public class GameScript : MonoBehaviour
 
         Instantiate(ShieldPowerupPrefab, new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
 
-        Debug.Log("shield : " + chanceS + " " + modifierS + " chance rolled: " + chance);
+        //Debug.Log("shield : " + chanceS + " " + modifierS + " chance rolled: " + chance);
       }
     }
   }

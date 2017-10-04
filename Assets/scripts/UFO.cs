@@ -181,6 +181,7 @@ public class UFO : MonoBehaviour
     { 
       _app.SpawnedUfos--;
       _app.Score += GlobalConstants.UfoScore;
+      _player.AddExperience(20);
 
       SoundManager.Instance.PlaySound("ship_explode", 0.25f);
 

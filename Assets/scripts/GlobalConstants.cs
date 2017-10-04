@@ -41,6 +41,7 @@ public static class GlobalConstants
 
   public static Dictionary<int, int> MaxUfosPerPlayerLevel = new Dictionary<int, int>() 
   {
+    { 0, 1 },
     { 1, 2 },
     { 2, 4 },
     { 3, 6 }

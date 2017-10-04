@@ -11,10 +11,9 @@ public class BulletLaser : BulletBase
     _borderOffset = 3.0f;
   }
 
-  bool _colliding = false;
-
   void OnTriggerEnter2D(Collider2D collider)
   { 
+    /*
     Rigidbody2D rb = collider.gameObject.GetComponentInParent<Rigidbody2D>();
     Vector2 v = RigidbodyComponent.position - rb.position;
 
@@ -23,6 +22,7 @@ public class BulletLaser : BulletBase
     {
       return;
     }
+    */
 
     var go = Instantiate(HitAnimationPrefab, new Vector3(_rigidbodyComponent.position.x, _rigidbodyComponent.position.y, 0.0f), Quaternion.identity);
     Destroy(go, 1.0f);
@@ -33,13 +33,13 @@ public class BulletLaser : BulletBase
     if (collider.gameObject.layer == asteroidsLayer)
     {
       Asteroid a = collider.gameObject.GetComponentInParent<Asteroid>();
-      if (a != null && !_colliding)
+      if (a != null)
       { 
-        _colliding = true;
-
         SoundManager.Instance.PlaySound(GlobalConstants.BulletSoundHitByType[GlobalConstants.BulletType.MEDIUM], 0.25f, 1.0f, false);
 
         a.ReceiveDamage(GlobalConstants.AsteroidHitpointsByBreakdownLevel[1], this);
+
+        StartCoroutine(DisableColliderRoutine());
       }
     }
     else if (collider.gameObject.layer == playerLayer)
@@ -54,8 +54,22 @@ public class BulletLaser : BulletBase
     }
   }
 
-  void OnTriggerExit2D(Collider2D collider)
+  float _timer = 0.0f;
+  IEnumerator DisableColliderRoutine()
   {
-    _colliding = false;
+    Collider.enabled = false;
+
+    while (_timer < 0.25f)
+    {
+      _timer += Time.smoothDeltaTime;
+
+      yield return null;
+    }
+
+    _timer = 0.0f;
+
+    Collider.enabled = true;
+
+    yield return null;
   }
 }
