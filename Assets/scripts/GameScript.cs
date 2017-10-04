@@ -321,9 +321,9 @@ public class GameScript : MonoBehaviour
     if (_powerupPosition.y < _screenRect[1]) _powerupPosition.y = _screenRect[1] + 1.0f;
     if (_powerupPosition.y > _screenRect[3]) _powerupPosition.y = _screenRect[3] - 1.0f;
 
-    float modifierH = 1.0f - PlayerScript.Hitpoints / PlayerScript.MaxPoints;
+    float modifierH = 1.0f - (float)PlayerScript.Hitpoints / (float)PlayerScript.MaxPoints;
     float chanceH = modifierH * GlobalConstants.PowerupSpawnPercent;
-    float modifierS = 1.0f - PlayerScript.Shieldpoints / PlayerScript.MaxPoints;
+    float modifierS = 1.0f - (float)PlayerScript.Shieldpoints / (float)PlayerScript.MaxPoints;
     float chanceS = modifierS * GlobalConstants.PowerupSpawnPercent;
 
     int whichOne = Random.Range(0, 2);

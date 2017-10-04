@@ -25,7 +25,7 @@ public class SoundManagerInspector : Editor
 
     if (GUILayout.Button("Generate Music List"))
     {
-      BuildMediaList(_sm.MusicTracks, _musicPath, "*.mp3");
+      BuildMediaList(_sm.MusicTracks, _musicPath, "*.ogg");
     }
 
     PrintListContents(_sm.MusicTracks);

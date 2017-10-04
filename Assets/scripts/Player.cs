@@ -165,14 +165,17 @@ public class Player : MonoBehaviour
     Shieldpoints = Mathf.Clamp(Shieldpoints, 0, _maxPoints);
   }
 
+  bool _isDestroying = false;
   public void ReceiveDamage(int damageReceived)
   {
     Hitpoints -= damageReceived;
 
     Hitpoints = Mathf.Clamp(Hitpoints, 0, _maxPoints);
 
-    if (Hitpoints == 0)
+    if (Hitpoints == 0 && !_isDestroying)
     { 
+      _isDestroying = true;
+
       SoundManager.Instance.StopMusic();
       SoundManager.Instance.PlaySound("ship_explode", 0.5f);
       SoundManager.Instance.PlaySound("gameover");

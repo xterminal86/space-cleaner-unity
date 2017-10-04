@@ -194,7 +194,7 @@ public class SoundManager : MonoSingleton<SoundManager>
       return;
     }
 
-    if (_audioSourcesByName[_currentPlayingTrack].timeSamples > (int)GlobalConstants.MusicTrackLoopPointsByName[_currentPlayingTrack].y)
+    if (_audioSourcesByName[_currentPlayingTrack].timeSamples >= (int)GlobalConstants.MusicTrackLoopPointsByName[_currentPlayingTrack].y)
     {
       _audioSourcesByName[_currentPlayingTrack].timeSamples = (int)GlobalConstants.MusicTrackLoopPointsByName[_currentPlayingTrack].x;
     }

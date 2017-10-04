@@ -32,7 +32,7 @@ public static class GlobalConstants
   // Delay of spawned powerup after it disappears
   public const float PowerupLifetime = 5.0f;
 
-  public const float PowerupSpawnPercent = 5.0f;
+  public const float PowerupSpawnPercent = 10.0f;
   public const float UfoSpawnPercent = 30.0f;
 
   // Random spread arc of asteroid from hitting the player
@@ -134,25 +134,25 @@ public static class GlobalConstants
   public static List<string> MusicTracks = new List<string>()
   {
     "pb1",
+    "dd",
     "metroid",
     "green-planet",
     "pb3",
     "pb4",
     "pb5",
-    "pb7",
-    "pb8"
+    "pb7"
   };
 
   public static Dictionary<string, Vector2> MusicTrackLoopPointsByName = new Dictionary<string, Vector2>()
   {
     { "metroid", new Vector2(320100, 2704100) },
-    { "green-planet", new Vector2(231910, 2536210) },
-    { "pb1", new Vector2(696800, 3678900) },
+    { "green-planet", new Vector2(211355, 2328480) },
+    { "pb1", new Vector2(638145, 3377539) },
     { "pb3", new Vector2(421300, 2097000) },
     { "pb4", new Vector2(480000, 2400000) },
     { "pb5", new Vector2(290300, 3362300) },
     { "pb7", new Vector2(962400, 3266400) },
-    { "pb8", new Vector2(694272, 1960512) }
+    { "dd", new Vector2(0, 2739386) }
 
     /*
     { "metroid", new Vector2(320100, 2704000) },
