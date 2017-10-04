@@ -69,9 +69,25 @@ public class FormHighScores : FormBase
     TextObject.text = sb.ToString();
   }
 
+  public override void SelectMenuItem(int itemIndex)
+  {    
+    (ChildForms[0] as FormYesNo).SetActions(() =>
+    {
+      SoundManager.Instance.PlaySound("cash-register", 1.0f, 1.0f, false);
+      GameStats.Instance.ClearHighScores();
+      RefreshHighscoreTable();
+    }, () =>
+    {
+      SoundManager.Instance.PlaySound(GlobalConstants.MenuBackSound);
+    });
+
+    ChildForms[0].Select(this);        
+  }
+
   Color _selectedColor = new Color(1.0f, 0.0f, 1.0f);
   public override void Process()
   {
+    /*
     if (Input.GetKeyDown(KeyCode.Return))
     {
       (ChildForms[0] as FormYesNo).SetActions(() =>
@@ -86,8 +102,9 @@ public class FormHighScores : FormBase
 
       ChildForms[0].Select(this);        
     }
-
+    
     _itemIndex = Mathf.Clamp(_itemIndex, 0, MenuIems.Count - 1);
+    */
 
     MenuIems[_itemIndex].color = _selectedColor;
 

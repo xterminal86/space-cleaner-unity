@@ -17,6 +17,10 @@ public class FormBase : MonoBehaviour
   {
   }
 
+  public virtual void SelectMenuItem(int itemIndex)
+  {
+  }
+
   public virtual void Select(FormBase parentForm)
   {   
     SoundManager.Instance.PlaySound(GlobalConstants.MenuSelectSound);

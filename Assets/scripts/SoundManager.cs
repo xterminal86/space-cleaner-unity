@@ -27,6 +27,7 @@ public class SoundManager : MonoSingleton<SoundManager>
     get { return _audioSourcesByName; }
   }
 
+  AudioSource _musicTrack;
   protected override void Init()
   {    
     int musicVol = (int)GameStats.Instance.GameConfig.DataAsJson[GlobalConstants.PlayerPrefsMusicVolumeKey];
@@ -38,7 +39,13 @@ public class SoundManager : MonoSingleton<SoundManager>
     SoundVolume = SoundVolumePercent * 0.01f;
     MusicVolume = MusicVolumePercent * 0.01f;
 
-    MakeMusicDatabase();
+    GameObject go = new GameObject("music-track");
+    go.transform.parent = transform;
+    _musicTrack = go.AddComponent<AudioSource>();
+    _musicTrack.playOnAwake = false;
+    _musicTrack.volume = MusicVolume;
+
+    //MakeMusicDatabase();
     MakeSoundsDatabase();
   }
 
@@ -49,7 +56,7 @@ public class SoundManager : MonoSingleton<SoundManager>
     // Some sound (might be music as well, hadn't tested) doesn't load.
     // Call this method during singleton's initialization.
 
-    MakeMusicDatabase();
+    //MakeMusicDatabase();
     MakeSoundsDatabase();
   }
 
@@ -155,11 +162,26 @@ public class SoundManager : MonoSingleton<SoundManager>
   string _currentPlayingTrack = string.Empty;
   public AudioSource CurrentMusicTrack
   {
-    get { return _audioSourcesByName[_currentPlayingTrack]; }
+    //get { return _audioSourcesByName[_currentPlayingTrack]; }
+    get { return _musicTrack; }
   }
 
   public void PlayMusicTrack(string trackName)
   { 
+    _musicTrack.Stop();
+   
+    string filename = string.Format("music/{0}", trackName);
+
+    var obj = Resources.Load(filename) as AudioClip;
+
+    _musicTrack.clip = obj;
+    _musicTrack.Play();
+
+    _currentPlayingTrack = trackName;
+
+    Resources.UnloadUnusedAssets();
+
+    /*
     if (_audioSourcesByName.ContainsKey(trackName))
     {
       if (_currentPlayingTrack != string.Empty && _audioSourcesByName[_currentPlayingTrack].isPlaying)
@@ -172,12 +194,21 @@ public class SoundManager : MonoSingleton<SoundManager>
       _audioSourcesByName[trackName].Play();
       _currentPlayingTrack = trackName;
     }
+    */
   }
 
   public void StopMusic()
   {
+    if (_musicTrack != null)
+    {
+      _musicTrack.Stop();
+      _musicTrack.timeSamples = 0;
+    }
+
+    /*
     _audioSourcesByName[_currentPlayingTrack].Stop();
     _audioSourcesByName[_currentPlayingTrack].timeSamples = 0;
+    */
   }
 
   public void StopAllSounds()
@@ -189,7 +220,18 @@ public class SoundManager : MonoSingleton<SoundManager>
   }
 
   void Update()
-  {    
+  {  
+    if (_musicTrack == null)
+    {  
+      return;
+    }
+
+    if (_musicTrack.timeSamples >= (int)GlobalConstants.MusicTrackLoopPointsByName[_currentPlayingTrack].Y)
+    {
+      _musicTrack.timeSamples = (int)GlobalConstants.MusicTrackLoopPointsByName[_currentPlayingTrack].X;
+    }
+
+    /*
     if (_currentPlayingTrack == string.Empty)
     {
       return;
@@ -199,5 +241,6 @@ public class SoundManager : MonoSingleton<SoundManager>
     {
       _audioSourcesByName[_currentPlayingTrack].timeSamples = (int)GlobalConstants.MusicTrackLoopPointsByName[_currentPlayingTrack].x;
     }
+    */
   }
 }

@@ -142,6 +142,37 @@ public class GameScript : MonoBehaviour
     ShieldpointsBar.text = "";
   }
 
+  public void RestartYesHandler()
+  {
+    SoundManager.Instance.AudioSourcesByName["gameover"].Stop();
+    SoundManager.Instance.AudioSourcesByName["ship_explode"].Stop();
+
+    LoadingScreen.Instance.Show();
+    SceneManager.LoadScene("main");
+  }
+
+  public void RestartNoHandler()
+  {
+    SoundManager.Instance.AudioSourcesByName["gameover"].Stop();
+    SoundManager.Instance.AudioSourcesByName["ship_explode"].Stop();
+
+    LoadingScreen.Instance.Show();
+    SceneManager.LoadScene("title");
+  }
+
+  public void ReturnToMenuYesHandler()
+  {
+    LoadingScreen.Instance.Show();
+    SceneManager.LoadScene("title");
+  }
+
+  public void ReturnToMenuNoHandler()
+  {
+    _returnToMainOpen = false;
+
+    ReturnToMenuScreen.gameObject.SetActive(false);
+  }
+
   [HideInInspector]
   public bool IsGameOver = false;
 
@@ -154,23 +185,6 @@ public class GameScript : MonoBehaviour
   {
     if (IsGameOver)
     {
-      if (Input.GetKeyDown(KeyCode.Y))
-      { 
-        SoundManager.Instance.AudioSourcesByName["gameover"].Stop();
-        SoundManager.Instance.AudioSourcesByName["ship_explode"].Stop();
-
-        LoadingScreen.Instance.Show();
-        SceneManager.LoadScene("main");
-      }
-      else if (Input.GetKeyDown(KeyCode.N))
-      {
-        SoundManager.Instance.AudioSourcesByName["gameover"].Stop();
-        SoundManager.Instance.AudioSourcesByName["ship_explode"].Stop();
-
-        LoadingScreen.Instance.Show();
-        SceneManager.LoadScene("title");
-      }
-
       return;
     }
 
@@ -179,22 +193,6 @@ public class GameScript : MonoBehaviour
       _returnToMainOpen = true;
 
       ReturnToMenuScreen.gameObject.SetActive(true);
-    }
-
-    if (_returnToMainOpen)
-    {
-      if (Input.GetKeyDown(KeyCode.Y))
-      {
-        LoadingScreen.Instance.Show();
-        SceneManager.LoadScene("title");
-        return;
-      }
-      else if (Input.GetKeyDown(KeyCode.N))
-      {
-        _returnToMainOpen = false;
-
-        ReturnToMenuScreen.gameObject.SetActive(false);
-      }
     }
 
     _hpBar.Length = 0;

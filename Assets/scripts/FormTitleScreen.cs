@@ -21,37 +21,25 @@ public class FormTitleScreen : FormBase
     MenuIems[_itemIndex].color = _selectedColor;
   }
 
-  public override void Process()
-  {           
-    if (Input.GetKeyDown(KeyCode.DownArrow))
+  public override void SelectMenuItem(int itemIndex)
+  {
+    if (_itemIndex == itemIndex)
     {
-      if (_itemIndex == MenuIems.Count - 1) return;
-
-      SoundManager.Instance.PlaySound(GlobalConstants.MenuMoveSound);
-
-      _fontSize = DefaultFontSize;
-      MenuIems[_itemIndex].fontSize = DefaultFontSize;
-      MenuIems[_itemIndex].color = Color.white;
-      _itemIndex++;
-    }
-    else if (Input.GetKeyDown(KeyCode.UpArrow))
-    {
-      if (_itemIndex == 0) return;
-
-      SoundManager.Instance.PlaySound(GlobalConstants.MenuMoveSound);
-
-      _fontSize = DefaultFontSize;
-      MenuIems[_itemIndex].fontSize = DefaultFontSize;
-      MenuIems[_itemIndex].color = Color.white;
-      _itemIndex--;
-    }
-    else if (Input.GetKeyDown(KeyCode.Return))
-    {      
       ChildForms[_itemIndex].Select(this);
     }
+    else
+    {
+      SoundManager.Instance.PlaySound(GlobalConstants.MenuMoveSound);
 
-    _itemIndex = Mathf.Clamp(_itemIndex, 0, MenuIems.Count - 1);
+      _fontSize = DefaultFontSize;
+      MenuIems[_itemIndex].fontSize = DefaultFontSize;
+      MenuIems[_itemIndex].color = Color.white;
+      _itemIndex = itemIndex;
+    }
+  }
 
+  public override void Process()
+  {           
     MenuIems[_itemIndex].color = _selectedColor;
 
     AnimateFont();

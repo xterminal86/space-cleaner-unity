@@ -13,22 +13,20 @@ public class FormYesNo : FormBase
     _closeNoCallback = negativeAction;
   }
 
-  public override void Process()
+  public void YesHandler()
   {
-    if (Input.GetKeyDown(KeyCode.Y))
-    {
-      Close();
+    Close();
 
-      if (_closeYesCallback != null)
-        _closeYesCallback();
-    }
-    else if (Input.GetKeyDown(KeyCode.N))
-    {
-      Close();
+    if (_closeYesCallback != null)
+      _closeYesCallback();
+  }
 
-      if (_closeNoCallback != null)
-        _closeNoCallback();
-    }
+  public void NoHandler()
+  {
+    Close();
+
+    if (_closeNoCallback != null)
+      _closeNoCallback();
   }
 
   public override void Close()

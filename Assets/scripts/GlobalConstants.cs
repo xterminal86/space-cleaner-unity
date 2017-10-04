@@ -152,16 +152,16 @@ public static class GlobalConstants
     "pb7"
   };
 
-  public static Dictionary<string, Vector2> MusicTrackLoopPointsByName = new Dictionary<string, Vector2>()
+  public static Dictionary<string, Int2> MusicTrackLoopPointsByName = new Dictionary<string, Int2>()
   {
-    { "metroid", new Vector2(291104, 2481643) },
-    { "green-planet", new Vector2(211355, 2328480) },
-    { "pb1", new Vector2(638145, 3377539) },
-    { "pb3", new Vector2(385171, 1923938) },
-    { "pb4", new Vector2(423377, 2116597) },
-    { "pb5", new Vector2(264518, 3086961) },
-    { "pb7", new Vector2(882204, 2998808) },
-    { "dd", new Vector2(0, 2739389) }
+    { "metroid", new Int2(291104, 2481643) },
+    { "green-planet", new Int2(211355, 2328480) },
+    { "pb1", new Int2(638145, 3377539) },
+    { "pb3", new Int2(385171, 1923938) },
+    { "pb4", new Int2(423377, 2116597) },
+    { "pb5", new Int2(264518, 3086961) },
+    { "pb7", new Int2(882204, 2998808) },
+    { "dd", new Int2(0, 2739389) }
 
     /*
     { "metroid", new Vector2(320100, 2704000) },
@@ -198,5 +198,52 @@ public static class GlobalConstants
   public static Vector2 RotateVector2(this Vector2 v, float degrees)
   {
     return Quaternion.Euler(0, 0, degrees) * v;
+  }
+}
+
+public class Int2
+{
+  int _x = 0;
+  int _y = 0;
+
+  public Int2()
+  {
+    _x = 0;
+    _y = 0;
+  }
+
+  public Int2(int x, int y)
+  {
+    _x = x;
+    _y = y;
+  }
+
+  public Int2(float x, float y)
+  {
+    _x = (int)x;
+    _y = (int)y;
+  }
+
+  public Int2(Vector2 v2)
+  {
+    _x = (int)v2.x;
+    _y = (int)v2.y;
+  }
+
+  public int X
+  {
+    set { _x = value; }
+    get { return _x; }
+  }
+
+  public int Y
+  {
+    set { _y = value; }
+    get { return _y; }
+  }
+
+  public override string ToString()
+  {
+    return string.Format("[Int2: X={0}, Y={1}]", X, Y);
   }
 }

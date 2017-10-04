@@ -22,6 +22,108 @@ public class FormOptions : FormBase
     MenuIems[2].text = string.Format("SOUND: {0}", SoundManager.Instance.SoundVolumePercent);
   }
 
+  public void LeftArrowHandler(int itemIndex)
+  {
+    switch (itemIndex)
+    {
+      case 1:
+        SoundManager.Instance.MusicVolumePercent -= _musicSoundDelta;
+        SoundManager.Instance.MusicVolume = SoundManager.Instance.MusicVolumePercent * 0.01f;
+
+        SoundManager.Instance.MusicVolumePercent = Mathf.Clamp(SoundManager.Instance.MusicVolumePercent, 0, 100);
+        SoundManager.Instance.MusicVolume = Mathf.Clamp(SoundManager.Instance.MusicVolume, 0.0f, 1.0f);
+
+        SoundManager.Instance.CurrentMusicTrack.volume = SoundManager.Instance.MusicVolume;
+        break;
+
+      case 2:
+        SoundManager.Instance.SoundVolumePercent -= _musicSoundDelta;
+        SoundManager.Instance.SoundVolume = SoundManager.Instance.SoundVolumePercent * 0.01f;
+
+        SoundManager.Instance.SoundVolumePercent = Mathf.Clamp(SoundManager.Instance.SoundVolumePercent, 0, 100);
+        SoundManager.Instance.SoundVolume = Mathf.Clamp(SoundManager.Instance.SoundVolume, 0.0f, 1.0f);
+        break;
+
+      case 3:
+        _musicIndex--;
+
+        if (_musicIndex < 0)
+        {
+          _musicIndex = GlobalConstants.MusicTracks.Count - 1;
+        }
+        else if (_musicIndex > GlobalConstants.MusicTracks.Count - 1)
+        {
+          _musicIndex = 0;
+        }
+
+        MenuIems[3].text = string.Format("MUSIC TEST: {0}", _musicIndex);
+        break;
+    }
+  }
+
+  public void RightArrowHandler(int itemIndex)
+  {
+    switch (itemIndex)
+    {
+      case 1:
+        SoundManager.Instance.MusicVolumePercent += _musicSoundDelta;
+        SoundManager.Instance.MusicVolume = SoundManager.Instance.MusicVolumePercent * 0.01f;
+
+        SoundManager.Instance.MusicVolumePercent = Mathf.Clamp(SoundManager.Instance.MusicVolumePercent, 0, 100);
+        SoundManager.Instance.MusicVolume = Mathf.Clamp(SoundManager.Instance.MusicVolume, 0.0f, 1.0f);
+
+        SoundManager.Instance.CurrentMusicTrack.volume = SoundManager.Instance.MusicVolume;
+        break;
+
+      case 2:
+        SoundManager.Instance.SoundVolumePercent += _musicSoundDelta;
+        SoundManager.Instance.SoundVolume = SoundManager.Instance.SoundVolumePercent * 0.01f;
+
+        SoundManager.Instance.SoundVolumePercent = Mathf.Clamp(SoundManager.Instance.SoundVolumePercent, 0, 100);
+        SoundManager.Instance.SoundVolume = Mathf.Clamp(SoundManager.Instance.SoundVolume, 0.0f, 1.0f);
+        break;        
+
+      case 3:
+        _musicIndex++;
+
+        if (_musicIndex < 0)
+        {
+          _musicIndex = GlobalConstants.MusicTracks.Count - 1;
+        }
+        else if (_musicIndex > GlobalConstants.MusicTracks.Count - 1)
+        {
+          _musicIndex = 0;
+        }
+
+        MenuIems[3].text = string.Format("MUSIC TEST: {0}", _musicIndex);
+        break;
+    }
+  }
+
+  public override void SelectMenuItem(int itemIndex)
+  {
+    if (_itemIndex == itemIndex)
+    {
+      if (_itemIndex == 3)
+      {
+        SoundManager.Instance.PlayMusicTrack(GlobalConstants.MusicTracks[_musicIndex]);
+      }
+      else if (_itemIndex == 0)
+      {
+        ChildForms[0].Select(this);
+      }
+    }
+    else
+    {
+      SoundManager.Instance.PlaySound(GlobalConstants.MenuMoveSound);
+
+      _fontSize = DefaultFontSize;
+      MenuIems[_itemIndex].fontSize = DefaultFontSize;
+      MenuIems[_itemIndex].color = Color.white;
+      _itemIndex = itemIndex;
+    }
+  }
+
   public override void Select(FormBase parentForm)
   {
     base.Select(parentForm);
@@ -42,43 +144,12 @@ public class FormOptions : FormBase
   int _musicIndex = 0;
   public override void Process()
   {           
-    if (Input.GetKeyDown(KeyCode.DownArrow))
-    {
-      if (_itemIndex == MenuIems.Count - 1) return;
+    //HandleMenuItem();
 
-      SoundManager.Instance.PlaySound(GlobalConstants.MenuMoveSound);
+    //_itemIndex = Mathf.Clamp(_itemIndex, 0, MenuIems.Count - 1);
 
-      _fontSize = DefaultFontSize;
-      MenuIems[_itemIndex].fontSize = DefaultFontSize;
-      MenuIems[_itemIndex].color = Color.white;
-      _itemIndex++;
-    }
-    else if (Input.GetKeyDown(KeyCode.UpArrow))
-    {
-      if (_itemIndex == 0) return;
-
-      SoundManager.Instance.PlaySound(GlobalConstants.MenuMoveSound);
-
-      _fontSize = DefaultFontSize;
-      MenuIems[_itemIndex].fontSize = DefaultFontSize;
-      MenuIems[_itemIndex].color = Color.white;
-      _itemIndex--;
-    }
-    else if (Input.GetKeyDown(KeyCode.Return))
-    {
-      if (_itemIndex == 3)
-      {
-        SoundManager.Instance.PlayMusicTrack(GlobalConstants.MusicTracks[_musicIndex]);
-      }
-      else if (_itemIndex == 0)
-      {
-        ChildForms[0].Select(this);
-      }
-    }
-
-    HandleMenuItem();
-
-    _itemIndex = Mathf.Clamp(_itemIndex, 0, MenuIems.Count - 1);
+    MenuIems[1].text = string.Format("MUSIC: {0}", SoundManager.Instance.MusicVolumePercent);
+    MenuIems[2].text = string.Format("SOUND: {0}", SoundManager.Instance.SoundVolumePercent);
 
     MenuIems[_itemIndex].color = _selectedColor;
 

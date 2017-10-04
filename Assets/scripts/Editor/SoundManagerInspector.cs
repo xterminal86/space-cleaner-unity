@@ -28,11 +28,21 @@ public class SoundManagerInspector : Editor
       BuildMediaList(_sm.MusicTracks, _musicPath, "*.ogg");
     }
 
+    if (GUILayout.Button("Clear Music List"))
+    {
+      _sm.MusicTracks.Clear();
+    }
+
     PrintListContents(_sm.MusicTracks);
 
     if (GUILayout.Button("Generate Sounds List"))
     {
       BuildMediaList(_sm.SoundEffects, _soundsPath, "*.wav");
+    }
+
+    if (GUILayout.Button("Clear Sounds List"))
+    {
+      _sm.SoundEffects.Clear();
     }
 
     PrintListContents(_sm.SoundEffects);
