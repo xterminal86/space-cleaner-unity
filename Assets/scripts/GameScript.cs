@@ -155,12 +155,18 @@ public class GameScript : MonoBehaviour
     if (IsGameOver)
     {
       if (Input.GetKeyDown(KeyCode.Y))
-      {
+      { 
+        SoundManager.Instance.AudioSourcesByName["gameover"].Stop();
+        SoundManager.Instance.AudioSourcesByName["ship_explode"].Stop();
+
         LoadingScreen.Instance.Show();
         SceneManager.LoadScene("main");
       }
       else if (Input.GetKeyDown(KeyCode.N))
       {
+        SoundManager.Instance.AudioSourcesByName["gameover"].Stop();
+        SoundManager.Instance.AudioSourcesByName["ship_explode"].Stop();
+
         LoadingScreen.Instance.Show();
         SceneManager.LoadScene("title");
       }
@@ -250,7 +256,7 @@ public class GameScript : MonoBehaviour
 
         float chance = Random.Range(0.0f, 101.0f);
 
-        if (chance < GlobalConstants.UfoSpawnPercent && PlayerScript.Level > 0 && SpawnedUfos < GlobalConstants.MaxUfos)
+        if (chance < GlobalConstants.UfoSpawnPercent && PlayerScript.Level > 0 && SpawnedUfos < GlobalConstants.MaxUfosPerPlayerLevel[PlayerScript.Level])
         {
           SpawnUfo();
         }
@@ -266,7 +272,7 @@ public class GameScript : MonoBehaviour
 
   void SpawnUfo()
   {
-    SoundManager.Instance.PlaySound("ufo-spawn", 0.25f);
+    SoundManager.Instance.PlaySound("ufo-spawn", 0.4f);
 
     int index = Random.Range(0, _spawnPoints.Count);
 
@@ -342,7 +348,7 @@ public class GameScript : MonoBehaviour
 
         Instantiate(HealthPowerupPrefab, new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
 
-        //Debug.Log("health : " + chanceH + " " + modifierH + " chance rolled: " + chance);
+        Debug.Log("health : " + chanceH + " " + modifierH + " chance rolled: " + chance);
       }
     }
     else
@@ -357,7 +363,7 @@ public class GameScript : MonoBehaviour
 
         Instantiate(ShieldPowerupPrefab, new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
 
-        //Debug.Log("shield : " + chanceS + " " + modifierS + " chance rolled: " + chance);
+        Debug.Log("shield : " + chanceS + " " + modifierS + " chance rolled: " + chance);
       }
     }
   }

@@ -6,13 +6,30 @@ using System.Text;
 
 public class FormHighScores : FormBase 
 {
+  public List<Text> MenuIems;
+  public int DefaultFontSize = 24;
+  public int FontSizeMax = 34;
+
   public Text TextObject;
 
+  int _itemIndex = 0, _fontSize = 1;
+
+  public override void Init()
+  {
+    _itemIndex = 0;
+    _fontSize = DefaultFontSize;
+  }
+
   StringBuilder sb = new StringBuilder();
-	public override void Select(FormBase parentForm)
+  public override void Select(FormBase parentForm)
   {
     base.Select(parentForm);
 
+    RefreshHighscoreTable();
+  }
+
+  void RefreshHighscoreTable()
+  {
     sb.Length = 0;
 
     int index = 0;
@@ -50,6 +67,55 @@ public class FormHighScores : FormBase
     }
 
     TextObject.text = sb.ToString();
+  }
+
+  Color _selectedColor = new Color(1.0f, 0.0f, 1.0f);
+  public override void Process()
+  {
+    if (Input.GetKeyDown(KeyCode.Return))
+    {
+      (ChildForms[0] as FormYesNo).SetActions(() =>
+      {
+        SoundManager.Instance.PlaySound("cash-register", 1.0f, 1.0f, false);
+        GameStats.Instance.ClearHighScores();
+        RefreshHighscoreTable();
+      }, () =>
+      {
+        SoundManager.Instance.PlaySound(GlobalConstants.MenuBackSound);
+      });
+
+      ChildForms[0].Select(this);        
+    }
+
+    _itemIndex = Mathf.Clamp(_itemIndex, 0, MenuIems.Count - 1);
+
+    MenuIems[_itemIndex].color = _selectedColor;
+
+    AnimateFont();
+  }
+
+  bool _sizeGrow = false;
+  void AnimateFont()
+  { 
+    if (_sizeGrow)
+    {
+      _fontSize++;
+    }
+    else
+    {
+      _fontSize--;
+    }
+
+    if (_fontSize > FontSizeMax)
+    {
+      _sizeGrow = false;
+    }
+    else if (_fontSize < DefaultFontSize)
+    {
+      _sizeGrow = true;
+    }
+
+    MenuIems[_itemIndex].fontSize = _fontSize;
   }
 
   string GetProperString(string initial, int maxChars)

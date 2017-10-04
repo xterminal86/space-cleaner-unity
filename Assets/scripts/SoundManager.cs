@@ -145,6 +145,7 @@ public class SoundManager : MonoSingleton<SoundManager>
       }
       else
       {        
+        _audioSourcesByName[name].pitch = pitch;
         _audioSourcesByName[name].volume = volume * SoundVolume;
         _audioSourcesByName[name].Play();
       }

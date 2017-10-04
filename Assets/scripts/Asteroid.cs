@@ -82,7 +82,7 @@ public class Asteroid : MonoBehaviour
 
       if (!(dealer is BulletLaser))
       {
-        SoundManager.Instance.PlaySound("asteroid_hit_big", volume, pitch, true);
+        SoundManager.Instance.PlaySound("asteroid_hit_big", volume, pitch, false);
         _game.Score += GlobalConstants.AsteroidScoreByBreakdownLevel[_breakdownLevel];
 
         if (_game.PlayerScript.Level != GlobalConstants.ExperienceByLevel.Count)

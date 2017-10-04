@@ -177,8 +177,8 @@ public class Player : MonoBehaviour
       _isDestroying = true;
 
       SoundManager.Instance.StopMusic();
-      SoundManager.Instance.PlaySound("ship_explode", 0.5f);
-      SoundManager.Instance.PlaySound("gameover");
+      SoundManager.Instance.PlaySound("ship_explode", 0.5f, 1.0f, false);
+      SoundManager.Instance.PlaySound("gameover", 1.0f, 1.0f, false);
 
       AppReference.SetGameOver();
 

@@ -11,13 +11,15 @@ public class BulletLaser : BulletBase
     _borderOffset = 3.0f;
   }
 
+  bool _colliding = false;
+
   void OnTriggerEnter2D(Collider2D collider)
-  {    
+  { 
     Rigidbody2D rb = collider.gameObject.GetComponentInParent<Rigidbody2D>();
     Vector2 v = RigidbodyComponent.position - rb.position;
 
     // Prevent collision on all objects after asteroid breakdown
-    if (v.magnitude < 0.21f)
+    if (v.magnitude < 0.15f)
     {
       return;
     }
@@ -31,8 +33,10 @@ public class BulletLaser : BulletBase
     if (collider.gameObject.layer == asteroidsLayer)
     {
       Asteroid a = collider.gameObject.GetComponentInParent<Asteroid>();
-      if (a != null)
+      if (a != null && !_colliding)
       { 
+        _colliding = true;
+
         SoundManager.Instance.PlaySound(GlobalConstants.BulletSoundHitByType[GlobalConstants.BulletType.MEDIUM], 0.25f, 1.0f, false);
 
         a.ReceiveDamage(GlobalConstants.AsteroidHitpointsByBreakdownLevel[1], this);
@@ -48,5 +52,10 @@ public class BulletLaser : BulletBase
         player.ProcessDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.LASER]);
       }
     }
+  }
+
+  void OnTriggerExit2D(Collider2D collider)
+  {
+    _colliding = false;
   }
 }

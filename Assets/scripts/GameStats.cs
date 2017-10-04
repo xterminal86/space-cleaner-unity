@@ -23,6 +23,25 @@ public class GameStats : MonoSingleton<GameStats>
     PlayerName = GameConfig.DataAsJson[GlobalConstants.PlayerPrefsPlayerNameKey];
   }
 
+  public void ClearHighScores()
+  {
+    string entryKey = string.Empty;
+    for (int i = 0; i < 10; i++)
+    {
+      HighscoreEntry e = new HighscoreEntry();
+
+      //e.PlayerName = string.Format("Player #{0}", i + 1);
+      //e.RandomizeEntry();
+
+      entryKey = string.Format("entry-{0}", i);
+
+      GameConfig.DataAsJson[entryKey] = e.GetJson();
+    }
+
+    FillHighscores();
+    GameConfig.WriteConfig();
+  }
+
   public void WriteHighScore(int score, int phase)
   {
     int index = -1;

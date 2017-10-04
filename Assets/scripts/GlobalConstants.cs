@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public delegate void Callback();
+
 public static class GlobalConstants 
 {
   // Maximum asteroids by default
   public const int AsteroidsMaxInstances = 40;
   // Number of asteroid breakdowns after it has been hit
   public const int AsteroidMaxBreakdownLevel = 4;
-  public const int MaxUfos = 6;
   public const int UfoScore = 50;
 
   public const int GuiHitpointsShieldBarLength = 20;
@@ -37,6 +38,13 @@ public static class GlobalConstants
 
   // Random spread arc of asteroid from hitting the player
   public const float AsteroidBreakdownHalfArc = 60.0f;
+
+  public static Dictionary<int, int> MaxUfosPerPlayerLevel = new Dictionary<int, int>() 
+  {
+    { 1, 2 },
+    { 2, 4 },
+    { 3, 6 }
+  };
 
   public static Dictionary<int, int> AsteroidHitpointsByBreakdownLevel = new Dictionary<int, int>() 
   {
@@ -107,7 +115,7 @@ public static class GlobalConstants
     { BulletType.LAME, 1 },
     { BulletType.MEDIUM, 4 },
     { BulletType.STRONG, 8 },
-    { BulletType.LASER, 5 }
+    { BulletType.LASER, 2 }
   };
 
   public static Dictionary<BulletType, string> BulletSoundByType = new Dictionary<BulletType, string>() 
@@ -145,14 +153,14 @@ public static class GlobalConstants
 
   public static Dictionary<string, Vector2> MusicTrackLoopPointsByName = new Dictionary<string, Vector2>()
   {
-    { "metroid", new Vector2(320100, 2704100) },
+    { "metroid", new Vector2(291104, 2481643) },
     { "green-planet", new Vector2(211355, 2328480) },
     { "pb1", new Vector2(638145, 3377539) },
-    { "pb3", new Vector2(421300, 2097000) },
-    { "pb4", new Vector2(480000, 2400000) },
-    { "pb5", new Vector2(290300, 3362300) },
-    { "pb7", new Vector2(962400, 3266400) },
-    { "dd", new Vector2(0, 2739386) }
+    { "pb3", new Vector2(385171, 1923938) },
+    { "pb4", new Vector2(423377, 2116597) },
+    { "pb5", new Vector2(264518, 3086961) },
+    { "pb7", new Vector2(882204, 2998808) },
+    { "dd", new Vector2(0, 2739389) }
 
     /*
     { "metroid", new Vector2(320100, 2704000) },

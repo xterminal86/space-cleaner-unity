@@ -248,7 +248,7 @@ public class UFO : MonoBehaviour
 
       if (Hitpoints != 0)
       {
-        PlaySound(1, 0.3f);
+        PlaySound(1, 0.5f);
         //SoundManager.Instance.PlaySound("ufo-hit", 0.125f, 1.0f, false);
       }
     }
