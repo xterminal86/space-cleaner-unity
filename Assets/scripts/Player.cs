@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class Player : MonoBehaviour 
 {
@@ -106,60 +105,12 @@ public class Player : MonoBehaviour
       _rotation -= GlobalConstants.PlayerRotationSpeed * Time.smoothDeltaTime;
     }
 
-    if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
-    {
-      _mousePos.Set(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
-
-      Vector2 wp = Camera.main.ScreenToWorldPoint(_mousePos);
-
-      _newCenterLocation.x = wp.x;
-      _newCenterLocation.y = wp.y;
-
-      _oldCenterLocation.x = wp.x;
-      _oldCenterLocation.y = wp.y;
-
-      //Debug.Log("mouse down");
-    }
-    else if (Input.GetMouseButtonUp(0))
-    {
-      _mousePos.Set(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
-
-      Vector2 wp = Camera.main.ScreenToWorldPoint(_mousePos);
-
-      _oldCenterLocation.x = _newCenterLocation.x;
-      _oldCenterLocation.y = _newCenterLocation.y;
-
-      _gasPedal = 0;
-
-      //Debug.Log("mouse up");
-    }
-    else if (Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject())
-    {
-      _gasPedal = 1;
-
-      _mousePos.Set(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
-      Vector2 wp = Camera.main.ScreenToWorldPoint(_mousePos);
-
-      _newCenterLocation.x = wp.x;
-      _newCenterLocation.y = wp.y;
-
-      _direction = _newCenterLocation - _oldCenterLocation;
-      _direction.Normalize();
-
-      float angle = Vector2.Angle(Vector2.right, _direction);
-      Vector3 cross = Vector3.Cross(Vector2.right, _direction);
-
-      if (cross.z < 0.0f)
-      {
-        angle = 360 - angle;
-      }
-
-      _rotation = angle;
-
-      //Debug.Log("mouse hold");
-    }
+    HandleMobileInput();
 
     #if UNITY_EDITOR
+
+    HandleEditorInput();
+
     if (Input.GetKeyDown(KeyCode.LeftBracket))
     {
       _currentWeapon--;
@@ -189,6 +140,147 @@ public class Player : MonoBehaviour
     ShieldCollider.gameObject.SetActive(Shieldpoints != 0);
 
     ProcessShield();
+  }
+
+  Vector3 _touchPosition = Vector3.zero;
+  void HandleMobileInput()
+  {    
+    foreach (var t in Input.touches)
+    {      
+      bool cond = (t.position.x > 0.0f && t.position.x < 200.0f && t.position.y > 0.0f && t.position.y < Screen.height);
+
+      switch (t.phase)
+      {
+        case TouchPhase.Began:          
+          if (!cond)
+          {
+            _touchPosition.Set(t.position.x, t.position.y, Camera.main.nearClipPlane);
+
+            Vector3 worldTouchPosition = Camera.main.ScreenToWorldPoint(_touchPosition);
+
+            _newCenterLocation.x = worldTouchPosition.x;
+            _newCenterLocation.y = worldTouchPosition.y;
+
+            _oldCenterLocation.x = worldTouchPosition.x;
+            _oldCenterLocation.y = worldTouchPosition.y;
+          }
+          break;
+
+        case TouchPhase.Stationary:
+          break;
+
+        case TouchPhase.Moved:
+          if (!cond)
+          {
+            _touchPosition.Set(t.position.x, t.position.y, Camera.main.nearClipPlane);
+            Vector3 worldTouchPosition = Camera.main.ScreenToWorldPoint(_touchPosition);
+
+            _newCenterLocation.x = worldTouchPosition.x;
+            _newCenterLocation.y = worldTouchPosition.y;
+
+            if ((_newCenterLocation - _oldCenterLocation).magnitude > 0.1f)
+            { 
+              _gasPedal = 1;
+
+              _direction = _newCenterLocation - _oldCenterLocation;
+              _direction.Normalize();
+
+              float angle = Vector2.Angle(Vector2.right, _direction);
+              Vector3 cross = Vector3.Cross(Vector2.right, _direction);
+
+              if (cross.z < 0.0f)
+              {
+                angle = 360 - angle;
+              }
+
+              _rotation = angle;
+            }
+          }
+          break;
+
+        case TouchPhase.Ended:
+          if (cond)
+          {
+            Fire();
+          }
+          else
+          {
+            _gasPedal = 0;
+          }
+          break;
+      }
+    }
+  }
+
+  bool _tapDetected = false;
+  void HandleEditorInput()
+  {
+    if (Input.GetMouseButtonDown(0))
+    {
+      _mousePos.Set(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
+
+      Vector2 wp = Camera.main.ScreenToWorldPoint(_mousePos);
+
+      _newCenterLocation.x = wp.x;
+      _newCenterLocation.y = wp.y;
+
+      _oldCenterLocation.x = wp.x;
+      _oldCenterLocation.y = wp.y;
+
+      _tapDetected = true;
+
+      //Debug.Log("mouse down");
+    }
+    else if (Input.GetMouseButtonUp(0))
+    {
+      if (_tapDetected)
+      {
+        Fire();
+      }
+      else
+      {
+        _mousePos.Set(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
+
+        Vector2 wp = Camera.main.ScreenToWorldPoint(_mousePos);
+
+        _oldCenterLocation.x = _newCenterLocation.x;
+        _oldCenterLocation.y = _newCenterLocation.y;
+
+        _gasPedal = 0;
+      }
+
+      //Debug.Log("mouse up");
+    }
+    else if (Input.GetMouseButton(0))
+    {      
+      _mousePos.Set(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
+      Vector2 wp = Camera.main.ScreenToWorldPoint(_mousePos);
+
+      _newCenterLocation.x = wp.x;
+      _newCenterLocation.y = wp.y;
+
+      if ((_newCenterLocation - _oldCenterLocation).magnitude > 0.5f)
+      {
+        _gasPedal = 1;
+
+        _tapDetected = false;
+
+        _direction = _newCenterLocation - _oldCenterLocation;
+        _direction.Normalize();
+
+        float angle = Vector2.Angle(Vector2.right, _direction);
+        Vector3 cross = Vector3.Cross(Vector2.right, _direction);
+
+        if (cross.z < 0.0f)
+        {
+          angle = 360 - angle;
+        }
+
+        _rotation = angle;
+      }
+
+      //Debug.Log("mouse hold");
+    }
   }
 
   float _gasAmount = 0.0f;

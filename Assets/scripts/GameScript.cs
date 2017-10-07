@@ -220,6 +220,7 @@ public class GameScript : MonoBehaviour
     }
 
     AsteroidsCount.text = string.Format("S: {0} / {1}", SpawnedAsteroids, GlobalConstants.AsteroidsMaxInstances);
+    //AsteroidsCount.text = string.Format("S: {0} / {1}  E: {2} / {3}", SpawnedAsteroids, GlobalConstants.AsteroidsMaxInstances, SpawnedUfos, GlobalConstants.MaxUfosPerPlayerLevel[PlayerScript.Level]);
     PhaseCount.text = string.Format("PHASE {0}", _currentPhase);
     SpawnRate.text = string.Format("R: {0:N2}", _currentSpawnRate / GlobalConstants.MaxSpawnRate);
     ScoreCount.text = Score.ToString();

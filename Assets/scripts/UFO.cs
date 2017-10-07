@@ -180,6 +180,10 @@ public class UFO : MonoBehaviour
     if (Hitpoints == 0)
     { 
       _app.SpawnedUfos--;
+
+      // On a device two ufos spawned on 0 player level
+      _app.SpawnedUfos = Mathf.Clamp(_app.SpawnedUfos, 0, GlobalConstants.MaxUfosPerPlayerLevel[3]);
+
       _app.Score += GlobalConstants.UfoScore;
       _player.AddExperience(20);
 
