@@ -168,7 +168,7 @@ public class SoundManager : MonoSingleton<SoundManager>
 
   public void PlayMusicTrack(string trackName)
   { 
-    _musicTrack.Stop();
+    StopMusic();
    
     string filename = string.Format("music/{0}", trackName);
 
@@ -242,5 +242,10 @@ public class SoundManager : MonoSingleton<SoundManager>
       _audioSourcesByName[_currentPlayingTrack].timeSamples = (int)GlobalConstants.MusicTrackLoopPointsByName[_currentPlayingTrack].x;
     }
     */
+  }
+
+  public void SetMusicTrackVolume(float volume)
+  {
+    _musicTrack.volume = volume;
   }
 }

@@ -154,14 +154,14 @@ public static class GlobalConstants
 
   public static Dictionary<string, Int2> MusicTrackLoopPointsByName = new Dictionary<string, Int2>()
   {
-    { "metroid", new Int2(291104, 2481643) },
-    { "green-planet", new Int2(211355, 2328480) },
-    { "pb1", new Int2(638145, 3377539) },
-    { "pb3", new Int2(385171, 1923938) },
-    { "pb4", new Int2(423377, 2116597) },
-    { "pb5", new Int2(264518, 3086961) },
-    { "pb7", new Int2(882204, 2998808) },
-    { "dd", new Int2(0, 2739389) }
+    { "metroid", new Int2(291104, 2481000) },
+    { "green-planet", new Int2(211355, 2328000) },
+    { "pb1", new Int2(638145, 3377000) },
+    { "pb3", new Int2(385171, 1923000) },
+    { "pb4", new Int2(423377, 2116000) },
+    { "pb5", new Int2(264518, 3086200) },
+    { "pb7", new Int2(882204, 2998300) },
+    { "dd", new Int2(0, 2738500) }
 
     /*
     { "metroid", new Vector2(320100, 2704000) },
