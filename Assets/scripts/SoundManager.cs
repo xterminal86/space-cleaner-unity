@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 
 public class SoundManager : MonoSingleton<SoundManager> 
@@ -166,8 +167,14 @@ public class SoundManager : MonoSingleton<SoundManager>
     get { return _musicTrack; }
   }
 
-  public void PlayMusicTrack(string trackName)
+  public void PlayMusicTrack(string trackName, Callback cb = null)
   { 
+    if (!_loading)
+    {
+      StartCoroutine(LoadMusicRoutine(trackName, cb));
+    }
+
+    /*
     StopMusic();
    
     string filename = string.Format("music/{0}", trackName);
@@ -180,6 +187,7 @@ public class SoundManager : MonoSingleton<SoundManager>
     _currentPlayingTrack = trackName;
 
     Resources.UnloadUnusedAssets();
+    */
 
     /*
     if (_audioSourcesByName.ContainsKey(trackName))
@@ -195,6 +203,39 @@ public class SoundManager : MonoSingleton<SoundManager>
       _currentPlayingTrack = trackName;
     }
     */
+  }
+
+  bool _loading = false;
+  IEnumerator LoadMusicRoutine(string resourceName, Callback cb)
+  {
+    _loading = true;
+
+    var res = Resources.LoadAsync(resourceName);
+
+    while (!res.isDone)
+    {
+      yield return null;
+    }
+
+    StopMusic();
+
+    AudioClip clip = res.asset as AudioClip;
+
+    _musicTrack.clip = clip;
+    _musicTrack.Play();
+
+    _currentPlayingTrack = resourceName;
+
+    Resources.UnloadUnusedAssets();
+
+    if (cb != null)
+    {
+      cb();
+    }
+
+    _loading = false;
+
+    yield return null;
   }
 
   public void StopMusic()
