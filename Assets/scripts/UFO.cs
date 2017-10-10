@@ -192,6 +192,8 @@ public class UFO : MonoBehaviour
       var go = Instantiate(_app.PlayerDeathEffect, new Vector3(RigidbodyComponent.position.x, RigidbodyComponent.position.y, 0.0f), Quaternion.identity);
       Destroy(go, 2.0f);
 
+      _app.SpawnPowerup(RigidbodyComponent.position);
+
       Destroy(gameObject);
     }
   }

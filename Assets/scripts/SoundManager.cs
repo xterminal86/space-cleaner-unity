@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -14,6 +15,8 @@ public class SoundManager : MonoSingleton<SoundManager>
   public int MusicVolumePercent = 100;
 
   public AudioSource AudioSourceOneShotPrefab;
+
+  public Text LoadingMusicText;
 
   [SerializeField]
   public List<AudioClip> MusicTracks = new List<AudioClip>();
@@ -167,11 +170,19 @@ public class SoundManager : MonoSingleton<SoundManager>
     get { return _musicTrack; }
   }
 
-  public void PlayMusicTrack(string trackName, Callback cb = null)
+  List<string> _loadingMusicStrings = new List<string>()
+  {
+    " - Loading...",
+    " \\ Loading...",
+    " | Loading...",
+    " / Loading..."
+  };
+
+  public void PlayMusicTrack(string trackName, bool showProgress = false)
   { 
     if (!_loading)
     {
-      StartCoroutine(LoadMusicRoutine(trackName, cb));
+      StartCoroutine(LoadMusicRoutine(trackName, showProgress));
     }
 
     /*
@@ -205,33 +216,50 @@ public class SoundManager : MonoSingleton<SoundManager>
     */
   }
 
+  int _stringsIndex = 0;
   bool _loading = false;
-  IEnumerator LoadMusicRoutine(string resourceName, Callback cb)
+  IEnumerator LoadMusicRoutine(string trackName, bool showProgress)
   {
     _loading = true;
+    _stringsIndex = 0;
 
-    var res = Resources.LoadAsync(resourceName);
+    if (showProgress)
+    {
+      LoadingMusicText.gameObject.SetActive(true);
+    }
+
+    string filename = string.Format("music/{0}", trackName);
+
+    var res = Resources.LoadAsync(filename);
+
+    _currentPlayingTrack = string.Empty;
 
     while (!res.isDone)
     {
+      _stringsIndex++;
+
+      LoadingMusicText.text = _loadingMusicStrings[_stringsIndex];
+
+      if (_stringsIndex > _loadingMusicStrings.Count - 1)
+      {
+        _stringsIndex = 0;
+      }
+
       yield return null;
     }
 
     StopMusic();
+
+    LoadingMusicText.gameObject.SetActive(false);
 
     AudioClip clip = res.asset as AudioClip;
 
     _musicTrack.clip = clip;
     _musicTrack.Play();
 
-    _currentPlayingTrack = resourceName;
+    _currentPlayingTrack = trackName;
 
     Resources.UnloadUnusedAssets();
-
-    if (cb != null)
-    {
-      cb();
-    }
 
     _loading = false;
 
@@ -262,7 +290,7 @@ public class SoundManager : MonoSingleton<SoundManager>
 
   void Update()
   {  
-    if (_musicTrack == null)
+    if (_musicTrack == null || _currentPlayingTrack == string.Empty)
     {  
       return;
     }

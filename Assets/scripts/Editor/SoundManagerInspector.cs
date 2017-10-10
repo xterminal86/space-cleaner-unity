@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
@@ -19,13 +20,14 @@ public class SoundManagerInspector : Editor
     if (_sm == null) return;
 
     _sm.AudioSourceOneShotPrefab = (AudioSource)EditorGUILayout.ObjectField("Audio Source One Shot Prefab", _sm.AudioSourceOneShotPrefab, typeof(AudioSource));
+    _sm.LoadingMusicText = (Text)EditorGUILayout.ObjectField("Loading music text", _sm.LoadingMusicText, typeof(Text));
 
     _sm.SoundVolume = EditorGUILayout.Slider("Sound Volume", _sm.SoundVolume, 0.0f, 1.0f);
     _sm.MusicVolume = EditorGUILayout.Slider("Music Volume", _sm.MusicVolume, 0.0f, 1.0f);    
 
     if (GUILayout.Button("Generate Music List"))
     {
-      BuildMediaList(_sm.MusicTracks, _musicPath, "*.ogg");
+      BuildMediaList(_sm.MusicTracks, _musicPath, "*.wav");
     }
 
     if (GUILayout.Button("Clear Music List"))

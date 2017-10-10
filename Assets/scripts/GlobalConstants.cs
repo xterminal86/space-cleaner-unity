@@ -33,7 +33,7 @@ public static class GlobalConstants
   // Delay of spawned powerup after it disappears
   public const float PowerupLifetime = 5.0f;
 
-  public const float PowerupSpawnPercent = 10.0f;
+  public const float PowerupSpawnPercent = 15.0f;
   public const float UfoSpawnPercent = 30.0f;
 
   // Random spread arc of asteroid from hitting the player

@@ -311,6 +311,36 @@ public class GameScript : MonoBehaviour
     */
   }
 
+  public void SpawnPowerup(Vector2 position)
+  {
+    if (PlayerScript == null)
+    {
+      return;
+    }
+
+    _powerupPosition.Set(position.x, position.y);
+
+    if (_powerupPosition.x < _screenRect[0]) _powerupPosition.x = _screenRect[0] + 1.0f;
+    if (_powerupPosition.x > _screenRect[2]) _powerupPosition.x = _screenRect[2] - 1.0f;
+    if (_powerupPosition.y < _screenRect[1]) _powerupPosition.y = _screenRect[1] + 1.0f;
+    if (_powerupPosition.y > _screenRect[3]) _powerupPosition.y = _screenRect[3] - 1.0f;
+
+    int whichOne = (PlayerScript.Hitpoints < PlayerScript.Shieldpoints) ? 0 : 1;
+
+    SoundManager.Instance.PlaySound("powerup_spawn", 0.25f);
+    var effect = Instantiate(PowerupSpawnEffect, new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
+    Destroy(effect, 1.0f);
+
+    if (whichOne == 0)
+    {
+      Instantiate(HealthPowerupPrefab, new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
+    }
+    else
+    {
+      Instantiate(ShieldPowerupPrefab, new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
+    }      
+  }
+
   Vector2 _powerupPosition = Vector2.zero;
   public void TryToSpawnPowerup(Vector2 position)
   {
@@ -331,7 +361,7 @@ public class GameScript : MonoBehaviour
     float modifierS = 1.0f - (float)PlayerScript.Shieldpoints / (float)PlayerScript.MaxPoints;
     float chanceS = modifierS * GlobalConstants.PowerupSpawnPercent;
 
-    int whichOne = Random.Range(0, 2);
+    int whichOne = (PlayerScript.Hitpoints < PlayerScript.Shieldpoints) ? 0 : 1;
 
     float chance = Random.Range(0.0f, 101.0f);
 
