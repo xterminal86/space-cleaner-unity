@@ -234,7 +234,7 @@ public class SoundManager : MonoSingleton<SoundManager>
 
     _currentPlayingTrack = string.Empty;
 
-    while (!res.isDone)
+    while (res.progress < 0.9f)
     {
       _stringsIndex++;
 
@@ -290,7 +290,7 @@ public class SoundManager : MonoSingleton<SoundManager>
 
   void Update()
   {  
-    if (_musicTrack == null || _currentPlayingTrack == string.Empty)
+    if (_musicTrack == null || _loading)
     {  
       return;
     }

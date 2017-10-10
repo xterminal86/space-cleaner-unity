@@ -31,7 +31,7 @@ public static class GlobalConstants
   public const float ShieldRechargeTimeout = 10.0f;
 
   // Delay of spawned powerup after it disappears
-  public const float PowerupLifetime = 5.0f;
+  public const float PowerupLifetime = 6.0f;
 
   public const float PowerupSpawnPercent = 15.0f;
   public const float UfoSpawnPercent = 30.0f;
@@ -115,7 +115,7 @@ public static class GlobalConstants
   {
     { BulletType.LAME, 1 },
     { BulletType.MEDIUM, 4 },
-    { BulletType.STRONG, 8 },
+    { BulletType.STRONG, 10 },
     { BulletType.LASER, 2 }
   };
 

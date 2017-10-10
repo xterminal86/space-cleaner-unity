@@ -441,7 +441,7 @@ public class Player : MonoBehaviour
       Vector2 newDir = GlobalConstants.RotateVector2(v, angle);
       newDir.Normalize();
 
-      asteroid.HandleCollision(newDir);
+      asteroid.HandleBreakdown(newDir);
     }
     else if (other.gameObject.layer == playerLayer)
     {
@@ -464,7 +464,7 @@ public class Player : MonoBehaviour
     }
     else
     {
-      SoundManager.Instance.PlaySound("ship_hit", 0.25f, 1.0f, false);
+      SoundManager.Instance.PlaySound("ship_hit", 0.7f, 1.0f, false);
       ReceiveDamage(damage);
     }
   }

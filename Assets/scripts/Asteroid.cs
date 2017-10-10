@@ -93,11 +93,11 @@ public class Asteroid : MonoBehaviour
         _game.TryToSpawnPowerup(RigidbodyComponent.position);
       }
 
-      HandleCollision(dealer.Direction);
+      HandleBreakdown(dealer.Direction);
     }
   }
 
-  public void HandleCollision(Vector2 collisionDir)
+  public void HandleBreakdown(Vector2 collisionDir)
   {
     _breakdownLevel++;
 

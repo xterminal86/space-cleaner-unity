@@ -361,7 +361,7 @@ public class GameScript : MonoBehaviour
     float modifierS = 1.0f - (float)PlayerScript.Shieldpoints / (float)PlayerScript.MaxPoints;
     float chanceS = modifierS * GlobalConstants.PowerupSpawnPercent;
 
-    int whichOne = (PlayerScript.Hitpoints < PlayerScript.Shieldpoints) ? 0 : 1;
+    int whichOne = (PlayerScript.Hitpoints < PlayerScript.Shieldpoints || PlayerScript.Hitpoints < (PlayerScript.MaxPoints / 4)) ? 0 : 1;
 
     float chance = Random.Range(0.0f, 101.0f);
 
