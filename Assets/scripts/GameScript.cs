@@ -11,6 +11,7 @@ public class GameScript : MonoBehaviour
   public GameObject BackgroundStarPrefab;
   public GameObject HealthPowerupPrefab;
   public GameObject ShieldPowerupPrefab;
+  public List<GameObject> SpecialPowerups;
   public GameObject UfoPrefab;
 
   public Transform AsteroidsHolder;
@@ -188,6 +189,13 @@ public class GameScript : MonoBehaviour
       return;
     }
 
+    #if UNITY_EDITOR
+    if (Input.GetKeyDown(KeyCode.P))
+    {
+      SpawnSpecialPowerup(Vector2.zero);
+    }
+    #endif
+
     if (Input.GetKeyDown(KeyCode.Escape) && !_returnToMainOpen)
     {
       _returnToMainOpen = true;
@@ -269,6 +277,22 @@ public class GameScript : MonoBehaviour
     }
   }
 
+  public void SpawnSpecialPowerup(Vector2 position)
+  {
+    _powerupPosition.Set(position.x, position.y);
+
+    if (_powerupPosition.x < _screenRect[0]) _powerupPosition.x = _screenRect[0] + 1.0f;
+    if (_powerupPosition.x > _screenRect[2]) _powerupPosition.x = _screenRect[2] - 1.0f;
+    if (_powerupPosition.y < _screenRect[1]) _powerupPosition.y = _screenRect[1] + 1.0f;
+    if (_powerupPosition.y > _screenRect[3]) _powerupPosition.y = _screenRect[3] - 1.0f;
+
+    SoundManager.Instance.PlaySound("powerup_spawn", 0.25f);
+    var effect = Instantiate(PowerupSpawnEffect, new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
+    Destroy(effect, 1.0f);
+
+    Instantiate(SpecialPowerups[0], new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
+  }
+
   void SpawnUfo()
   {
     SoundManager.Instance.PlaySound("ufo-spawn", 0.4f);
@@ -325,7 +349,7 @@ public class GameScript : MonoBehaviour
     if (_powerupPosition.y < _screenRect[1]) _powerupPosition.y = _screenRect[1] + 1.0f;
     if (_powerupPosition.y > _screenRect[3]) _powerupPosition.y = _screenRect[3] - 1.0f;
 
-    int whichOne = (PlayerScript.Hitpoints < PlayerScript.Shieldpoints) ? 0 : 1;
+    int whichOne = (PlayerScript.Hitpoints < PlayerScript.Shieldpoints || PlayerScript.Hitpoints < (PlayerScript.MaxPoints / 4)) ? 0 : 1;
 
     SoundManager.Instance.PlaySound("powerup_spawn", 0.25f);
     var effect = Instantiate(PowerupSpawnEffect, new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);

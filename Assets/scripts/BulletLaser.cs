@@ -29,6 +29,7 @@ public class BulletLaser : BulletBase
 
     int asteroidsLayer = LayerMask.NameToLayer("Asteroids");
     int playerLayer = LayerMask.NameToLayer("Player");
+    int enemyLayer = LayerMask.NameToLayer("Enemy");
 
     if (collider.gameObject.layer == asteroidsLayer)
     {
@@ -50,6 +51,16 @@ public class BulletLaser : BulletBase
         Destroy(gameObject);
 
         player.ProcessDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.LASER]);
+      }
+    }
+    else if (collider.gameObject.layer == enemyLayer)
+    {
+      UFO u = collider.gameObject.GetComponentInParent<UFO>();
+      if (u != null)
+      {
+        Destroy(gameObject);
+
+        u.ProcessDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.LASER]);
       }
     }
   }

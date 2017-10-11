@@ -200,10 +200,11 @@ public class UFO : MonoBehaviour
 
   void OnTriggerEnter2D(Collider2D other)
   {
-    int asteroidsLayer = LayerMask.NameToLayer("Asteroids");
     int playerLayer = LayerMask.NameToLayer("Player");
 
     /*
+    int asteroidsLayer = LayerMask.NameToLayer("Asteroids");
+    
     if (other.gameObject.layer == asteroidsLayer)
     {   
       Asteroid asteroid = other.gameObject.GetComponentInParent<Asteroid>();
@@ -231,12 +232,6 @@ public class UFO : MonoBehaviour
     */
     if (other.gameObject.layer == playerLayer)
     {
-      Player p = other.gameObject.GetComponentInParent<Player>();
-      if (p != null)
-      {
-        ProcessDamage(1);
-      }
-
       ProcessDamage(1);
     }
   }

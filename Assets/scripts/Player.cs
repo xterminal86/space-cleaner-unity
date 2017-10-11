@@ -6,6 +6,8 @@ using UnityEngine;
 public class Player : MonoBehaviour 
 {
   public GameScript AppReference;
+  public RosaryController RosaryControllerScript;
+  public ShowerController ShowerControllerScript;
 
   public Rigidbody2D RigidbodyComponent;
   public Collider2D PlayerCollider;
@@ -125,14 +127,6 @@ public class Player : MonoBehaviour
     AppReference.SetWeapon(_currentWeapon);
     #endif
 
-    /*
-    _cos = Mathf.Sin(_rotation * Mathf.Deg2Rad);
-    _sin = Mathf.Cos(_rotation * Mathf.Deg2Rad);
-
-    _direction.x = _sin;
-    _direction.y = _cos;
-    */
-
     CheckGas();
 
     _acceleration = _gasAmount * GlobalConstants.PlayerMoveSpeed;
@@ -215,6 +209,29 @@ public class Player : MonoBehaviour
   bool _tapDetected = false;
   void HandleEditorInput()
   {
+    _gasAmount = Input.GetAxis("Vertical");
+
+    if (Input.GetKey(KeyCode.A))
+    {
+      _rotation += 2;
+    }
+    else if (Input.GetKey(KeyCode.D))
+    {
+      _rotation -= 2;
+    }
+
+    if (Input.GetKeyDown(KeyCode.Space))
+    {
+      Fire();
+    }
+
+    _cos = Mathf.Sin(_rotation * Mathf.Deg2Rad);
+    _sin = Mathf.Cos(_rotation * Mathf.Deg2Rad);
+
+    _direction.x = _sin;
+    _direction.y = _cos;
+
+    /*
     if (Input.GetMouseButtonDown(0))
     {
       _mousePos.Set(Input.mousePosition.x, Input.mousePosition.y, Input.mousePosition.z);
@@ -281,6 +298,7 @@ public class Player : MonoBehaviour
 
       //Debug.Log("mouse hold");
     }
+    */
   }
 
   float _gasAmount = 0.0f;
@@ -380,6 +398,11 @@ public class Player : MonoBehaviour
 
   public void AddExperience(int experienceToAdd)
   {
+    if (Level == GlobalConstants.ExperienceByLevel.Count)
+    {
+      return;
+    }
+
     Experience += experienceToAdd;
 
     if (Experience >= GlobalConstants.ExperienceByLevel[Level])
@@ -409,6 +432,11 @@ public class Player : MonoBehaviour
     }
   }
 
+  public void InitiateRosaryPowerup()
+  {
+    RosaryControllerScript.Execute();
+  }
+
   void OnTriggerEnter2D(Collider2D other)
   {
     if (AppReference.IsGameOver)
@@ -417,7 +445,7 @@ public class Player : MonoBehaviour
     }
 
     int asteroidsLayer = LayerMask.NameToLayer("Asteroids");
-    int playerLayer = LayerMask.NameToLayer("Player");
+    int enemyLayer = LayerMask.NameToLayer("Enemy");
 
     if (other.gameObject.layer == asteroidsLayer)
     {   
@@ -443,13 +471,9 @@ public class Player : MonoBehaviour
 
       asteroid.HandleBreakdown(newDir);
     }
-    else if (other.gameObject.layer == playerLayer)
+    else if (other.gameObject.layer == enemyLayer)
     {
-      UFO saucer = other.gameObject.GetComponentInParent<UFO>();
-      if (saucer != null)
-      {
-        ProcessDamage(1);
-      }
+      ProcessDamage(1);
     }
   }
 
