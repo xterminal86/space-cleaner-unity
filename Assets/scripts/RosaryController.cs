@@ -5,12 +5,17 @@ using UnityEngine;
 public class RosaryController : MonoBehaviour 
 {
   public SpriteRenderer AreaSprite;
+  public Collider2D AreaCollider;
 
   float _maxRadius = 10.0f;
 
   Color _areaColor = Color.white;
   bool _isActive = false;
-  public void Execute()
+
+  [HideInInspector]
+  public bool WasSpawned = false;
+
+  public void Execute(Vector2 pos)
   {
     if (_isActive)
     {
@@ -22,6 +27,7 @@ public class RosaryController : MonoBehaviour
     AreaSprite.transform.localScale = _scale;
     AreaSprite.color = _areaColor;
     _isActive = true;
+    AreaSprite.transform.localPosition = pos;
     AreaSprite.gameObject.SetActive(true);
   }
 
@@ -48,6 +54,7 @@ public class RosaryController : MonoBehaviour
     {
       AreaSprite.gameObject.SetActive(false);
       _isActive = false;
+      WasSpawned = false;
     }
   }
 
@@ -62,7 +69,23 @@ public class RosaryController : MonoBehaviour
       var a = other.gameObject.GetComponentInParent<Asteroid>();
       if (a != null)
       {
-        a.Deactivate();
+        a.ForceDestroy();
+      }
+    }
+    else if (other.gameObject.layer == enemyLayer)
+    {
+      var u = other.gameObject.GetComponentInParent<UFO>();
+      if (u != null)
+      {
+        u.ForceDestroy();
+      }
+    }
+    else if (other.gameObject.layer == bulletsLayer)
+    {
+      var b = other.gameObject.GetComponentInParent<BulletBase>();
+      if (b != null)
+      {
+        b.ForceDestroy();
       }
     }
   }

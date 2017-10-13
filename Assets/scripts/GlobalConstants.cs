@@ -122,7 +122,7 @@ public static class GlobalConstants
   public static Dictionary<BulletType, string> BulletSoundByType = new Dictionary<BulletType, string>() 
   {
     { BulletType.LAME, "ship_fire_lame" },
-    { BulletType.MEDIUM, "ship_fire_medium" },
+    { BulletType.MEDIUM, "ship_fire_medium2" },
     { BulletType.STRONG, "ship_fire_strong" }
   };
 

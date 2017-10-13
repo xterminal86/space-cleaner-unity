@@ -4,5 +4,8 @@ using UnityEngine;
 
 public class PowerupShower : PowerupBase 
 {
-	
+  public override void Pickup(Player p)
+  {
+    
+  }
 }

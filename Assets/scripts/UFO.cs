@@ -171,6 +171,21 @@ public class UFO : MonoBehaviour
     Shieldpoints = Mathf.Clamp(Shieldpoints, 0, _maxPoints);
   }
 
+  public void ForceDestroy()
+  {
+    _app.SpawnedUfos--;
+
+    // On a device two ufos spawned on 0 player level
+    _app.SpawnedUfos = Mathf.Clamp(_app.SpawnedUfos, 0, GlobalConstants.MaxUfosPerPlayerLevel[3]);
+
+    SoundManager.Instance.PlaySound("ship_explode", 0.25f);
+
+    var go = Instantiate(_app.PlayerDeathEffect, new Vector3(RigidbodyComponent.position.x, RigidbodyComponent.position.y, 0.0f), Quaternion.identity);
+    Destroy(go, 2.0f);
+
+    Destroy(gameObject);
+  }
+
   public void ReceiveDamage(int damageReceived)
   {
     Hitpoints -= damageReceived;

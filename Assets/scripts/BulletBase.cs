@@ -36,6 +36,13 @@ public class BulletBase : MonoBehaviour
     _bulletSpeed = bulletSpeed;
   }
 
+  public void ForceDestroy()
+  {
+    var go = Instantiate(HitAnimationPrefab, new Vector3(_rigidbodyComponent.position.x, _rigidbodyComponent.position.y, 0.0f), Quaternion.identity);
+    Destroy(go, 1.0f);
+    Destroy(gameObject);
+  }
+
   protected float _borderOffset = 0.5f;
   void FixedUpdate()
   {

@@ -69,6 +69,12 @@ public class AsteroidController : MonoBehaviour
     if (shouldDeactivate)
     {
       _appReference.SpawnedAsteroids--;
+
+      if (_appReference.SpawnedAsteroids < 0)
+      {
+        _appReference.SpawnedAsteroids = 0;
+      }
+
       IsActive = false;
     }
   }

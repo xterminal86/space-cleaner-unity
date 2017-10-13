@@ -83,6 +83,7 @@ public class Player : MonoBehaviour
     }
     Physics2D.IgnoreCollision(PlayerCollider, bullet.Collider);
     Physics2D.IgnoreCollision(ShieldCollider, bullet.Collider);
+    Physics2D.IgnoreCollision(RosaryControllerScript.AreaCollider, bullet.Collider);
     float volume = GlobalConstants.BulletSoundVolumesByType[(GlobalConstants.BulletType)_currentWeapon];
     string soundName = GlobalConstants.BulletSoundByType[(GlobalConstants.BulletType)_currentWeapon];
     bullet.Propel(_direction, GlobalConstants.BulletSpeedByType[(GlobalConstants.BulletType)_currentWeapon]);
@@ -434,7 +435,7 @@ public class Player : MonoBehaviour
 
   public void InitiateRosaryPowerup()
   {
-    RosaryControllerScript.Execute();
+    RosaryControllerScript.Execute(RigidbodyComponent.position);
   }
 
   void OnTriggerEnter2D(Collider2D other)

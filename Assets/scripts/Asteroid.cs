@@ -94,8 +94,17 @@ public class Asteroid : MonoBehaviour
     }
   }
 
-  public void Deactivate()
+  public void ForceDestroy()
   {
+    float pitch = 0.125f * Mathf.Pow(2, _breakdownLevel + 1);
+    float volume = 1.0f / _breakdownLevel;
+
+    SoundManager.Instance.PlaySound("asteroid_hit_big", volume, pitch, false);
+
+    GameObject effect = Instantiate(_game.AsteroidBreakdownEffect, new Vector3(RigidbodyComponent.position.x, RigidbodyComponent.position.y, 0.0f), Quaternion.identity);
+    effect.transform.localScale = transform.localScale;
+    Destroy(effect.gameObject, 2.0f);
+
     gameObject.SetActive(false);
     IsActive = false;
   }

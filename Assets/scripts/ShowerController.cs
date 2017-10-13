@@ -4,15 +4,5 @@ using UnityEngine;
 
 public class ShowerController : MonoBehaviour 
 {
-	// Use this for initialization
-	void Start () 
-  {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () 
-  {
-		
-	}
+  const int BulletsNumber = 50;
 }
