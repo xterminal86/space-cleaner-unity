@@ -11,6 +11,7 @@ public static class GlobalConstants
   // Number of asteroid breakdowns after it has been hit
   public const int AsteroidMaxBreakdownLevel = 4;
   public const int UfoScore = 50;
+  public const int UfoExpericence = 40;
 
   public const int GuiHitpointsShieldBarLength = 20;
 

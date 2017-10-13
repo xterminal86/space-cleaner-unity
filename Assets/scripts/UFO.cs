@@ -200,7 +200,7 @@ public class UFO : MonoBehaviour
       _app.SpawnedUfos = Mathf.Clamp(_app.SpawnedUfos, 0, GlobalConstants.MaxUfosPerPlayerLevel[3]);
 
       _app.Score += GlobalConstants.UfoScore;
-      _player.AddExperience(20);
+      _player.AddExperience(GlobalConstants.UfoExpericence);
 
       SoundManager.Instance.PlaySound("ship_explode", 0.25f);
 
