@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class BulletLaser : BulletBase 
-{
+{  
   public override void Propel(Vector2 direction, float bulletSpeed)
   {
     base.Propel(direction, bulletSpeed);
@@ -47,8 +47,8 @@ public class BulletLaser : BulletBase
     {
       Player player = collider.gameObject.GetComponentInParent<Player>();
       if (player != null)
-      {        
-        Destroy(gameObject);
+      {       
+        WaitForEndOfTrailDestroy();
 
         player.ProcessDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.LASER]);
       }
@@ -58,7 +58,7 @@ public class BulletLaser : BulletBase
       UFO u = collider.gameObject.GetComponentInParent<UFO>();
       if (u != null)
       {
-        Destroy(gameObject);
+        WaitForEndOfTrailDestroy();
 
         u.ProcessDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.LASER]);
       }

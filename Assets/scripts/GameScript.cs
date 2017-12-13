@@ -182,6 +182,14 @@ public class GameScript : MonoBehaviour
   float _progressBarTimer = 0.0f;
   float _spawnAcceleration = 1.0f;
   int _barCounter = 0;
+  float _powerupLifetimeTimer = 0.0f;
+
+  public void ResetPowerupLock()
+  {
+    _powerupLifetimeTimer = 0.0f;
+    _powerupSpawned = false;
+  }
+
   void Update()
   {
     if (IsGameOver)
@@ -189,12 +197,28 @@ public class GameScript : MonoBehaviour
       return;
     }
 
+    if (_powerupSpawned)
+    {
+      _powerupLifetimeTimer += Time.smoothDeltaTime;
+
+      if (_powerupLifetimeTimer > GlobalConstants.PowerupLifetime)
+      {
+        ResetPowerupLock();
+      }
+    }
+
     #if UNITY_EDITOR
     if (Input.GetKeyDown(KeyCode.P))
     {
       float x = Random.Range(-5.0f, 5.0f);
       float y = Random.Range(-5.0f, 5.0f);
-      TryToSpawnSpecialPowerup(new Vector2(x, y), true);
+      TryToSpawnPowerup(new Vector2(x, y));
+      //TryToSpawnSpecialPowerup(new Vector2(x, y), true);
+    }
+
+    if (Input.GetKeyDown(KeyCode.U))
+    {
+      SpawnUfo();
     }
     #endif
 
@@ -288,15 +312,22 @@ public class GameScript : MonoBehaviour
     if (_powerupPosition.y < _screenRect[1]) _powerupPosition.y = _screenRect[1] + 1.0f;
     if (_powerupPosition.y > _screenRect[3]) _powerupPosition.y = _screenRect[3] - 1.0f;
 
+    float modifier = (float)SpawnedAsteroids / (float)GlobalConstants.AsteroidsMaxInstances;
+    float chance = GlobalConstants.SpecialPowerupSpawnPercent * modifier;
+
     int whichOne = Random.Range(0, SpecialPowerups.Count);
-    int chance = Random.Range(0, 101);
+    float roll = Random.Range(0.0f, 100.0f);
+
+    #if UNITY_EDITOR
+    Debug.Log(string.Format("Trying to spawn special powerup: rolled {0} chance {1}", roll, chance));
+    #endif
 
     if (debugMode)
     {
-      chance = 0;
+      roll = 0;
     }
 
-    if (chance < GlobalConstants.PowerupSpawnPercent / 2.0f)
+    if (roll < chance)
     {
       // FIXME: hard coded: no double rosaries
       if (whichOne == 0)
@@ -316,6 +347,8 @@ public class GameScript : MonoBehaviour
       Destroy(effect, 1.0f);
 
       Instantiate(SpecialPowerups[whichOne], new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
+
+      _powerupSpawned = true;
     }
   }
 
@@ -391,10 +424,11 @@ public class GameScript : MonoBehaviour
     }      
   }
 
+  bool _powerupSpawned = false;
   Vector2 _powerupPosition = Vector2.zero;
   public void TryToSpawnPowerup(Vector2 position)
   {
-    if (PlayerScript == null)
+    if (PlayerScript == null || _powerupSpawned)
     {
       return;
     }
@@ -415,10 +449,14 @@ public class GameScript : MonoBehaviour
 
     int whichOne = (PlayerScript.Hitpoints < PlayerScript.Shieldpoints || PlayerScript.Hitpoints < (PlayerScript.MaxPoints / 4)) ? 0 : 1;
 
-    float chance = Random.Range(0.0f, 101.0f);
+    float chance = Random.Range(0.0f, 100.0f);
 
     if (whichOne == 0)
     {
+      #if UNITY_EDITOR
+      Debug.Log(string.Format("Health powerup: rolled {0} chance {1}", chance, chanceH));
+      #endif
+
       if (chance < chanceH)
       { 
         SoundManager.Instance.PlaySound("powerup_spawn", 0.25f);
@@ -436,6 +474,10 @@ public class GameScript : MonoBehaviour
     }
     else
     {
+      #if UNITY_EDITOR
+      Debug.Log(string.Format("Shield powerup: rolled {0} chance {1}", chance, chanceS));
+      #endif
+
       if (chance < chanceS)
       {
         SoundManager.Instance.PlaySound("powerup_spawn", 0.25f);
@@ -451,6 +493,8 @@ public class GameScript : MonoBehaviour
         success = true;
       }
     }
+
+    _powerupSpawned = success;
 
     if (!success)
     {

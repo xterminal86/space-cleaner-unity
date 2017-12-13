@@ -18,6 +18,7 @@ public class PowerupBase : MonoBehaviour
 
   public virtual void Pickup(Player p)
   {
+    p.AppReference.ResetPowerupLock();
   }
 
   void OnTriggerEnter2D(Collider2D collider)

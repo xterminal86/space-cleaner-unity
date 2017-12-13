@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class BulletBase : MonoBehaviour 
 {
+  public GameObject BulletSprite;
   public GameObject HitAnimationPrefab;
   public Collider2D Collider;
 
@@ -29,18 +30,30 @@ public class BulletBase : MonoBehaviour
     get { return _direction; }
   }
 
-  float _bulletSpeed = 0.0f;
+  protected float _bulletSpeed = 0.0f;
   public virtual void Propel(Vector2 direction, float bulletSpeed)
   {
     _direction = direction;
     _bulletSpeed = bulletSpeed;
   }
 
+  public void WaitForEndOfTrailDestroy()
+  {
+    BulletSprite.SetActive(false);
+    _bulletSpeed = 0.0f;
+
+    Destroy(gameObject, 2.0f);
+  }
+
   public void ForceDestroy()
   {
     var go = Instantiate(HitAnimationPrefab, new Vector3(_rigidbodyComponent.position.x, _rigidbodyComponent.position.y, 0.0f), Quaternion.identity);
     Destroy(go, 1.0f);
-    Destroy(gameObject);
+
+    if (this is BulletLaser)
+    {
+      WaitForEndOfTrailDestroy();
+    }
   }
 
   protected float _borderOffset = 0.5f;

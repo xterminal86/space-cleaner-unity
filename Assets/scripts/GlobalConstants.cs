@@ -7,7 +7,7 @@ public delegate void Callback();
 public static class GlobalConstants 
 {
   // Maximum asteroids by default
-  public const int AsteroidsMaxInstances = 40;
+  public const int AsteroidsMaxInstances = 50;
   // Number of asteroid breakdowns after it has been hit
   public const int AsteroidMaxBreakdownLevel = 4;
   public const int UfoScore = 50;
@@ -34,7 +34,8 @@ public static class GlobalConstants
   // Delay of spawned powerup after it disappears
   public const float PowerupLifetime = 6.0f;
 
-  public const float PowerupSpawnPercent = 25.0f;
+  public const float PowerupSpawnPercent = 10.0f;
+  public const float SpecialPowerupSpawnPercent = 10.0f;
   public const float UfoSpawnPercent = 30.0f;
 
   // Random spread arc of asteroid from hitting the player
