@@ -27,6 +27,7 @@ public class TitleScreen : MonoBehaviour
     GameStats.Instance.Initialize();
     LoadingScreen.Instance.Initialize();
     SoundManager.Instance.Initialize();
+    //FPSCounter.Instance.Initialize();
 
     Vector3 dimensions = Camera.main.ViewportToWorldPoint(new Vector3(0.0f, 0.0f, Camera.main.nearClipPlane));
 
