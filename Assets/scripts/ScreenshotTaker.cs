@@ -15,7 +15,7 @@ public class ScreenshotTaker : MonoSingleton<ScreenshotTaker>
 
       _dt = DateTime.Now;
       _filename = string.Format("{0}-{1}-{2}-{3}{4}{5}.png", _dt.Day, _dt.Month, _dt.Year, _dt.Hour, _dt.Minute, _dt.Second);
-      Application.CaptureScreenshot(_filename);
+      ScreenCapture.CaptureScreenshot(_filename);
     }
   }
 }

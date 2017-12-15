@@ -23,6 +23,9 @@ public class TitleScreen : MonoBehaviour
 
   void Awake()
   {
+    // In new version of Unity without this framerate seems to be limited to 30 FPS on Android
+    Application.targetFrameRate = 60;
+
     ScreenshotTaker.Instance.Initialize();
     GameStats.Instance.Initialize();
     LoadingScreen.Instance.Initialize();
