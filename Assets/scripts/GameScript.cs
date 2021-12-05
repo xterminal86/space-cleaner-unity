@@ -63,6 +63,9 @@ public class GameScript : MonoBehaviour
 
   float _currentSpawnRate = 1.0f;
 
+  [HideInInspector]
+  public int ActiveEmpBullets = 0;
+
   List<AsteroidController> _asteroidControllers = new List<AsteroidController>();
 
   List<Vector2> _spawnPoints = new List<Vector2>();
@@ -145,12 +148,41 @@ public class GameScript : MonoBehaviour
     */
   }
 
+  public void ReduceSpawnRate()
+  {
+    _spawnAcceleration -= (_spawnAcceleration * 0.25f);
+    _spawnAcceleration = Mathf.Clamp(_spawnAcceleration, 1.0f, 2.0f);
+
+    _currentSpawnRate += (_currentSpawnRate * 0.25f);
+    _currentSpawnRate = Mathf.Clamp(_currentSpawnRate, GlobalConstants.MaxSpawnRate, GlobalConstants.StartingSpawnRate);
+
+    _progressBarSb.Length = 0;
+    _progressBarTimer = Time.realtimeSinceStartup;
+
+    _progressBarUpdateInterval = _currentSpawnRate / 20.0f;
+
+    _barCounter = 0;
+  }
+
+  Dictionary<UfoController.UfoVariant, int> _ufosKilled = new Dictionary<UfoController.UfoVariant, int>()
+  {
+    { UfoController.UfoVariant.LAME,  0 },
+    { UfoController.UfoVariant.EMP,   0 },
+    { UfoController.UfoVariant.ELITE, 0 }
+  };
+
+  public Dictionary<UfoController.UfoVariant, int> UfosKilled
+  {
+    get { return _ufosKilled; }
+  }
+
   public void SetGameOver()
   {
     IsGameOver = true;
 
+    EMPLockoutObject.SetActive(false);
     GameOverScreen.SetActive(true);
-    GameStats.Instance.WriteHighScore(Score, _currentPhase);
+    GameStats.Instance.WriteHighScore(Score, _currentPhase, _ufosKilled);
 
     HitpointsBar.text = "";
     ShieldpointsBar.text = "";
@@ -288,6 +320,11 @@ public class GameScript : MonoBehaviour
       PlayerScript.AddExperience(1000);
       Debug.Log(PlayerScript.Level);
     }
+
+    if (Input.GetKeyDown(KeyCode.Q))
+    {
+      TryToSpawnSpecialPowerup(Vector2.zero, 1, true);
+    }
 #endif
 
     if (Input.GetKeyDown(KeyCode.Escape) && !_returnToMainOpen)
@@ -392,7 +429,6 @@ public class GameScript : MonoBehaviour
       // Check probabilities from lowest to highest
       //
       int chance = Random.Range(0, 101) - _nextUfoChanceAddition;
-
       if (chance <= GlobalConstants.UfoSpawnChanceByVariant[UfoController.UfoVariant.ELITE])
       {
         variant = UfoController.UfoVariant.ELITE;
@@ -408,7 +444,18 @@ public class GameScript : MonoBehaviour
 
       if (variant != UfoController.UfoVariant.LAST_ELEMENT)
       {
+        // If we rolled maximum category, but it's not allowed,
+        // fall through until we can spawn something.
         bool isAllowed = GlobalConstants.AllowedUfoVariantsByPlayerLevel[PlayerScript.Level].Contains(variant);
+        int index = -1;
+        while (!isAllowed)
+        {
+          index = GlobalConstants.AllowedUfosAscendingList.FindIndex(x => x == variant);
+          index--;
+          variant = GlobalConstants.AllowedUfosAscendingList[index];
+          isAllowed = GlobalConstants.AllowedUfoVariantsByPlayerLevel[PlayerScript.Level].Contains(variant);
+        }
+
         bool canBeSpawned = (UfoControllerScript.SpawnedUfosByVariant[variant] < GlobalConstants.MaximumAllowedUfosByVariant[variant]);
 
         if (isAllowed && canBeSpawned)
@@ -424,57 +471,6 @@ public class GameScript : MonoBehaviour
     {
       _nextUfoChanceAddition++;
       SpawnAsteroid();
-    }
-  }
-
-  public void TryToSpawnSpecialPowerup(Vector2 position, bool debugMode = false)
-  {
-    _powerupPosition.Set(position.x, position.y);
-
-    if (_powerupPosition.x < _screenRect[0]) _powerupPosition.x = _screenRect[0] + 1.0f;
-    if (_powerupPosition.x > _screenRect[2]) _powerupPosition.x = _screenRect[2] - 1.0f;
-    if (_powerupPosition.y < _screenRect[1]) _powerupPosition.y = _screenRect[1] + 1.0f;
-    if (_powerupPosition.y > _screenRect[3]) _powerupPosition.y = _screenRect[3] - 1.0f;
-
-    //float modifier = (float)SpawnedAsteroids / (float)GlobalConstants.AsteroidsMaxInstances;
-    //float modifier = (float)AsteroidsOnScreen / (float)GlobalConstants.AsteroidsMaxInstances;
-    //float chance = GlobalConstants.SpecialPowerupSpawnPercent * modifier;
-    float chance = (float)AsteroidsOnScreen / ((float)GlobalConstants.AsteroidsMaxInstances / 4.0f);
-
-    int whichOne = Random.Range(0, SpecialPowerups.Count);
-    float roll = Random.Range(0.0f, 100.0f);
-
-    #if UNITY_EDITOR
-    Debug.Log(string.Format("Trying to spawn special powerup: rolled {0} chance {1}", roll, chance));
-    #endif
-
-    if (debugMode)
-    {
-      roll = 0;
-    }
-
-    if (roll < chance)
-    {
-      // FIXME: hard coded: no double rosaries
-      if (whichOne == 0)
-      {
-        if (PlayerScript.RosaryControllerScript.WasSpawned)
-        {
-          return;
-        }
-        else
-        {
-          PlayerScript.RosaryControllerScript.WasSpawned = true;
-        }
-      }
-
-      SoundManager.Instance.PlaySound("powerup_spawn", 0.25f);
-      var effect = Instantiate(PowerupSpawnEffect, new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
-      Destroy(effect, 1.0f);
-
-      Instantiate(SpecialPowerups[whichOne], new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
-
-      _powerupSpawned = true;
     }
   }
 
@@ -572,8 +568,8 @@ public class GameScript : MonoBehaviour
     float modifierS = 1.0f - (float)PlayerScript.Shieldpoints / (float)PlayerScript.MaxPoints;
     float chanceS = modifierS * GlobalConstants.PowerupSpawnPercent;
 
-    int whichOne = (PlayerScript.Hitpoints < PlayerScript.Shieldpoints
-                 || PlayerScript.Hitpoints < (PlayerScript.MaxPoints / 4)) ? 0 : 1;
+    int whichOne = ((PlayerScript.Hitpoints < PlayerScript.Shieldpoints)
+                 || (PlayerScript.Hitpoints < (PlayerScript.MaxPoints / 4))) ? 0 : 1;
 
     float chance = Random.Range(0.0f, 100.0f);
 
@@ -620,66 +616,70 @@ public class GameScript : MonoBehaviour
       }
     }
 
-    _powerupSpawned = success;
-
     if (!success)
     {
-      TryToSpawnSpecialPowerup(position);
+      success = TryToSpawnSpecialPowerup(position);
     }
+
+    _powerupSpawned = success;
+  }
+
+  public bool TryToSpawnSpecialPowerup(Vector2 position, int whichOneOverride = -1, bool debugMode = false)
+  {
+    bool res = false;
+
+    _powerupPosition.Set(position.x, position.y);
+
+    if (_powerupPosition.x < _screenRect[0]) _powerupPosition.x = _screenRect[0] + 1.0f;
+    if (_powerupPosition.x > _screenRect[2]) _powerupPosition.x = _screenRect[2] - 1.0f;
+    if (_powerupPosition.y < _screenRect[1]) _powerupPosition.y = _screenRect[1] + 1.0f;
+    if (_powerupPosition.y > _screenRect[3]) _powerupPosition.y = _screenRect[3] - 1.0f;
+
+    //float modifier = (float)SpawnedAsteroids / (float)GlobalConstants.AsteroidsMaxInstances;
+    //float modifier = (float)AsteroidsOnScreen / (float)GlobalConstants.AsteroidsMaxInstances;
+    //float chance = GlobalConstants.SpecialPowerupSpawnPercent * modifier;
+    float rosaryChance = (float)AsteroidsOnScreen / ((float)GlobalConstants.AsteroidsMaxInstances / 12.0f);
+    float clockChance = (0.8f - (_currentSpawnRate / GlobalConstants.StartingSpawnRate)) * 50.0f;
+
+    int whichOne = Random.Range(0, SpecialPowerups.Count);
+    float roll = Random.Range(0, 101);
+
+    if (debugMode)
+    {
+      roll = 0;
+      whichOne = whichOneOverride;
+      rosaryChance = 100;
+      clockChance = 100;
+    }
+
+    // FIXME: duplicate code
+    if (whichOne == 0 && roll < rosaryChance)
+    {
+      SoundManager.Instance.PlaySound("powerup_spawn", 0.25f);
+      var effect = Instantiate(PowerupSpawnEffect, new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
+      Destroy(effect, 1.0f);
+
+      Instantiate(SpecialPowerups[whichOne], new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
+
+      res = true;
+    }
+    else if (whichOne == 1 && roll < clockChance)
+    {
+      SoundManager.Instance.PlaySound("powerup_spawn", 0.25f);
+      var effect = Instantiate(PowerupSpawnEffect, new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
+      Destroy(effect, 1.0f);
+
+      Instantiate(SpecialPowerups[whichOne], new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
+
+      res = true;
+    }
+
+    return res;
   }
 
   public void SetWeapon(int weaponIndex)
   {
     WeaponIcon.sprite = BulletsIcons[weaponIndex];
-  }
-
-  public void RotateLeftDownHandler()
-  {
-    if (IsGameOver) return;
-
-    PlayerScript.SetRotation(1);
-  }
-
-  public void RotateLeftUpHandler()
-  {
-    if (IsGameOver) return;
-
-    PlayerScript.SetRotation(0);
-  }
-
-  public void RotateRightDownHandler()
-  {
-    if (IsGameOver) return;
-
-    PlayerScript.SetRotation(2);
-  }
-
-  public void RotateRightUpHandler()
-  {
-    if (IsGameOver) return;
-
-    PlayerScript.SetRotation(0);
-  }
-
-  public void FireHandler()
-  {
-    if (IsGameOver) return;
-
-    PlayerScript.Fire();
-  }
-
-  public void GasDownHandler()
-  {
-    if (IsGameOver) return;
-
-    PlayerScript.SetGas(1);
-  }
-
-  public void GasUpHandler()
-  {
-    if (IsGameOver) return;
-
-    PlayerScript.SetGas(0);
   }
 
   void OnEnable()

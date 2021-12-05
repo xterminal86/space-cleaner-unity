@@ -9,7 +9,7 @@ public class FormHighScores : FormBase
   public int DefaultFontSize = 24;
   public int FontSizeMax = 34;
 
-  public Text TextObject;
+  public List<HighScoreItem> HighScoreItems;
 
   int _itemIndex = 0, _fontSize = 1;
 
@@ -17,9 +17,13 @@ public class FormHighScores : FormBase
   {
     _itemIndex = 0;
     _fontSize = DefaultFontSize;
+
+    foreach (var item in HighScoreItems)
+    {
+      item.ResetValues();
+    }
   }
 
-  StringBuilder sb = new StringBuilder();
   public override void Select(FormBase parentForm)
   {
     base.Select(parentForm);
@@ -29,43 +33,11 @@ public class FormHighScores : FormBase
 
   void RefreshHighscoreTable()
   {
-    sb.Length = 0;
-
-    int index = 0;
-    foreach (var item in GameStats.Instance.HighscoresSorted)
+    for (int i = 0; i < GlobalConstants.MaxHighScoreEntries; i++)
     {
-      string sindex = string.Empty;
-      string sname = string.Empty;
-      string sscore = string.Empty;
-      string sphase = string.Empty;
-
-      if (item.Score == -1)
-      {
-        sindex = GetProperString((index + 1).ToString(), 2);
-        sname = GetProperString("-----", 20);
-        sscore = GetProperString("-----", 5);
-        sphase = "-----";
-      }
-      else
-      {
-        sindex = GetProperString((index + 1).ToString(), 2);
-        sname = GetProperString(item.PlayerName, 20);
-        sscore = GetProperString(item.Score.ToString(), 5);
-        sphase = string.Format("PHASE: {0}", item.Phase);
-      }
-
-      sb.AppendFormat("{0}    {1}    {2}    {3}", sindex, sname, sscore, sphase);
-
-      // No newline for last entry
-      if (index != 9)
-      {
-        sb.Append('\n');
-      }
-
-      index++;
+      HighscoreEntry e = GameStats.Instance.HighscoresSorted[i];
+      HighScoreItems[i].SetValues(e);
     }
-
-    TextObject.text = sb.ToString();
   }
 
   public override void SelectMenuItem(int itemIndex)
@@ -128,19 +100,5 @@ public class FormHighScores : FormBase
     }
 
     MenuIems[_itemIndex].fontSize = _fontSize;
-  }
-
-  string GetProperString(string initial, int maxChars)
-  {
-    string format = "{0}";
-
-    int spacesToFill = maxChars - initial.Length;
-    if (spacesToFill != 0)
-    {
-      string spaces = new string(' ', spacesToFill);
-      format = "{0}" + spaces;
-    }
-
-    return string.Format(format, initial);
   }
 }

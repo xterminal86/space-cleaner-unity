@@ -79,7 +79,8 @@ public class Player : MonoBehaviour
     var bullet = go.GetComponent<BulletBase>();
     if (_currentWeapon == 2)
     {
-      bullet.RigidbodyComponent.rotation = _rotation;
+      // For bullet-strong we must adjust the angle
+      bullet.RigidbodyComponent.rotation = _rotation - 90.0f;
     }
     Physics2D.IgnoreCollision(PlayerCollider, bullet.Collider);
     Physics2D.IgnoreCollision(ShieldCollider, bullet.Collider);
@@ -175,7 +176,7 @@ public class Player : MonoBehaviour
     AppReference.SetWeapon(_currentWeapon);
 #endif
 
-    CheckGas();
+    ClampGas();
 
     _acceleration = _gasAmount * GlobalConstants.PlayerMoveSpeed;
 
@@ -351,7 +352,7 @@ public class Player : MonoBehaviour
   }
 
   float _gasAmount = 0.0f;
-  void CheckGas()
+  void ClampGas()
   {
     if (_gasPedal == 1)
     {
@@ -494,7 +495,7 @@ public class Player : MonoBehaviour
 
       _currentWeapon++;
 
-      SoundManager.Instance.PlaySound("weapon_upgrade", 0.25f);
+      SoundManager.Instance.PlaySound("weapon-upgrade", 0.25f);
 
       _currentWeapon = Mathf.Clamp(_currentWeapon, 0, GlobalConstants.BulletSpeedByType.Count - 1);
 
@@ -529,7 +530,7 @@ public class Player : MonoBehaviour
 
       int damageDealt = (GlobalConstants.AsteroidMaxBreakdownLevel + 1) - asteroid.BreakdownLevel;
 
-      ProcessDamage(damageDealt);
+      ProcessDamage(damageDealt, null);
 
       //Vector2 v = RigidbodyComponent.position - asteroid.RigidbodyComponent.position;
       Vector2 v = asteroid.RigidbodyComponent.position - RigidbodyComponent.position;
@@ -543,24 +544,29 @@ public class Player : MonoBehaviour
     }
     else if (other.gameObject.layer == enemyLayer)
     {
-      ProcessDamage(1);
+      ProcessDamage(1, null);
     }
   }
 
-  public void ProcessDamage(int damage)
+  public void ProcessDamage(int damage, BulletBase from)
   {
+    bool isOk = (from != null && !(from is BulletEmp)) || (from == null);
+
     if (Shieldpoints != 0)
     {
-      SoundManager.Instance.PlaySound("shield_hit_energy", 0.1f, 1.0f, false);
+      if (isOk)
+      {
+        SoundManager.Instance.PlaySound("shield-hit-energy", 0.1f, 1.0f, false);
+      }
 
       _shieldColor.a = 1.0f;
       ReceiveShieldDamage(1);
     }
     else
     {
-      if (damage > 0)
+      if (isOk)
       {
-        SoundManager.Instance.PlaySound("ship_hit", 0.7f, 1.0f, false);
+        SoundManager.Instance.PlaySound("ship-hit", 0.7f, 1.0f, false);
       }
 
       ReceiveDamage(damage);

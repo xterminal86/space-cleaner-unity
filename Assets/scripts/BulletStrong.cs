@@ -30,7 +30,7 @@ public class BulletStrong : BulletBase
       UfoBase saucer = collider.gameObject.GetComponentInParent<UfoBase>();
       if (saucer != null)
       {
-        saucer.ProcessDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.STRONG]);
+        saucer.ProcessDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.STRONG], this);
       }
     }
 

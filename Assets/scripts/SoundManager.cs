@@ -113,6 +113,55 @@ public class SoundManager : MonoSingleton<SoundManager>
     }
   }
 
+  public bool IsSoundPlaying(string name)
+  {
+    if (_audioSourcesByName.ContainsKey(name))
+    {
+      return _audioSourcesByName[name].isPlaying;
+    }
+
+    return false;
+  }
+
+  public void PlaySoundLooped(string name, float volume, float pitch = 1.0f)
+  {
+    if (_audioSourcesByName.ContainsKey(name))
+    {
+      _audioSourcesByName[name].volume = volume;
+
+      if (!IsSoundPlaying(name))
+      {
+        _audioSourcesByName[name].loop = true;
+        _audioSourcesByName[name].pitch = pitch;
+        _audioSourcesByName[name].Play();
+      }
+      else
+      {
+        _audioSourcesByName[name].UnPause();
+      }
+    }
+  }
+
+  public void StopLoopedSound(string name)
+  {
+    if (_audioSourcesByName.ContainsKey(name))
+    {
+      // To avoid clicking during sound stoppage,
+      // stop sound on the next frame
+      _audioSourcesByName[name].volume = 0.0f;
+      StartCoroutine(StopSoundRoutine(name));
+    }
+  }
+
+  IEnumerator StopSoundRoutine(string name)
+  {
+    yield return null;
+
+    _audioSourcesByName[name].Pause();
+
+    yield return null;
+  }
+
   public void PlaySound(string name, Vector3 position, bool is3D, float pitch = 1.0f)
   {
     if (_audioSourcesByName.ContainsKey(name))

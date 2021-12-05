@@ -30,7 +30,7 @@ public class BulletMedium : BulletBase
       UfoBase saucer = collider.gameObject.GetComponentInParent<UfoBase>();
       if (saucer != null)
       {
-        saucer.ProcessDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.MEDIUM]);
+        saucer.ProcessDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.MEDIUM], this);
       }
     }
 

@@ -38,7 +38,7 @@ public class BulletElite : BulletBase
       {
         WaitForEndOfTrailDestroy();
 
-        player.ProcessDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.ELITE]);
+        player.ProcessDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.ELITE], this);
       }
     }
     else if (collider.gameObject.layer == enemyLayer)
@@ -48,7 +48,7 @@ public class BulletElite : BulletBase
       {
         WaitForEndOfTrailDestroy();
 
-        u.ProcessDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.ELITE]);
+        u.ProcessDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.ELITE], this);
       }
     }
   }

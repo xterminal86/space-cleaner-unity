@@ -55,7 +55,7 @@ public class FormBase : MonoBehaviour
   void Update()
   {
     if (Input.GetKeyDown(KeyCode.Escape)
-     || Input.GetKeyDown(KeyCode.Backspace)
+     || (!(this is FormChangeName) && Input.GetKeyDown(KeyCode.Backspace))
      || Input.GetMouseButtonDown(1))
     {
       Close();

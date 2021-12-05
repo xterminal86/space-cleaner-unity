@@ -104,6 +104,8 @@ public class AsteroidController : MonoBehaviour
       {
         if (!item.IsActive)
         {
+          position.x += Random.Range(-0.1f, 0.1f);
+          position.y += Random.Range(-0.1f, 0.1f);
           item.Init(position, breakdownLevel, pushDir);
           break;
         }

@@ -30,15 +30,18 @@ public static class GlobalConstants
   public const float SpawnRateDelta = 0.1f;
   // Shield restores one bar after this time
   public const float ShieldRechargeTimeout = 10.0f;
+  // How much should current spawn rate be decreased
+  public const float ClockPowerupValue = 2.0f;
 
   // Delay of spawned powerup after it disappears
   public const float PowerupLifetime = 6.0f;
 
-  public const float PowerupSpawnPercent = 10.0f;
-  public const float SpecialPowerupSpawnPercent = 10.0f;
+  public const float PowerupSpawnPercent = 35.0f;
 
   // Random spread arc of asteroid from hitting the player
   public const float AsteroidBreakdownHalfArc = 60.0f;
+
+  public const int MaxHighScoreEntries = 10;
 
   public static Dictionary<int, int> MaxUfosPerPlayerLevel = new Dictionary<int, int>()
   {
@@ -46,6 +49,11 @@ public static class GlobalConstants
     { 1, 2 },
     { 2, 4 },
     { 3, 6 }
+  };
+
+  public static List<UfoController.UfoVariant> AllowedUfosAscendingList = new List<UfoController.UfoVariant>()
+  {
+    UfoController.UfoVariant.LAME, UfoController.UfoVariant.EMP, UfoController.UfoVariant.ELITE
   };
 
   public static Dictionary<int, List<UfoController.UfoVariant>> AllowedUfoVariantsByPlayerLevel = new Dictionary<int, List<UfoController.UfoVariant>>()
@@ -88,9 +96,9 @@ public static class GlobalConstants
 
   public static Dictionary<UfoController.UfoVariant, int> UfoSpawnChanceByVariant = new Dictionary<UfoController.UfoVariant, int>()
   {
-    { UfoController.UfoVariant.LAME,  40 },
-    { UfoController.UfoVariant.EMP,   20 },
-    { UfoController.UfoVariant.ELITE, 10 }
+    { UfoController.UfoVariant.LAME,  50 },
+    { UfoController.UfoVariant.EMP,   30 },
+    { UfoController.UfoVariant.ELITE, 15 }
   };
 
   // Number of asteroids to destroy (value) after given level (key) is reached
@@ -112,7 +120,7 @@ public static class GlobalConstants
   public static string MenuSelectSound = "menu_select";
   public static string MenuBackSound = "menu_back";
 
-  public static string PlayerPrefsConfigDataKey = "pp-config";
+  public static string PlayerPrefsConfigDataKey = "pp-config-v14";
   public static string PlayerPrefsPlayerNameKey = "pp-player-name";
   public static string PlayerPrefsSoundVolumeKey = "pp-sound-volume";
   public static string PlayerPrefsMusicVolumeKey = "pp-music-volume";
@@ -120,6 +128,9 @@ public static class GlobalConstants
   public static string HighscoreEntryPlayerNameKey = "e-name";
   public static string HighscoreEntryPlayerScoreKey = "e-score";
   public static string HighscoreEntryPlayerPhaseKey = "e-phase";
+  public static string HighscoreEntryLameUfoCount = "e-ufo-1";
+  public static string HighscoreEntryEMPUfoCount = "e-ufo-2";
+  public static string HighscoreEntryEliteUfoCount = "e-ufo-3";
 
   public enum PowerupType
   {
@@ -170,9 +181,9 @@ public static class GlobalConstants
 
   public static Dictionary<BulletType, float> BulletSoundVolumesByType = new Dictionary<BulletType, float>()
   {
-    { BulletType.LAME,    0.15f },
+    { BulletType.LAME,   0.25f  },
     { BulletType.MEDIUM, 0.125f },
-    { BulletType.STRONG, 0.125f }
+    { BulletType.STRONG, 0.25f  }
   };
 
   // Music will play in the order of listing here

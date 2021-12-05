@@ -49,7 +49,7 @@ public class BulletLaser : BulletBase
       {
         WaitForEndOfTrailDestroy();
 
-        player.ProcessDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.LASER]);
+        player.ProcessDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.LASER], this);
       }
     }
     else if (collider.gameObject.layer == enemyLayer)
@@ -59,7 +59,7 @@ public class BulletLaser : BulletBase
       {
         WaitForEndOfTrailDestroy();
 
-        u.ProcessDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.LASER]);
+        u.ProcessDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.LASER], this);
       }
     }
   }

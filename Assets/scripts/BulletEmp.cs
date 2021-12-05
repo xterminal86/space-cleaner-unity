@@ -2,11 +2,27 @@
 
 public class BulletEmp : BulletBase
 {
+  const float _sparksVolume = 0.3f;
+
   public override void Propel(Vector2 direction, float bulletSpeed)
   {
     base.Propel(direction, bulletSpeed);
 
     _borderOffset = 3.0f;
+
+    _app.ActiveEmpBullets++;
+
+    SoundManager.Instance.PlaySoundLooped("bullet-emp2", 0.8f, 0.5f);
+  }
+
+  void OnDestroy()
+  {
+    _app.ActiveEmpBullets--;
+
+    if (_app.ActiveEmpBullets == 0 && SoundManager.isInstantinated)
+    {
+      SoundManager.Instance.StopLoopedSound("bullet-emp2");
+    }
   }
 
   void OnTriggerEnter2D(Collider2D collider)
@@ -43,9 +59,10 @@ public class BulletEmp : BulletBase
       Player player = collider.gameObject.GetComponentInParent<Player>();
       if (player != null)
       {
+        SoundManager.Instance.PlaySound(GlobalConstants.BulletSoundHitByType[GlobalConstants.BulletType.EMP], _sparksVolume, 1.0f, false);
+
         if (player.Shieldpoints == 0)
         {
-          SoundManager.Instance.PlaySound(GlobalConstants.BulletSoundHitByType[GlobalConstants.BulletType.EMP], 0.25f, 1.0f, false);
           player.SetEMPLockout();
         }
         else
@@ -57,8 +74,7 @@ public class BulletEmp : BulletBase
           // even if player had 1 shieldpoint left, because shield always
           // gets 1 point of damage.
           //
-          player.ProcessDamage(0);
-
+          player.ProcessDamage(0, this);
           player.Shieldpoints = 0;
         }
 
@@ -70,18 +86,16 @@ public class BulletEmp : BulletBase
       UfoBase u = collider.gameObject.GetComponentInParent<UfoBase>();
       if (u != null)
       {
-        if (!(u is UfoEmp))
+        SoundManager.Instance.PlaySound(GlobalConstants.BulletSoundHitByType[GlobalConstants.BulletType.EMP], _sparksVolume, 1.0f, false);
+
+        if (u.Shieldpoints == 0)
         {
-          if (u.Shieldpoints == 0)
-          {
-            SoundManager.Instance.PlaySound(GlobalConstants.BulletSoundHitByType[GlobalConstants.BulletType.EMP], 0.25f, 1.0f, false);
-            u.SetEMPLockout();
-          }
-          else
-          {
-            u.ProcessDamage(0);
-            u.Shieldpoints = 0;
-          }
+          u.SetEMPLockout();
+        }
+        else
+        {
+          u.ProcessDamage(0, this);
+          u.Shieldpoints = 0;
         }
 
         Destroy(gameObject);

@@ -21,7 +21,7 @@ public class FormYesNo : FormBase
 
   public void NoHandler()
   {
-    base.Close();
+    base.Close(true);
 
     if (_closeNoCallback != null)
       _closeNoCallback();

@@ -15,6 +15,8 @@ public class TitleScreen : MonoBehaviour
 
   public FormTitleScreen FormTitleScreenScript;
 
+  public List<GameObject> AllFormsObjects;
+
   List<BackgroundStar> _stars = new List<BackgroundStar>();
 
   float[] _screenRect;
@@ -34,11 +36,14 @@ public class TitleScreen : MonoBehaviour
     // In new version of Unity without this framerate seems to be limited to 30 FPS on Android
     Application.targetFrameRate = 60;
 
-    ScreenshotTaker.Instance.Initialize();
+    //PlayerPrefs.DeleteAll();
+
     GameStats.Instance.Initialize();
+
+    SoundManager.Instance.Initialize();
+    ScreenshotTaker.Instance.Initialize();
     LoadingScreen.Instance.Initialize();
     LoadingScreen.Instance.Show();
-    SoundManager.Instance.Initialize();
     //FPSCounter.Instance.Initialize();
 
     Vector3 dimensions = Camera.main.ViewportToWorldPoint(new Vector3(0.0f, 0.0f, Camera.main.nearClipPlane));
@@ -103,6 +108,17 @@ public class TitleScreen : MonoBehaviour
   {
     // Introduces lag when opening 'Options' menu for the first time
     //System.GC.Collect();
+
+    // Again, trying to deal with draw lag when opening 'Options' menu
+    foreach (var item in AllFormsObjects)
+    {
+      item.gameObject.SetActive(true);
+    }
+
+    foreach (var item in AllFormsObjects)
+    {
+      item.gameObject.SetActive(false);
+    }
 
     LoadingScreen.Instance.Hide();
   }

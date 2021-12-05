@@ -37,7 +37,7 @@ public class Config
     DataAsJson[GlobalConstants.PlayerPrefsSoundVolumeKey] = "100";
     DataAsJson[GlobalConstants.PlayerPrefsMusicVolumeKey] = "100";
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < GlobalConstants.MaxHighScoreEntries; i++)
     {
       HighscoreEntry e = new HighscoreEntry();
 
@@ -70,7 +70,7 @@ public class Config
     DataAsJson[GlobalConstants.PlayerPrefsSoundVolumeKey] = SoundManager.Instance.SoundVolumePercent.ToString();
     DataAsJson[GlobalConstants.PlayerPrefsMusicVolumeKey] = SoundManager.Instance.MusicVolumePercent.ToString();
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < GlobalConstants.MaxHighScoreEntries; i++)
     {
       string entryKey = string.Format("entry-{0}", i);
 
@@ -84,28 +84,28 @@ public class Config
 public class HighscoreEntry
 {
   public string PlayerName = string.Empty;
-  public int Score = -1;
-  public int Phase = -1;
+  public int Score         = -1;
+  public int Phase         = -1;
+  public int UfoLameCount  = -1;
+  public int UfoEmpCount   = -1;
+  public int UfoEliteCount = -1;
 
   public JSONNode DataAsJson = new JSONObject();
 
   public string GetJson()
   {
-    DataAsJson[GlobalConstants.HighscoreEntryPlayerNameKey] = PlayerName;
+    DataAsJson[GlobalConstants.HighscoreEntryPlayerNameKey]  = PlayerName;
     DataAsJson[GlobalConstants.HighscoreEntryPlayerScoreKey] = Score.ToString();
     DataAsJson[GlobalConstants.HighscoreEntryPlayerPhaseKey] = Phase.ToString();
+    DataAsJson[GlobalConstants.HighscoreEntryLameUfoCount]   = UfoLameCount.ToString();
+    DataAsJson[GlobalConstants.HighscoreEntryEMPUfoCount]    = UfoEmpCount.ToString();
+    DataAsJson[GlobalConstants.HighscoreEntryEliteUfoCount]  = UfoEliteCount.ToString();
 
     return DataAsJson.ToString();
   }
 
-  public void RandomizeEntry()
-  {
-    Score = Random.Range(1, 1000);
-    Phase = Random.Range(1, 1000);
-  }
-
   public override string ToString()
   {
-    return string.Format("name=[{0}] score=[{1}] phase=[{2}]", PlayerName, Score, Phase);
+    return string.Format("name=[{0}] score=[{1}] phase=[{2}] ufo1=[{3}] ufo2=[{4}] ufo5=[{5}]", PlayerName, Score, Phase, UfoLameCount, UfoEmpCount, UfoEliteCount);
   }
 }

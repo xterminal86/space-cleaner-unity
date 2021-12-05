@@ -242,6 +242,7 @@ public class UfoBase : MonoBehaviour
     if (Hitpoints == 0)
     {
       _app.Score += GlobalConstants.UfoScoreByVariant[_currentVariant];
+      _app.UfosKilled[_currentVariant]++;
       _player.AddExperience(GlobalConstants.UfoScoreByVariant[_currentVariant]);
 
       SoundManager.Instance.PlaySound("ship_explode", 0.25f);
@@ -289,7 +290,7 @@ public class UfoBase : MonoBehaviour
     */
     if (other.gameObject.layer == playerLayer)
     {
-      ProcessDamage(1);
+      ProcessDamage(1, null);
     }
   }
 
@@ -327,39 +328,30 @@ public class UfoBase : MonoBehaviour
     yield return null;
   }
 
-  public void ProcessDamage(int damage)
+  public void ProcessDamage(int damage, BulletBase from)
   {
+    bool isOk = (from != null && !(from is BulletEmp)) || (from == null);
+
     if (Shieldpoints != 0)
     {
-      PlaySound(0, 0.1f);
-      //SoundManager.Instance.PlaySound("shield_hit_energy", 0.1f, 1.0f, false);
+      if (isOk)
+      {
+        EnergyHitSound.volume = 0.1f * SoundManager.Instance.SoundVolume;
+        EnergyHitSound.Play();
+      }
 
       _shieldColor.a = 1.0f;
       ReceiveShieldDamage(1);
     }
     else
     {
-      ReceiveDamage(damage);
-
-      if (Hitpoints != 0)
+      if (isOk)
       {
-        PlaySound(1, 0.5f);
-        //SoundManager.Instance.PlaySound("ufo-hit", 0.125f, 1.0f, false);
+        HitSound.volume = 0.5f * SoundManager.Instance.SoundVolume;
+        HitSound.Play();
       }
-    }
-  }
 
-  void PlaySound(int type, float volume)
-  {
-    if (type == 0)
-    {
-      EnergyHitSound.volume = volume * SoundManager.Instance.SoundVolume;
-      EnergyHitSound.Play();
-    }
-    else
-    {
-      HitSound.volume = volume * SoundManager.Instance.SoundVolume;
-      HitSound.Play();
+      ReceiveDamage(damage);
     }
   }
 }

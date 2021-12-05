@@ -26,7 +26,7 @@ public class BulletLame : BulletBase
 
           Destroy(go, 1.0f);
 
-          SoundManager.Instance.PlaySound(GlobalConstants.BulletSoundHitByType[GlobalConstants.BulletType.LAME], 0.25f);
+          SoundManager.Instance.PlaySound(GlobalConstants.BulletSoundHitByType[GlobalConstants.BulletType.LAME], 0.35f);
         }
       }
     }
@@ -38,7 +38,7 @@ public class BulletLame : BulletBase
         var go = Instantiate(HitAnimationPrefab, new Vector3(_rigidbodyComponent.position.x, _rigidbodyComponent.position.y, 0.0f), Quaternion.identity);
         Destroy(go, 1.0f);
 
-        saucer.ProcessDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.LAME]);
+        saucer.ProcessDamage(GlobalConstants.BulletDamageByType[GlobalConstants.BulletType.LAME], this);
       }
     }
 

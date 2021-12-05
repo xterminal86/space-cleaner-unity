@@ -25,7 +25,7 @@ public class GameStats : MonoSingleton<GameStats>
   public void ClearHighScores()
   {
     string entryKey = string.Empty;
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < GlobalConstants.MaxHighScoreEntries; i++)
     {
       HighscoreEntry e = new HighscoreEntry();
 
@@ -41,7 +41,7 @@ public class GameStats : MonoSingleton<GameStats>
     GameConfig.WriteConfig();
   }
 
-  public void WriteHighScore(int score, int phase)
+  public void WriteHighScore(int score, int phase, Dictionary<UfoController.UfoVariant, int> ufosKilled)
   {
     int index = -1;
     for (int i = 0; i < _highScoresSorted.Count; i++)
@@ -57,9 +57,12 @@ public class GameStats : MonoSingleton<GameStats>
     {
       HighscoreEntry e = new HighscoreEntry();
 
-      e.PlayerName = PlayerName;
-      e.Score = score;
-      e.Phase = phase;
+      e.PlayerName    = PlayerName;
+      e.Score         = score;
+      e.Phase         = phase;
+      e.UfoLameCount  = ufosKilled[UfoController.UfoVariant.LAME];
+      e.UfoEmpCount   = ufosKilled[UfoController.UfoVariant.EMP];
+      e.UfoEliteCount = ufosKilled[UfoController.UfoVariant.ELITE];
 
       _highScoresSorted.Insert(index, e);
 
@@ -79,7 +82,7 @@ public class GameStats : MonoSingleton<GameStats>
   {
     _highScoresSorted.Clear();
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < GlobalConstants.MaxHighScoreEntries; i++)
     {
       _highScoresSorted.Add(GetEntry(i));
     }
@@ -104,9 +107,12 @@ public class GameStats : MonoSingleton<GameStats>
 
     JSONNode n = JSON.Parse(GameConfig.DataAsJson[key]);
 
-    e.PlayerName = n[GlobalConstants.HighscoreEntryPlayerNameKey];
-    e.Score = (int)n[GlobalConstants.HighscoreEntryPlayerScoreKey];
-    e.Phase = (int)n[GlobalConstants.HighscoreEntryPlayerPhaseKey];
+    e.PlayerName    = n[GlobalConstants.HighscoreEntryPlayerNameKey];
+    e.Score         = (int)n[GlobalConstants.HighscoreEntryPlayerScoreKey];
+    e.Phase         = (int)n[GlobalConstants.HighscoreEntryPlayerPhaseKey];
+    e.UfoLameCount  = (int)n[GlobalConstants.HighscoreEntryLameUfoCount];
+    e.UfoEmpCount   = (int)n[GlobalConstants.HighscoreEntryEMPUfoCount];
+    e.UfoEliteCount = (int)n[GlobalConstants.HighscoreEntryEliteUfoCount];
 
     return e;
   }
