@@ -29,6 +29,7 @@ public class GameScript : MonoBehaviour
   public Text PhaseCount;
   public Text ScoreCount;
   public Text SpawnProgressBar;
+  public Text MusicPlayingTrackText;
 
   public GameObject AsteroidPrefab;
   public GameObject AsteroidSpawnEffect;
@@ -150,10 +151,10 @@ public class GameScript : MonoBehaviour
 
   public void ReduceSpawnRate()
   {
-    _spawnAcceleration -= (_spawnAcceleration * 0.25f);
+    _spawnAcceleration -= 0.4f;
     _spawnAcceleration = Mathf.Clamp(_spawnAcceleration, 1.0f, 2.0f);
 
-    _currentSpawnRate += (_currentSpawnRate * 0.25f);
+    _currentSpawnRate += 4.0f;
     _currentSpawnRate = Mathf.Clamp(_currentSpawnRate, GlobalConstants.MaxSpawnRate, GlobalConstants.StartingSpawnRate);
 
     _progressBarSb.Length = 0;
@@ -267,8 +268,62 @@ public class GameScript : MonoBehaviour
     }
   }
 
+  Color _playingTrackColor = Color.white;
+
+  const float _alphaControlDelay = 3.0f;
+  float _playingTrackAlphaControl = _alphaControlDelay;
+
+  bool _musicKeyPressed = false;
+  void MusicTrackControl()
+  {
+    _musicKeyPressed = false;
+
+    if (Input.GetKeyDown(KeyCode.LeftBracket))
+    {
+      _musicTrackIndex++;
+      _musicKeyPressed = true;
+    }
+    else if (Input.GetKeyDown(KeyCode.RightBracket))
+    {
+      _musicTrackIndex--;
+      _musicKeyPressed = true;
+    }
+
+    if (_musicKeyPressed)
+    {
+      if (_musicTrackIndex < 0)
+      {
+        _musicTrackIndex = GlobalConstants.MusicTracks.Count - 1;
+      }
+
+      _musicTrackIndex %= GlobalConstants.MusicTracks.Count;
+
+      _playingTrackColor.a = 1.0f;
+
+      _playingTrackAlphaControl = _alphaControlDelay;
+
+      SetTrackName();
+
+      SoundManager.Instance.PlayMusicTrack(GlobalConstants.MusicTracks[_musicTrackIndex].Key);
+    }
+
+    _playingTrackAlphaControl -= Time.smoothDeltaTime;
+    _playingTrackAlphaControl = Mathf.Clamp(_playingTrackAlphaControl, 0.0f, _alphaControlDelay);
+
+    if (_playingTrackAlphaControl < 1.0f)
+    {
+      _playingTrackColor.a = _playingTrackAlphaControl;
+    }
+
+    _playingTrackColor.a = Mathf.Clamp01(_playingTrackColor.a);
+
+    MusicPlayingTrackText.color = _playingTrackColor;
+  }
+
   void Update()
   {
+    MusicTrackControl();
+
     CheckRestart();
 
     if (IsGameOver)
@@ -531,7 +586,7 @@ public class GameScript : MonoBehaviour
     int whichOne = (PlayerScript.Hitpoints < PlayerScript.Shieldpoints
                  || PlayerScript.Hitpoints < (PlayerScript.MaxPoints / 4)) ? 0 : 1;
 
-    SoundManager.Instance.PlaySound("powerup_spawn", 0.25f);
+    SoundManager.Instance.PlaySound("powerup_spawn", _powerupSpawnVolume);
     var effect = Instantiate(PowerupSpawnEffect, new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
     Destroy(effect, 1.0f);
 
@@ -544,6 +599,8 @@ public class GameScript : MonoBehaviour
       Instantiate(ShieldPowerupPrefab, new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
     }
   }
+
+  const float _powerupSpawnVolume = 0.4f;
 
   bool _powerupSpawned = false;
   Vector2 _powerupPosition = Vector2.zero;
@@ -581,7 +638,7 @@ public class GameScript : MonoBehaviour
 
       if (chance < chanceH)
       {
-        SoundManager.Instance.PlaySound("powerup_spawn", 0.25f);
+        SoundManager.Instance.PlaySound("powerup_spawn", _powerupSpawnVolume);
 
         var effect = Instantiate(PowerupSpawnEffect, new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
 
@@ -602,7 +659,7 @@ public class GameScript : MonoBehaviour
 
       if (chance < chanceS)
       {
-        SoundManager.Instance.PlaySound("powerup_spawn", 0.25f);
+        SoundManager.Instance.PlaySound("powerup_spawn", _powerupSpawnVolume);
 
         var effect = Instantiate(PowerupSpawnEffect, new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
 
@@ -638,7 +695,7 @@ public class GameScript : MonoBehaviour
     //float modifier = (float)SpawnedAsteroids / (float)GlobalConstants.AsteroidsMaxInstances;
     //float modifier = (float)AsteroidsOnScreen / (float)GlobalConstants.AsteroidsMaxInstances;
     //float chance = GlobalConstants.SpecialPowerupSpawnPercent * modifier;
-    float rosaryChance = (float)AsteroidsOnScreen / ((float)GlobalConstants.AsteroidsMaxInstances / 12.0f);
+    float rosaryChance = (float)AsteroidsOnScreen / ((float)GlobalConstants.AsteroidsMaxInstances / 24.0f);
     float clockChance = (0.8f - (_currentSpawnRate / GlobalConstants.StartingSpawnRate)) * 50.0f;
 
     int whichOne = Random.Range(0, SpecialPowerups.Count);
@@ -652,10 +709,14 @@ public class GameScript : MonoBehaviour
       clockChance = 100;
     }
 
+#if UNITY_EDITOR
+    Debug.Log(string.Format("Special powerup: roll = {0}, rosaryChance = {1}, clockChance = {2}", roll, rosaryChance, clockChance));
+#endif
+
     // FIXME: duplicate code
     if (whichOne == 0 && roll < rosaryChance)
     {
-      SoundManager.Instance.PlaySound("powerup_spawn", 0.25f);
+      SoundManager.Instance.PlaySound("powerup_spawn", _powerupSpawnVolume);
       var effect = Instantiate(PowerupSpawnEffect, new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
       Destroy(effect, 1.0f);
 
@@ -665,7 +726,7 @@ public class GameScript : MonoBehaviour
     }
     else if (whichOne == 1 && roll < clockChance)
     {
-      SoundManager.Instance.PlaySound("powerup_spawn", 0.25f);
+      SoundManager.Instance.PlaySound("powerup_spawn", _powerupSpawnVolume);
       var effect = Instantiate(PowerupSpawnEffect, new Vector3(_powerupPosition.x, _powerupPosition.y, 0.0f), Quaternion.identity);
       Destroy(effect, 1.0f);
 
@@ -692,17 +753,28 @@ public class GameScript : MonoBehaviour
     SceneManager.sceneLoaded -= SceneLoadedHandler;
   }
 
+  string _musicPlayingTrackFormat = "Playing Track:\n[ {0} ]";
+
+  void SetTrackName()
+  {
+    string trackName = GlobalConstants.MusicTracks[_musicTrackIndex].Value;
+    MusicPlayingTrackText.text = string.Format(_musicPlayingTrackFormat, trackName);
+  }
+
+  int _musicTrackIndex = 0;
   void SceneLoadedHandler(Scene scene, LoadSceneMode mode)
   {
     // May introduce unnecessary lags
     // (see comments in TitleScreen:;SceneLoadedHandler())
     //
-    // System.GC.Collect();
+    System.GC.Collect();
 
     LoadingScreen.Instance.Hide();
 
-    int musicTrackIndex = Random.Range(1, GlobalConstants.MusicTracks.Count);
+    _musicTrackIndex = Random.Range(1, GlobalConstants.MusicTracks.Count);
 
-    SoundManager.Instance.PlayMusicTrack(GlobalConstants.MusicTracks[musicTrackIndex]);
+    SetTrackName();
+
+    SoundManager.Instance.PlayMusicTrack(GlobalConstants.MusicTracks[_musicTrackIndex].Key);
   }
 }

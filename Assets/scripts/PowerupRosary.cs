@@ -4,7 +4,7 @@
   {
     base.Pickup(p);
 
-    SoundManager.Instance.PlaySound("powerup-rosary", 0.5f, 2.0f);
+    SoundManager.Instance.PlaySound("powerup-rosary", 1.0f, 2.0f);
 
     p.InitiateRosaryPowerup();
 

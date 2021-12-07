@@ -124,10 +124,10 @@ public class UfoBase : MonoBehaviour
     Physics2D.IgnoreCollision(UfoCollider, bc.Collider);
     bc.Propel(shotDir, bulletSpeed);
 
-    PlayBulletCreatedSound();
+    PlayBulletCreatedSound(bc);
   }
 
-  protected virtual void PlayBulletCreatedSound()
+  protected virtual void PlayBulletCreatedSound(BulletBase bc)
   {
     SoundManager.Instance.PlaySound("laser", 0.25f, 1.0f, true);
   }

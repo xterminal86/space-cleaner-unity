@@ -3,12 +3,14 @@ using UnityEngine;
 
 public class UfoElite : UfoBase
 {
+  public GameObject BulletEMP;
+
   protected override void SetupSpecific(UfoController.UfoVariant variant)
   {
-    Hitpoints = 40;
+    Hitpoints = 200;
     _maxHitPoints = Hitpoints;
 
-    Shieldpoints = 60;
+    Shieldpoints = 400;
     _maxShieldPoints = Shieldpoints;
 
     _moveDirChangeTimeout = Random.Range(2.0f, 4.0f);
@@ -18,10 +20,13 @@ public class UfoElite : UfoBase
     _shootingCooldown = 6.0f;
   }
 
+  float _empShootCounter = 0.0f;
+  const float _empShootTimeout = 4.0f;
   protected override void Logic()
   {
     _timer += Time.smoothDeltaTime;
     _shootingCooldownCounter += Time.smoothDeltaTime;
+    _empShootCounter += Time.smoothDeltaTime;
 
     if (_timer > _moveDirChangeTimeout)
     {
@@ -34,6 +39,12 @@ public class UfoElite : UfoBase
     {
       _shootingCooldownCounter = 0.0f;
       StartCoroutine(ShootRoutine());
+    }
+
+    if (_empShootCounter > _empShootTimeout)
+    {
+      _empShootCounter = 0.0f;
+      SpawnBullet(BulletEMP, GlobalConstants.BulletEmpSpeed);
     }
   }
 
@@ -50,8 +61,11 @@ public class UfoElite : UfoBase
     yield return null;
   }
 
-  protected override void PlayBulletCreatedSound()
+  protected override void PlayBulletCreatedSound(BulletBase bc)
   {
-    SoundManager.Instance.PlaySound("laser", 0.4f, 0.5f, true);
+    if (!(bc is BulletEmp))
+    {
+      SoundManager.Instance.PlaySound("laser", 0.4f, 0.5f, true);
+    }
   }
 }

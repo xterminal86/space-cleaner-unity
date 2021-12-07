@@ -8,7 +8,7 @@ public class PowerupShield : PowerupBase
   {
     base.Pickup(p);
 
-    SoundManager.Instance.PlaySound("shield_powerup", 0.25f, 1.0f);
+    SoundManager.Instance.PlaySound("shield_powerup", 0.35f, 1.0f);
 
     p.ReceiveShieldDamage(-10);
 

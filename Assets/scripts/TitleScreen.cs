@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Threading;
 
@@ -15,7 +17,7 @@ public class TitleScreen : MonoBehaviour
 
   public FormTitleScreen FormTitleScreenScript;
 
-  public List<GameObject> AllFormsObjects;
+  public Text AuthorText;
 
   List<BackgroundStar> _stars = new List<BackgroundStar>();
 
@@ -107,18 +109,7 @@ public class TitleScreen : MonoBehaviour
   void SceneLoadedHandler(Scene scene, LoadSceneMode mode)
   {
     // Introduces lag when opening 'Options' menu for the first time
-    //System.GC.Collect();
-
-    // Again, trying to deal with draw lag when opening 'Options' menu
-    foreach (var item in AllFormsObjects)
-    {
-      item.gameObject.SetActive(true);
-    }
-
-    foreach (var item in AllFormsObjects)
-    {
-      item.gameObject.SetActive(false);
-    }
+    System.GC.Collect();
 
     LoadingScreen.Instance.Hide();
   }

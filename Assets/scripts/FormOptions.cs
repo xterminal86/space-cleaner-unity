@@ -106,7 +106,7 @@ public class FormOptions : FormBase
     {
       if (_itemIndex == 3)
       {
-        SoundManager.Instance.PlayMusicTrack(GlobalConstants.MusicTracks[_musicIndex], true);
+        SoundManager.Instance.PlayMusicTrack(GlobalConstants.MusicTracks[_musicIndex].Key, true);
       }
       else if (_itemIndex == 0)
       {

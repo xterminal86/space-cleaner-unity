@@ -8,7 +8,7 @@ public class PowerupClock : PowerupBase
   {
     base.Pickup(p);
 
-    SoundManager.Instance.PlaySound("powerup-clock", 2.0f, 2.0f);
+    SoundManager.Instance.PlaySound("powerup-clock", 0.75f, 1.0f);
 
     p.AppReference.ReduceSpawnRate();
 

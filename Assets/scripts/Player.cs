@@ -495,7 +495,7 @@ public class Player : MonoBehaviour
 
       _currentWeapon++;
 
-      SoundManager.Instance.PlaySound("weapon-upgrade", 0.25f);
+      SoundManager.Instance.PlaySound("weapon-upgrade", 0.5f);
 
       _currentWeapon = Mathf.Clamp(_currentWeapon, 0, GlobalConstants.BulletSpeedByType.Count - 1);
 

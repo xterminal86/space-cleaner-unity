@@ -46,7 +46,7 @@ public class UfoEmp : UfoBase
     }
   }
 
-  protected override void PlayBulletCreatedSound()
+  protected override void PlayBulletCreatedSound(BulletBase bc)
   {
   }
 }

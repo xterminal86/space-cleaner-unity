@@ -31,19 +31,19 @@ public class MusicTest : MonoBehaviour
   */
 
   int _trackIndex = 0;
-  string _trackName = string.Empty;
+  string _trackKey = string.Empty;
   void Awake()
   {
     SoundManager.Instance.Initialize();
 
-    _trackName = GlobalConstants.MusicTracks[_trackIndex];
+    _trackKey = GlobalConstants.MusicTracks[_trackIndex].Key;
 
-    SamplesStart.text = GlobalConstants.MusicTrackLoopPointsByName[_trackName].X.ToString();
-    SamplesEnd.text = GlobalConstants.MusicTrackLoopPointsByName[_trackName].Y.ToString();
+    SamplesStart.text = GlobalConstants.MusicTrackLoopPointsByName[_trackKey].X.ToString();
+    SamplesEnd.text = GlobalConstants.MusicTrackLoopPointsByName[_trackKey].Y.ToString();
 
-    TrackName.text = _trackName;
+    TrackName.text = _trackKey;
 
-    SoundManager.Instance.PlayMusicTrack(_trackName);
+    SoundManager.Instance.PlayMusicTrack(_trackKey);
 
     SoundManager.Instance.SetMusicTrackVolume(1.0f);
   }
@@ -57,11 +57,11 @@ public class MusicTest : MonoBehaviour
       _trackIndex = GlobalConstants.MusicTracks.Count - 1;
     }
 
-    _trackName = GlobalConstants.MusicTracks[_trackIndex];
-    SamplesStart.text = GlobalConstants.MusicTrackLoopPointsByName[_trackName].X.ToString();
-    SamplesEnd.text = GlobalConstants.MusicTrackLoopPointsByName[_trackName].Y.ToString();
+    _trackKey = GlobalConstants.MusicTracks[_trackIndex].Key;
+    SamplesStart.text = GlobalConstants.MusicTrackLoopPointsByName[_trackKey].X.ToString();
+    SamplesEnd.text = GlobalConstants.MusicTrackLoopPointsByName[_trackKey].Y.ToString();
 
-    TrackName.text = _trackName;
+    TrackName.text = _trackKey;
   }
 
   public void NextHandler()
@@ -73,11 +73,11 @@ public class MusicTest : MonoBehaviour
       _trackIndex = 0;
     }
 
-    _trackName = GlobalConstants.MusicTracks[_trackIndex];
-    SamplesStart.text = GlobalConstants.MusicTrackLoopPointsByName[_trackName].X.ToString();
-    SamplesEnd.text = GlobalConstants.MusicTrackLoopPointsByName[_trackName].Y.ToString();
+    _trackKey = GlobalConstants.MusicTracks[_trackIndex].Key;
+    SamplesStart.text = GlobalConstants.MusicTrackLoopPointsByName[_trackKey].X.ToString();
+    SamplesEnd.text = GlobalConstants.MusicTrackLoopPointsByName[_trackKey].Y.ToString();
 
-    TrackName.text = _trackName;
+    TrackName.text = _trackKey;
   }
 
   int _endLoop = 0;
@@ -85,14 +85,14 @@ public class MusicTest : MonoBehaviour
   {
     _endLoop = int.Parse(SamplesEnd.text);
 
-    GlobalConstants.MusicTrackLoopPointsByName[_trackName].Y = _endLoop;
+    GlobalConstants.MusicTrackLoopPointsByName[_trackKey].Y = _endLoop;
   }
 
   public void PlayHandler()
   {
-    SoundManager.Instance.PlayMusicTrack(_trackName);
+    SoundManager.Instance.PlayMusicTrack(_trackKey);
 
-    int playFrom = GlobalConstants.MusicTrackLoopPointsByName[_trackName].Y - 100000;
+    int playFrom = GlobalConstants.MusicTrackLoopPointsByName[_trackKey].Y - 100000;
     SoundManager.Instance.CurrentMusicTrack.timeSamples = playFrom;
   }
 }

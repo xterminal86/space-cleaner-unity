@@ -36,7 +36,7 @@ public static class GlobalConstants
   // Delay of spawned powerup after it disappears
   public const float PowerupLifetime = 6.0f;
 
-  public const float PowerupSpawnPercent = 35.0f;
+  public const float PowerupSpawnPercent = 25.0f;
 
   // Random spread arc of asteroid from hitting the player
   public const float AsteroidBreakdownHalfArc = 60.0f;
@@ -82,9 +82,9 @@ public static class GlobalConstants
 
   public static Dictionary<UfoController.UfoVariant, int> UfoScoreByVariant = new Dictionary<UfoController.UfoVariant, int>()
   {
-    { UfoController.UfoVariant.LAME,  15 },
-    { UfoController.UfoVariant.EMP,   30 },
-    { UfoController.UfoVariant.ELITE, 60 }
+    { UfoController.UfoVariant.LAME,  20 },
+    { UfoController.UfoVariant.EMP,   40 },
+    { UfoController.UfoVariant.ELITE, 80 }
   };
 
   public static Dictionary<UfoController.UfoVariant, int> MaximumAllowedUfosByVariant = new Dictionary<UfoController.UfoVariant, int>()
@@ -98,7 +98,7 @@ public static class GlobalConstants
   {
     { UfoController.UfoVariant.LAME,  50 },
     { UfoController.UfoVariant.EMP,   30 },
-    { UfoController.UfoVariant.ELITE, 15 }
+    { UfoController.UfoVariant.ELITE, 30 }
   };
 
   // Number of asteroids to destroy (value) after given level (key) is reached
@@ -120,7 +120,7 @@ public static class GlobalConstants
   public static string MenuSelectSound = "menu_select";
   public static string MenuBackSound = "menu_back";
 
-  public static string PlayerPrefsConfigDataKey = "pp-config-v14";
+  public static string PlayerPrefsConfigDataKey = string.Format("pp-config-v{0}", Application.version);
   public static string PlayerPrefsPlayerNameKey = "pp-player-name";
   public static string PlayerPrefsSoundVolumeKey = "pp-sound-volume";
   public static string PlayerPrefsMusicVolumeKey = "pp-music-volume";
@@ -187,17 +187,17 @@ public static class GlobalConstants
   };
 
   // Music will play in the order of listing here
-  public static List<string> MusicTracks = new List<string>()
+  public static List<KeyValuePair<string, string>> MusicTracks = new List<KeyValuePair<string, string>>()
   {
-    "pb1",
-    "dd",
-    "metroid",
-    "green-planet",
-    "pb3",
-    "pb4",
-    "pb5",
-    "pb7",
-    "city-lights"
+    new KeyValuePair<string, string>("pb1", "Power Blade - Sector 7: The Computer"),
+    new KeyValuePair<string, string>("dd", "Battletoads & Double Dragon - Robo Manus"),
+    new KeyValuePair<string, string>("metroid", "Metroid - Brinstar"),
+    new KeyValuePair<string, string>("green-planet", "Bucky O'Hare - Green Planet"),
+    new KeyValuePair<string, string>("pb3", "Power Blade - Sector 5: Tanker"),
+    new KeyValuePair<string, string>("pb4", "Power Blade - Sector 1: Space Center"),
+    new KeyValuePair<string, string>("pb5", "Power Blade - Sector 2: Power Windmills"),
+    new KeyValuePair<string, string>("pb7", "Power Blade - Sector 6: City"),
+    new KeyValuePair<string, string>("city-lights", "Street Fighter 2010: The Final Fight - City Lights")
   };
 
   public static Dictionary<string, Int2> MusicTrackLoopPointsByName = new Dictionary<string, Int2>()
@@ -209,8 +209,8 @@ public static class GlobalConstants
     { "pb4",          new Int2(423377, 2116000) },
     { "pb5",          new Int2(264518, 3086200) },
     { "pb7",          new Int2(882204, 2998300) },
-    { "dd",           new Int2(0, 2738500)      },
-    { "city-lights",  new Int2(0, 2560300)      }
+    { "dd",           new Int2(0,      2738500) },
+    { "city-lights",  new Int2(0,      2560300) }
 
     /*
     { "metroid", new Vector2(320100, 2704000) },
