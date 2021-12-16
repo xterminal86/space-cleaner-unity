@@ -230,6 +230,15 @@ public class GameScript : MonoBehaviour
   int _barCounter = 0;
   float _powerupLifetimeTimer = 0.0f;
 
+  int _specialPowerupRespawnTimeoutCounter = 0;
+  const int _specialPowerupTimeoutPhases = 12;
+  bool _specialPowerupWasPicked = false;
+  public void SpecialPowerupPicked()
+  {
+    _specialPowerupWasPicked = true;
+    _specialPowerupRespawnTimeoutCounter = 0;
+  }
+
   public void ResetPowerupLock()
   {
     _powerupLifetimeTimer = 0.0f;
@@ -448,6 +457,14 @@ public class GameScript : MonoBehaviour
         _progressBarSb.Length = 0;
 
         DecideSpawn();
+
+        _specialPowerupRespawnTimeoutCounter++;
+
+        if (_specialPowerupWasPicked
+         && _specialPowerupRespawnTimeoutCounter > _specialPowerupTimeoutPhases)
+        {
+          _specialPowerupWasPicked = false;
+        }
       }
 
       SpawnProgressBar.text = _progressBarSb.ToString();
@@ -683,6 +700,11 @@ public class GameScript : MonoBehaviour
 
   public bool TryToSpawnSpecialPowerup(Vector2 position, int whichOneOverride = -1, bool debugMode = false)
   {
+    if (_specialPowerupWasPicked)
+    {
+      return false;
+    }
+
     bool res = false;
 
     _powerupPosition.Set(position.x, position.y);

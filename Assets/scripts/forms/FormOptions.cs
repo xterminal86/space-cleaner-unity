@@ -14,6 +14,11 @@ public class FormOptions : FormBase
   Color _selectedColor = new Color(1.0f, 0.0f, 1.0f);
   public override void Init()
   {
+    foreach (var item in MenuIems)
+    {
+      item.color = Color.white;
+    }
+
     _itemIndex = 0;
     _fontSize = DefaultFontSize;
     MenuIems[_itemIndex].color = _selectedColor;

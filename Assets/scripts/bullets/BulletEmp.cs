@@ -63,6 +63,17 @@ public class BulletEmp : BulletBase
 
         if (player.Shieldpoints == 0)
         {
+          //
+          // Sometimes collider may not get deactivated,
+          // because OnTriggerEnter2D() is driven by physics engine
+          // and FixedUpdate() as the result, which may be called
+          // variable number of times per frame. So, as I see it,
+          // shield could gain 1 point and thus enable the collider,
+          // but we still get in this method, thus leaving shield collider
+          // enabled. Kinda strange, but that's my guess.
+          //
+          player.ShieldCollider.gameObject.SetActive(false);
+
           player.SetEMPLockout();
         }
         else
@@ -90,6 +101,9 @@ public class BulletEmp : BulletBase
 
         if (u.Shieldpoints == 0)
         {
+          // See comments for player case above
+          u.ShieldCollider.gameObject.SetActive(false);
+
           u.SetEMPLockout();
         }
         else

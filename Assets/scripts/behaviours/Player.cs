@@ -154,9 +154,7 @@ public class Player : MonoBehaviour
       _rotation -= GlobalConstants.PlayerRotationSpeed * Time.smoothDeltaTime;
     }
 
-    HandleMobileInput();
-
-#if UNITY_EDITOR || UNITY_STANDALONE_WIN
+#if UNITY_EDITOR || UNITY_STANDALONE
 
     HandleEditorInput();
 
@@ -174,6 +172,8 @@ public class Player : MonoBehaviour
     _currentWeapon = Mathf.Clamp(_currentWeapon, 0, GlobalConstants.BulletSpeedByType.Count - 1);
 
     AppReference.SetWeapon(_currentWeapon);
+#else
+    HandleMobileInput();
 #endif
 
     ClampGas();

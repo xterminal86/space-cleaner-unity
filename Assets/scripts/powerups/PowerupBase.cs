@@ -27,6 +27,11 @@ public class PowerupBase : MonoBehaviour
 
       if (p != null)
       {
+        if (this is PowerupClock || this is PowerupRosary)
+        {
+          p.AppReference.SpecialPowerupPicked();
+        }
+
         Pickup(p);
       }
     }
