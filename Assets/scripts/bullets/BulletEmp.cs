@@ -51,7 +51,6 @@ public class BulletEmp : BulletBase
       if (a != null)
       {
         SoundManager.Instance.PlaySound(GlobalConstants.BulletSoundHitByType[GlobalConstants.BulletType.MEDIUM], 0.25f, 1.0f, false);
-        Destroy(gameObject);
       }
     }
     else if (collider.gameObject.layer == playerLayer)
@@ -88,8 +87,6 @@ public class BulletEmp : BulletBase
           player.ProcessDamage(0, this);
           player.Shieldpoints = 0;
         }
-
-        Destroy(gameObject);
       }
     }
     else if (collider.gameObject.layer == enemyLayer)
@@ -111,9 +108,10 @@ public class BulletEmp : BulletBase
           u.ProcessDamage(0, this);
           u.Shieldpoints = 0;
         }
-
-        Destroy(gameObject);
       }
     }
+
+    // Gets destroyed on any collision
+    Destroy(gameObject);
   }
 }

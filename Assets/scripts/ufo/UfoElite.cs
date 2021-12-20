@@ -53,7 +53,7 @@ public class UfoElite : UfoBase
     int bullets = 0;
     while (bullets < 3)
     {
-      SpawnBullet(null, GlobalConstants.BulletLaserSpeed);
+      SpawnBullet(null, GlobalConstants.BulletEliteSpeed);
       bullets++;
       yield return new WaitForSeconds(0.3f);
     }

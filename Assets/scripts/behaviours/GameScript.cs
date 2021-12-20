@@ -385,9 +385,19 @@ public class GameScript : MonoBehaviour
       Debug.Log(PlayerScript.Level);
     }
 
-    if (Input.GetKeyDown(KeyCode.Q))
+    if (Input.GetKeyDown(KeyCode.C))
     {
       TryToSpawnSpecialPowerup(Vector2.zero, 1, true);
+    }
+
+    if (Input.GetKeyDown(KeyCode.R))
+    {
+      TryToSpawnSpecialPowerup(Vector2.zero, 0, true);
+    }
+
+    if (Input.GetKeyDown(KeyCode.T))
+    {
+      ExhaustAllUfoVariants();
     }
 #endif
 
@@ -471,7 +481,6 @@ public class GameScript : MonoBehaviour
     }
   }
 
-  int _nextUfoChanceAddition = 0;
   void DecideSpawn()
   {
 #if UNITY_EDITOR
@@ -483,7 +492,22 @@ public class GameScript : MonoBehaviour
     Debug.Log(output);
 #endif
 
-    bool shouldSpawnAsteroid = true;
+    UfoController.UfoVariant ufoVariant = ExhaustAllUfoVariants();
+
+    if (ufoVariant == UfoController.UfoVariant.LAST_ELEMENT)
+    {
+      SpawnAsteroid();
+    }
+    else
+    {
+      SpawnUfo(ufoVariant);
+    }
+  }
+
+  int _nextUfoSpawnNudge = 0;
+  UfoController.UfoVariant ExhaustAllUfoVariants()
+  {
+    UfoController.UfoVariant variant = UfoController.UfoVariant.LAST_ELEMENT;
 
     // Check total number of UFOs on screen
     int activeUfos = 0;
@@ -495,55 +519,68 @@ public class GameScript : MonoBehaviour
     // If we can spawn some more because player level allows...
     if (activeUfos < GlobalConstants.MaxUfosPerPlayerLevel[PlayerScript.Level])
     {
-      UfoController.UfoVariant variant = UfoController.UfoVariant.LAST_ELEMENT;
+      int chance = Random.Range(0, 101) - _nextUfoSpawnNudge;
+
+#if UNITY_EDITOR
+      Debug.Log("UFO spawn: chance " + chance);
+#endif
 
       //
-      // Check probabilities from lowest to highest
+      // If we hit the maximum category, but can't spawn it due to
+      // maximum allowed spawned objects of that category, move to the next
+      // one in order until we can either spawn something or can't.
       //
-      int chance = Random.Range(0, 101) - _nextUfoChanceAddition;
-      if (chance <= GlobalConstants.UfoSpawnChanceByVariant[UfoController.UfoVariant.ELITE])
+      var candidates = GetSpawnCandidates(chance);
+      for (int i = 0; i < candidates.Count; i++)
       {
-        variant = UfoController.UfoVariant.ELITE;
-      }
-      else if (chance <= GlobalConstants.UfoSpawnChanceByVariant[UfoController.UfoVariant.EMP])
-      {
-        variant = UfoController.UfoVariant.EMP;
-      }
-      else if (chance <= GlobalConstants.UfoSpawnChanceByVariant[UfoController.UfoVariant.LAME])
-      {
-        variant = UfoController.UfoVariant.LAME;
-      }
-
-      if (variant != UfoController.UfoVariant.LAST_ELEMENT)
-      {
-        // If we rolled maximum category, but it's not allowed,
-        // fall through until we can spawn something.
-        bool isAllowed = GlobalConstants.AllowedUfoVariantsByPlayerLevel[PlayerScript.Level].Contains(variant);
-        int index = -1;
-        while (!isAllowed)
+        UfoController.UfoVariant v = candidates[i];
+        bool isAllowed = GlobalConstants.AllowedUfoVariantsByPlayerLevel[PlayerScript.Level].Contains(v);
+        if (isAllowed)
         {
-          index = GlobalConstants.AllowedUfosAscendingList.FindIndex(x => x == variant);
-          index--;
-          variant = GlobalConstants.AllowedUfosAscendingList[index];
-          isAllowed = GlobalConstants.AllowedUfoVariantsByPlayerLevel[PlayerScript.Level].Contains(variant);
-        }
-
-        bool canBeSpawned = (UfoControllerScript.SpawnedUfosByVariant[variant] < GlobalConstants.MaximumAllowedUfosByVariant[variant]);
-
-        if (isAllowed && canBeSpawned)
-        {
-          _nextUfoChanceAddition = 0;
-          shouldSpawnAsteroid = false;
-          SpawnUfo(variant);
+          bool canBeSpawned = (UfoControllerScript.SpawnedUfosByVariant[v] < GlobalConstants.MaximumAllowedUfosByVariant[v]);
+          if (canBeSpawned)
+          {
+            _nextUfoSpawnNudge = 0;
+            variant = v;
+            break;
+          }
         }
       }
     }
 
-    if (shouldSpawnAsteroid)
+    if (variant == UfoController.UfoVariant.LAST_ELEMENT)
     {
-      _nextUfoChanceAddition++;
-      SpawnAsteroid();
+      _nextUfoSpawnNudge++;
+      _nextUfoSpawnNudge = Mathf.Clamp(_nextUfoSpawnNudge, 1, 50);
     }
+
+#if UNITY_EDITOR
+    Debug.Log("UFO spawn result: " + variant);
+#endif
+
+    return variant;
+  }
+
+  List<UfoController.UfoVariant> GetSpawnCandidates(int chance)
+  {
+    List<UfoController.UfoVariant> res = new List<UfoController.UfoVariant>();
+
+    if (chance <= GlobalConstants.UfoSpawnChanceByVariant[UfoController.UfoVariant.ELITE])
+    {
+      res.Add(UfoController.UfoVariant.ELITE);
+    }
+
+    if (chance <= GlobalConstants.UfoSpawnChanceByVariant[UfoController.UfoVariant.EMP])
+    {
+      res.Add(UfoController.UfoVariant.EMP);
+    }
+
+    if (chance <= GlobalConstants.UfoSpawnChanceByVariant[UfoController.UfoVariant.LAME])
+    {
+      res.Add(UfoController.UfoVariant.LAME);
+    }
+
+    return res;
   }
 
   void SpawnUfo(UfoController.UfoVariant variant)
@@ -700,7 +737,7 @@ public class GameScript : MonoBehaviour
 
   public bool TryToSpawnSpecialPowerup(Vector2 position, int whichOneOverride = -1, bool debugMode = false)
   {
-    if (_specialPowerupWasPicked)
+    if (_specialPowerupWasPicked && !debugMode)
     {
       return false;
     }

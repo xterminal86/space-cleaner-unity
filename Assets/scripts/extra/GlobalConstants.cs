@@ -113,7 +113,8 @@ public static class GlobalConstants
   public const float BulletLameSpeed = 8.0f;
   public const float BulletMediumSpeed = 8.0f;
   public const float BulletStrongSpeed = 8.0f;
-  public const float BulletLaserSpeed = 6.0f;
+  public const float BulletLaserSpeed = 8.0f;
+  public const float BulletEliteSpeed = 6.0f;
   public const float BulletEmpSpeed = 3.0f;
 
   public static string MenuMoveSound = "menu_move";

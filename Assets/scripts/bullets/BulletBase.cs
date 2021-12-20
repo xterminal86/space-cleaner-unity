@@ -48,9 +48,13 @@ public class BulletBase : MonoBehaviour
     var go = Instantiate(HitAnimationPrefab, new Vector3(_rigidbodyComponent.position.x, _rigidbodyComponent.position.y, 0.0f), Quaternion.identity);
     Destroy(go, 1.0f);
 
-    if (this is BulletLaser)
+    if (this is BulletLaser || this is BulletElite)
     {
       WaitForEndOfTrailDestroy();
+    }
+    else
+    {
+      Destroy(gameObject);
     }
   }
 

@@ -42,6 +42,7 @@ public class BulletLame : BulletBase
       }
     }
 
+    // Gets destroyed on any collision
     Destroy(gameObject);
   }
 }
